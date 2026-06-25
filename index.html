@@ -82,7 +82,6 @@
             --btn-shadow: 6px 6px 12px rgba(191, 54, 12, 0.15), -6px -6px 12px rgba(255, 255, 255, 0.9);
             --input-shadow: inset 4px 4px 8px rgba(191, 54, 12, 0.15), inset -4px -4px 8px rgba(255, 255, 255, 0.9);
         }
-        /* 🌸 櫻花粉主題 */
         body.pink {
             --primary-color: #c2185b;
             --bg-color: #fce4ec; --card-bg: #fce4ec; --border-color: #f8bbd0;
@@ -92,7 +91,6 @@
             --btn-shadow: 6px 6px 12px rgba(194, 24, 91, 0.15), -6px -6px 12px rgba(255, 255, 255, 0.9);
             --input-shadow: inset 4px 4px 8px rgba(194, 24, 91, 0.15), inset -4px -4px 8px rgba(255, 255, 255, 0.9);
         }
-        /* 🍃 薄荷綠主題 */
         body.mint {
             --primary-color: #00796b;
             --bg-color: #e0f2f1; --card-bg: #e0f2f1; --border-color: #b2dfdb;
@@ -113,14 +111,15 @@
         h2 { margin: 0; font-size: 26px; font-weight: 900; color: var(--primary-color); text-shadow: var(--text-3d); letter-spacing: 1px; }
         .subtitle { color: var(--text-gray); margin-bottom: 16px; font-size: 15px; font-weight: bold; text-shadow: var(--text-3d); }
         
+        /* 統一所有板塊為細框線 */
         .card { 
             background: var(--card-bg); border-radius: 20px; padding: 18px; margin-bottom: 16px; 
-            box-shadow: var(--card-shadow), var(--card-inset); border: 1px solid var(--border-color);
+            box-shadow: var(--card-shadow), var(--card-inset); border: 1px solid var(--text-gray);
             transition: all 0.3s ease;
         }
         .card-title { 
             font-size: 18px; font-weight: 900; margin-bottom: 14px; padding-bottom: 8px; 
-            border-bottom: 2px dashed var(--border-color); color: var(--primary-color); 
+            border-bottom: 1px solid var(--text-gray); color: var(--primary-color); 
             text-shadow: var(--text-3d); display: flex; justify-content: space-between; align-items: center;
         }
         
@@ -131,7 +130,6 @@
             transition: all 0.3s;
         }
         
-        /* ----------------修改重點：凹陷有厚度的內陰影設計---------------- */
         .input-group input[type="number"] {
             box-shadow: inset 5px 5px 12px rgba(0, 0, 0, 0.15), inset -5px -5px 12px rgba(255, 255, 255, 1), 1px 1px 2px rgba(0,0,0,0.03);
             border: 1px solid var(--text-gray);
@@ -151,26 +149,31 @@
         .input-group input[type="date"]:focus { 
             box-shadow: var(--input-shadow), 0 0 0 2px rgba(26, 140, 125, 0.2); 
         }
-        /* -------------------------------------------------------- */
         
         .btn-group { display: flex; gap: 12px; margin-bottom: 8px; flex-wrap: wrap; }
+        
+        /* 統一所有按鈕為細框線 */
         button { 
             flex: 1; min-width: 100px; padding: 12px; border-radius: 14px; font-size: 16px; font-weight: 900; 
-            cursor: pointer; border: 1px solid var(--primary-color); transition: 0.2s; color: var(--primary-color); 
+            cursor: pointer; border: 1px solid var(--text-gray); transition: 0.2s; color: var(--primary-color); 
             text-shadow: var(--text-engrave); background: transparent; box-shadow: var(--btn-shadow);
             display: flex; justify-content: center; align-items: center; gap: 6px;
         }
-        .header-btn { flex: none; min-width: auto; padding: 10px 16px; background: var(--card-bg); color: var(--primary-color); border: 1px solid var(--border-color); box-shadow: var(--btn-shadow); text-shadow: none; border-radius: 12px; font-size: 14px;}
-        .btn-primary { color: var(--primary-color); border: 2px solid var(--primary-color); }
-        .btn-outline { color: var(--text-gray); border: 1px solid var(--border-color); }
-        .btn-danger { background: linear-gradient(145deg, #e74c3c, #c0392b); color: white; border: none; text-shadow: none; box-shadow: 0 4px 10px rgba(231, 76, 60, 0.3); }
+        
+        /* 移除個別按鈕原本自訂的邊框，讓它們繼承上面 button 的細框線 */
+        .header-btn { flex: none; min-width: auto; padding: 10px 16px; background: var(--card-bg); color: var(--primary-color); box-shadow: var(--btn-shadow); text-shadow: none; border-radius: 12px; font-size: 14px;}
+        .btn-primary { color: var(--primary-color); }
+        .btn-outline { color: var(--text-gray); }
+        .btn-danger { background: linear-gradient(145deg, #e74c3c, #c0392b); color: white; text-shadow: none; box-shadow: 0 4px 10px rgba(231, 76, 60, 0.3); }
         button:active { transform: translateY(3px); box-shadow: var(--btn-shadow-active); }
         
         .hint-text { color: var(--primary-color); font-size: 13px; margin-bottom: 12px; font-weight: bold; text-shadow: var(--text-3d); }
-        .table-responsive { width: 100%; overflow-x: auto; border-radius: 16px; box-shadow: var(--card-inset); border: 1px solid var(--border-color); background: transparent; }
+        
+        /* 統一表格相關區塊為細框線 */
+        .table-responsive { width: 100%; overflow-x: auto; border-radius: 16px; box-shadow: var(--card-inset); border: 1px solid var(--text-gray); background: transparent; }
         table { width: 100%; border-collapse: collapse; text-align: center; font-size: 15px; background: transparent; color: var(--text-dark); min-width: 600px; }
-        th, td { padding: 10px 4px; border-bottom: 1px solid var(--border-color); white-space: nowrap; }
-        th { background-color: var(--table-header); font-weight: 900; color: var(--primary-color); text-shadow: var(--text-3d); border-bottom: 2px solid var(--border-color); }
+        th, td { padding: 10px 4px; border-bottom: 1px solid var(--text-gray); white-space: nowrap; }
+        th { background-color: var(--table-header); font-weight: 900; color: var(--primary-color); text-shadow: var(--text-3d); border-bottom: 1px solid var(--text-gray); }
         
         tbody tr:nth-child(odd) { background-color: #ffffff; }
         tbody tr:nth-child(even) { background-color: var(--tr-even); }
@@ -180,25 +183,26 @@
         .col-action { width: 50px; } 
         .col-data { width: auto; }  
         
-        .edit-btn { background: var(--card-bg); border: 1px solid var(--border-color); color: var(--primary-color); font-size: 14px; cursor: pointer; padding: 6px 10px; min-width: auto; flex: none; font-weight: bold; box-shadow: var(--btn-shadow); text-shadow: none; border-radius: 10px; transition: 0.1s; }
+        .edit-btn { background: var(--card-bg); color: var(--primary-color); font-size: 14px; cursor: pointer; padding: 6px 10px; min-width: auto; flex: none; font-weight: bold; box-shadow: var(--btn-shadow); text-shadow: none; border-radius: 10px; transition: 0.1s; }
         .edit-btn:active { transform: translateY(2px); box-shadow: var(--btn-shadow-active); }
         .align-bottom { vertical-align: bottom !important; padding-bottom: 8px !important; }
         .group-header { padding-top: 8px !important; padding-bottom: 4px !important; }
-        .sub-header th { padding-top: 4px !important; padding-bottom: 8px !important; border-bottom: 2px solid var(--border-color); }
+        .sub-header th { padding-top: 4px !important; padding-bottom: 8px !important; border-bottom: 1px solid var(--text-gray); }
         
+        /* 統一彈出視窗與輸入區為細框線 */
         .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; justify-content: center; align-items: center; backdrop-filter: blur(5px); }
-        .modal-content { background: var(--card-bg); color: var(--text-dark); padding: 24px; border-radius: 24px; width: 90%; max-width: 380px; position: relative; box-shadow: 0 10px 30px rgba(0,0,0,0.3), var(--card-inset); border: 1px solid var(--border-color); }
+        .modal-content { background: var(--card-bg); color: var(--text-dark); padding: 24px; border-radius: 24px; width: 90%; max-width: 380px; position: relative; box-shadow: 0 10px 30px rgba(0,0,0,0.3), var(--card-inset); border: 1px solid var(--text-gray); }
         .modal-close { float: right; font-size: 28px; font-weight: bold; color: var(--text-gray); cursor: pointer; line-height: 1; margin-top: -5px; }
-        .theme-select { width: 100%; padding: 12px; border-radius: 12px; margin-bottom: 16px; background: var(--input-bg); color: var(--text-dark); border: 1px solid var(--border-color); font-size: 15px; font-weight: bold; box-shadow: var(--input-shadow); outline: none; }
+        .theme-select { width: 100%; padding: 12px; border-radius: 12px; margin-bottom: 16px; background: var(--input-bg); color: var(--text-dark); border: 1px solid var(--text-gray); font-size: 15px; font-weight: bold; box-shadow: var(--input-shadow); outline: none; }
         .version-text { text-align: center; margin-top: 20px; font-size: 12px; color: var(--text-gray); font-weight: bold; letter-spacing: 1px; }
         
         .modal-period-btns { display: flex; gap: 12px; margin-top: 16px; }
-        .modal-period-btns button { flex: 1; padding: 14px; border-radius: 14px; font-size: 16px; font-weight: 900; cursor: pointer; border: none; color: white; text-shadow: 1px 1px 2px rgba(0,0,0,0.3); }
+        .modal-period-btns button { flex: 1; padding: 14px; border-radius: 14px; font-size: 16px; font-weight: 900; cursor: pointer; color: white; text-shadow: 1px 1px 2px rgba(0,0,0,0.3); }
         .modal-btn-morning { background: linear-gradient(145deg, #fb8c00, #e65100); box-shadow: 0 4px 10px rgba(230, 81, 0, 0.3); }
         .modal-btn-evening { background: linear-gradient(145deg, #1e88e5, #0d47a1); box-shadow: 0 4px 10px rgba(13, 71, 161, 0.3); }
         
         .toast-container { position: fixed; bottom: 40px; left: 50%; transform: translateX(-50%); z-index: 9999; display: flex; flex-direction: column; align-items: center; gap: 10px; pointer-events: none; }
-        .toast { background: var(--text-dark); color: var(--bg-color); padding: 12px 24px; border-radius: 30px; font-size: 15px; font-weight: bold; box-shadow: 0 8px 20px rgba(0,0,0,0.4); opacity: 0; transform: translateY(20px); animation: toastIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards, toastOut 0.4s 2.5s forwards; pointer-events: auto; text-align: center; max-width: 85vw; border: 1px solid rgba(255,255,255,0.1); }
+        .toast { background: var(--text-dark); color: var(--bg-color); padding: 12px 24px; border-radius: 30px; font-size: 15px; font-weight: bold; box-shadow: 0 8px 20px rgba(0,0,0,0.4); opacity: 0; transform: translateY(20px); animation: toastIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards, toastOut 0.4s 2.5s forwards; pointer-events: auto; text-align: center; max-width: 85vw; border: 1px solid var(--text-gray); }
         .toast.error { background: #d32f2f; color: white; }
         .toast.warning { background: #f57c00; color: white; }
         @keyframes toastIn { to { opacity: 1; transform: translateY(0); } }
@@ -217,14 +221,14 @@
             th { background-color: #f0f0f0 !important; font-weight: bold; }
         }
     
-        .gist-status { display: flex; align-items: center; gap: 10px; margin-bottom: 16px; padding: 12px; border-radius: 14px; background: var(--tr-even); border: 1px solid var(--border-color); font-size: 14px; font-weight: bold; box-shadow: var(--card-inset);}
+        .gist-status { display: flex; align-items: center; gap: 10px; margin-bottom: 16px; padding: 12px; border-radius: 14px; background: var(--tr-even); border: 1px solid var(--text-gray); font-size: 14px; font-weight: bold; box-shadow: var(--card-inset);}
         .gist-status-dot { width: 12px; height: 12px; border-radius: 50%; background: #ccc; }
         .gist-status-dot.connected { background: #4caf50; box-shadow: 0 0 8px #4caf50; }
         .gist-status-dot.error { background: #f44336; box-shadow: 0 0 8px #f44336; }
         .gist-status-dot.syncing { background: #ff9800; animation: pulse 1s infinite; }
         @keyframes pulse { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: 0.6; transform: scale(1.2); } }
-        .token-input { width: 100%; padding: 12px; border-radius: 12px; font-size: 14px; font-family: monospace; background: var(--input-bg); color: var(--text-dark); border: 1px solid var(--border-color); box-shadow: var(--input-shadow); margin-bottom: 12px; }
-        .gist-id-display { font-family: monospace; font-size: 13px; color: var(--text-gray); background: var(--input-bg); padding: 8px 12px; border-radius: 10px; word-break: break-all; margin-bottom: 14px; border: 1px dashed var(--border-color); box-shadow: var(--card-inset);}
+        .token-input { width: 100%; padding: 12px; border-radius: 12px; font-size: 14px; font-family: monospace; background: var(--input-bg); color: var(--text-dark); border: 1px solid var(--text-gray); box-shadow: var(--input-shadow); margin-bottom: 12px; }
+        .gist-id-display { font-family: monospace; font-size: 13px; color: var(--text-gray); background: var(--input-bg); padding: 8px 12px; border-radius: 10px; word-break: break-all; margin-bottom: 14px; border: 1px solid var(--text-gray); box-shadow: var(--card-inset);}
     </style>
 </head>
 <body>
