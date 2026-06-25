@@ -123,13 +123,33 @@
             border-bottom: 2px dashed var(--border-color); color: var(--primary-color); 
             text-shadow: var(--text-3d); display: flex; justify-content: space-between; align-items: center;
         }
+        
+        /* ----------------修改重點：白底、立體陰影---------------- */
         .input-group { display: flex; gap: 12px; margin-bottom: 16px; }
         .input-group input { 
             flex: 1; width: 100%; padding: 14px 8px; border-radius: 14px; font-size: 18px; font-weight: bold;
-            text-align: center; background: var(--input-bg); color: var(--text-dark); border: 1px solid var(--border-color); 
-            box-shadow: var(--input-shadow); transition: all 0.3s;
+            text-align: center; background: #ffffff; color: var(--text-dark); border: 1px solid var(--border-color); 
+            transition: all 0.3s;
         }
-        .input-group input:focus { outline: none; border-color: var(--primary-color); box-shadow: var(--input-shadow), 0 0 0 2px rgba(26, 140, 125, 0.2); }
+        
+        /* 新增/編輯輸入框：外擴立體陰影 */
+        .input-group input[type="number"] {
+            box-shadow: 4px 4px 8px rgba(0, 0, 0, 0.08), -4px -4px 8px rgba(255, 255, 255, 0.9);
+        }
+        
+        /* 日期輸入框：沿用主題內陰影 */
+        .input-group input[type="date"] {
+            box-shadow: var(--input-shadow);
+        }
+
+        .input-group input:focus { outline: none; border-color: var(--primary-color); }
+        .input-group input[type="number"]:focus { 
+            box-shadow: inset 2px 2px 5px rgba(0,0,0,0.1), 0 0 0 2px rgba(26, 140, 125, 0.2); 
+        }
+        .input-group input[type="date"]:focus { 
+            box-shadow: var(--input-shadow), 0 0 0 2px rgba(26, 140, 125, 0.2); 
+        }
+        /* -------------------------------------------------------- */
         
         .btn-group { display: flex; gap: 12px; margin-bottom: 8px; flex-wrap: wrap; }
         button { 
@@ -149,7 +169,12 @@
         table { width: 100%; border-collapse: collapse; text-align: center; font-size: 15px; background: transparent; color: var(--text-dark); min-width: 600px; }
         th, td { padding: 10px 4px; border-bottom: 1px solid var(--border-color); white-space: nowrap; }
         th { background-color: var(--table-header); font-weight: 900; color: var(--primary-color); text-shadow: var(--text-3d); border-bottom: 2px solid var(--border-color); }
-        tr:nth-child(even) { background-color: var(--tr-even); }
+        
+        /* ----------------修改重點：表格白底與淺色交錯---------------- */
+        tbody tr:nth-child(odd) { background-color: #ffffff; }
+        tbody tr:nth-child(even) { background-color: var(--tr-even); }
+        /* ------------------------------------------------------------ */
+        
         tr:last-child td { border-bottom: none; }
         .col-date { width: 100px; font-weight: bold;} 
         .col-action { width: 50px; } 
