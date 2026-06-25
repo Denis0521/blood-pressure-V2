@@ -113,9 +113,10 @@
         h2 { margin: 0; font-size: 26px; font-weight: 900; color: var(--primary-color); text-shadow: var(--text-3d); letter-spacing: 1px; }
         .subtitle { color: var(--text-gray); margin-bottom: 16px; font-size: 15px; font-weight: bold; text-shadow: var(--text-3d); }
         
+        /* 修改點 1：卡片邊框加粗為 2px，讓板塊邊緣更俐落 */
         .card { 
             background: var(--card-bg); border-radius: 20px; padding: 18px; margin-bottom: 16px; 
-            box-shadow: var(--card-shadow), var(--card-inset); border: 1px solid var(--border-color);
+            box-shadow: var(--card-shadow), var(--card-inset); border: 2px solid var(--border-color);
             transition: all 0.3s ease;
         }
         .card-title { 
@@ -125,17 +126,15 @@
         }
         
         .input-group { display: flex; gap: 12px; margin-bottom: 16px; }
+        /* 修改點 2：輸入框預設加上 2px 邊框 */
         .input-group input { 
             flex: 1; width: 100%; padding: 14px 8px; border-radius: 14px; font-size: 18px; font-weight: bold;
-            text-align: center; background: #ffffff; color: var(--text-dark); border: 1px solid var(--border-color); 
+            text-align: center; background: #ffffff; color: var(--text-dark); border: 2px solid var(--border-color); 
             transition: all 0.3s;
         }
         
-        /* ----------------修改重點：凹陷有厚度的內陰影設計---------------- */
         .input-group input[type="number"] {
-            /* 使用強烈的內陰影 (inset) 來創造深凹陷厚度，加上極淡外陰影修飾邊界 */
             box-shadow: inset 5px 5px 12px rgba(0, 0, 0, 0.15), inset -5px -5px 12px rgba(255, 255, 255, 1), 1px 1px 2px rgba(0,0,0,0.03);
-            border: 1px solid rgba(0,0,0,0.05);
         }
         
         .input-group input[type="date"] {
@@ -145,30 +144,31 @@
         .input-group input:focus { outline: none; border-color: var(--primary-color); }
         
         .input-group input[type="number"]:focus { 
-            /* 聚焦時加深陰影並加入主題色的微光暈 */
             box-shadow: inset 6px 6px 14px rgba(0, 0, 0, 0.2), inset -6px -6px 14px rgba(255, 255, 255, 1), 0 0 0 2px rgba(26, 140, 125, 0.2); 
         }
         
         .input-group input[type="date"]:focus { 
             box-shadow: var(--input-shadow), 0 0 0 2px rgba(26, 140, 125, 0.2); 
         }
-        /* -------------------------------------------------------- */
         
         .btn-group { display: flex; gap: 12px; margin-bottom: 8px; flex-wrap: wrap; }
+        /* 修改點 3：所有一般按鈕邊框加粗為 2px，強化輪廓 */
         button { 
             flex: 1; min-width: 100px; padding: 12px; border-radius: 14px; font-size: 16px; font-weight: 900; 
-            cursor: pointer; border: 1px solid var(--primary-color); transition: 0.2s; color: var(--primary-color); 
+            cursor: pointer; border: 2px solid var(--primary-color); transition: 0.2s; color: var(--primary-color); 
             text-shadow: var(--text-engrave); background: transparent; box-shadow: var(--btn-shadow);
             display: flex; justify-content: center; align-items: center; gap: 6px;
         }
-        .header-btn { flex: none; min-width: auto; padding: 10px 16px; background: var(--card-bg); color: var(--primary-color); border: 1px solid var(--border-color); box-shadow: var(--btn-shadow); text-shadow: none; border-radius: 12px; font-size: 14px;}
+        /* 修改點 4：標題列的說明與設定按鈕，改用主題色邊框與 2px 厚度 */
+        .header-btn { flex: none; min-width: auto; padding: 10px 16px; background: var(--card-bg); color: var(--primary-color); border: 2px solid var(--primary-color); box-shadow: var(--btn-shadow); text-shadow: none; border-radius: 12px; font-size: 14px;}
         .btn-primary { color: var(--primary-color); border: 2px solid var(--primary-color); }
-        .btn-outline { color: var(--text-gray); border: 1px solid var(--border-color); }
+        /* 修改點 5：次要按鈕也改用主題色作為輪廓 */
+        .btn-outline { color: var(--primary-color); border: 2px solid var(--primary-color); }
         .btn-danger { background: linear-gradient(145deg, #e74c3c, #c0392b); color: white; border: none; text-shadow: none; box-shadow: 0 4px 10px rgba(231, 76, 60, 0.3); }
         button:active { transform: translateY(3px); box-shadow: var(--btn-shadow-active); }
         
         .hint-text { color: var(--primary-color); font-size: 13px; margin-bottom: 12px; font-weight: bold; text-shadow: var(--text-3d); }
-        .table-responsive { width: 100%; overflow-x: auto; border-radius: 16px; box-shadow: var(--card-inset); border: 1px solid var(--border-color); background: transparent; }
+        .table-responsive { width: 100%; overflow-x: auto; border-radius: 16px; box-shadow: var(--card-inset); border: 2px solid var(--border-color); background: transparent; }
         table { width: 100%; border-collapse: collapse; text-align: center; font-size: 15px; background: transparent; color: var(--text-dark); min-width: 600px; }
         th, td { padding: 10px 4px; border-bottom: 1px solid var(--border-color); white-space: nowrap; }
         th { background-color: var(--table-header); font-weight: 900; color: var(--primary-color); text-shadow: var(--text-3d); border-bottom: 2px solid var(--border-color); }
@@ -181,16 +181,19 @@
         .col-action { width: 50px; } 
         .col-data { width: auto; }  
         
-        .edit-btn { background: var(--card-bg); border: 1px solid var(--border-color); color: var(--primary-color); font-size: 14px; cursor: pointer; padding: 6px 10px; min-width: auto; flex: none; font-weight: bold; box-shadow: var(--btn-shadow); text-shadow: none; border-radius: 10px; transition: 0.1s; }
+        /* 修改點 6：編輯按鈕邊框加粗為 2px，改用主題色突顯 */
+        .edit-btn { background: var(--card-bg); border: 2px solid var(--primary-color); color: var(--primary-color); font-size: 14px; cursor: pointer; padding: 6px 10px; min-width: auto; flex: none; font-weight: bold; box-shadow: var(--btn-shadow); text-shadow: none; border-radius: 10px; transition: 0.1s; }
         .edit-btn:active { transform: translateY(2px); box-shadow: var(--btn-shadow-active); }
         .align-bottom { vertical-align: bottom !important; padding-bottom: 8px !important; }
         .group-header { padding-top: 8px !important; padding-bottom: 4px !important; }
         .sub-header th { padding-top: 4px !important; padding-bottom: 8px !important; border-bottom: 2px solid var(--border-color); }
         
         .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; justify-content: center; align-items: center; backdrop-filter: blur(5px); }
-        .modal-content { background: var(--card-bg); color: var(--text-dark); padding: 24px; border-radius: 24px; width: 90%; max-width: 380px; position: relative; box-shadow: 0 10px 30px rgba(0,0,0,0.3), var(--card-inset); border: 1px solid var(--border-color); }
+        /* 修改點 7：彈出視窗(Modal) 邊框加粗為 2px */
+        .modal-content { background: var(--card-bg); color: var(--text-dark); padding: 24px; border-radius: 24px; width: 90%; max-width: 380px; position: relative; box-shadow: 0 10px 30px rgba(0,0,0,0.3), var(--card-inset); border: 2px solid var(--border-color); }
         .modal-close { float: right; font-size: 28px; font-weight: bold; color: var(--text-gray); cursor: pointer; line-height: 1; margin-top: -5px; }
-        .theme-select { width: 100%; padding: 12px; border-radius: 12px; margin-bottom: 16px; background: var(--input-bg); color: var(--text-dark); border: 1px solid var(--border-color); font-size: 15px; font-weight: bold; box-shadow: var(--input-shadow); outline: none; }
+        /* 修改點 8：下拉選單邊框加粗為 2px，用主題色 */
+        .theme-select { width: 100%; padding: 12px; border-radius: 12px; margin-bottom: 16px; background: #ffffff; color: var(--text-dark); border: 2px solid var(--primary-color); font-size: 15px; font-weight: bold; box-shadow: var(--input-shadow); outline: none; }
         .version-text { text-align: center; margin-top: 20px; font-size: 12px; color: var(--text-gray); font-weight: bold; letter-spacing: 1px; }
         
         .modal-period-btns { display: flex; gap: 12px; margin-top: 16px; }
@@ -218,14 +221,15 @@
             th { background-color: #f0f0f0 !important; font-weight: bold; }
         }
     
-        .gist-status { display: flex; align-items: center; gap: 10px; margin-bottom: 16px; padding: 12px; border-radius: 14px; background: var(--tr-even); border: 1px solid var(--border-color); font-size: 14px; font-weight: bold; box-shadow: var(--card-inset);}
+        /* 修改點 9：狀態板塊與 Token 輸入框邊框加粗，強化視覺重點 */
+        .gist-status { display: flex; align-items: center; gap: 10px; margin-bottom: 16px; padding: 12px; border-radius: 14px; background: var(--tr-even); border: 2px solid var(--border-color); font-size: 14px; font-weight: bold; box-shadow: var(--card-inset);}
         .gist-status-dot { width: 12px; height: 12px; border-radius: 50%; background: #ccc; }
         .gist-status-dot.connected { background: #4caf50; box-shadow: 0 0 8px #4caf50; }
         .gist-status-dot.error { background: #f44336; box-shadow: 0 0 8px #f44336; }
         .gist-status-dot.syncing { background: #ff9800; animation: pulse 1s infinite; }
         @keyframes pulse { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: 0.6; transform: scale(1.2); } }
-        .token-input { width: 100%; padding: 12px; border-radius: 12px; font-size: 14px; font-family: monospace; background: var(--input-bg); color: var(--text-dark); border: 1px solid var(--border-color); box-shadow: var(--input-shadow); margin-bottom: 12px; }
-        .gist-id-display { font-family: monospace; font-size: 13px; color: var(--text-gray); background: var(--input-bg); padding: 8px 12px; border-radius: 10px; word-break: break-all; margin-bottom: 14px; border: 1px dashed var(--border-color); box-shadow: var(--card-inset);}
+        .token-input { width: 100%; padding: 12px; border-radius: 12px; font-size: 14px; font-family: monospace; background: #ffffff; color: var(--text-dark); border: 2px solid var(--primary-color); box-shadow: var(--input-shadow); margin-bottom: 12px; }
+        .gist-id-display { font-family: monospace; font-size: 13px; color: var(--text-gray); background: var(--input-bg); padding: 8px 12px; border-radius: 10px; word-break: break-all; margin-bottom: 14px; border: 2px dashed var(--border-color); box-shadow: var(--card-inset);}
     </style>
 </head>
 <body>
