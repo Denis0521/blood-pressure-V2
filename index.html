@@ -82,7 +82,7 @@
             --btn-shadow: 6px 6px 12px rgba(191, 54, 12, 0.15), -6px -6px 12px rgba(255, 255, 255, 0.9);
             --input-shadow: inset 4px 4px 8px rgba(191, 54, 12, 0.15), inset -4px -4px 8px rgba(255, 255, 255, 0.9);
         }
-        /* 🌸 新增：櫻花粉主題 */
+        /* 🌸 櫻花粉主題 */
         body.pink {
             --primary-color: #c2185b;
             --bg-color: #fce4ec; --card-bg: #fce4ec; --border-color: #f8bbd0;
@@ -92,7 +92,7 @@
             --btn-shadow: 6px 6px 12px rgba(194, 24, 91, 0.15), -6px -6px 12px rgba(255, 255, 255, 0.9);
             --input-shadow: inset 4px 4px 8px rgba(194, 24, 91, 0.15), inset -4px -4px 8px rgba(255, 255, 255, 0.9);
         }
-        /* 🍃 新增：薄荷綠主題 */
+        /* 🍃 薄荷綠主題 */
         body.mint {
             --primary-color: #00796b;
             --bg-color: #e0f2f1; --card-bg: #e0f2f1; --border-color: #b2dfdb;
@@ -124,7 +124,6 @@
             text-shadow: var(--text-3d); display: flex; justify-content: space-between; align-items: center;
         }
         
-        /* ----------------修改重點：白底、立體陰影---------------- */
         .input-group { display: flex; gap: 12px; margin-bottom: 16px; }
         .input-group input { 
             flex: 1; width: 100%; padding: 14px 8px; border-radius: 14px; font-size: 18px; font-weight: bold;
@@ -132,20 +131,24 @@
             transition: all 0.3s;
         }
         
-        /* 新增/編輯輸入框：外擴立體陰影 */
+        /* ----------------修改重點：凹陷有厚度的內陰影設計---------------- */
         .input-group input[type="number"] {
-            box-shadow: 4px 4px 8px rgba(0, 0, 0, 0.08), -4px -4px 8px rgba(255, 255, 255, 0.9);
+            /* 使用強烈的內陰影 (inset) 來創造深凹陷厚度，加上極淡外陰影修飾邊界 */
+            box-shadow: inset 5px 5px 12px rgba(0, 0, 0, 0.15), inset -5px -5px 12px rgba(255, 255, 255, 1), 1px 1px 2px rgba(0,0,0,0.03);
+            border: 1px solid rgba(0,0,0,0.05);
         }
         
-        /* 日期輸入框：沿用主題內陰影 */
         .input-group input[type="date"] {
             box-shadow: var(--input-shadow);
         }
 
         .input-group input:focus { outline: none; border-color: var(--primary-color); }
+        
         .input-group input[type="number"]:focus { 
-            box-shadow: inset 2px 2px 5px rgba(0,0,0,0.1), 0 0 0 2px rgba(26, 140, 125, 0.2); 
+            /* 聚焦時加深陰影並加入主題色的微光暈 */
+            box-shadow: inset 6px 6px 14px rgba(0, 0, 0, 0.2), inset -6px -6px 14px rgba(255, 255, 255, 1), 0 0 0 2px rgba(26, 140, 125, 0.2); 
         }
+        
         .input-group input[type="date"]:focus { 
             box-shadow: var(--input-shadow), 0 0 0 2px rgba(26, 140, 125, 0.2); 
         }
@@ -170,10 +173,8 @@
         th, td { padding: 10px 4px; border-bottom: 1px solid var(--border-color); white-space: nowrap; }
         th { background-color: var(--table-header); font-weight: 900; color: var(--primary-color); text-shadow: var(--text-3d); border-bottom: 2px solid var(--border-color); }
         
-        /* ----------------修改重點：表格白底與淺色交錯---------------- */
         tbody tr:nth-child(odd) { background-color: #ffffff; }
         tbody tr:nth-child(even) { background-color: var(--tr-even); }
-        /* ------------------------------------------------------------ */
         
         tr:last-child td { border-bottom: none; }
         .col-date { width: 100px; font-weight: bold;} 
