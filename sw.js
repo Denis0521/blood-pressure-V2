@@ -1,4 +1,4 @@
-const CACHE_NAME = 'bp-app-v8.1';
+const CACHE_NAME = 'bp-app-v8.4';
 const urlsToCache = [
     './index.html',
     './manifest.json',
