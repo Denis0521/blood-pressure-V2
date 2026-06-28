@@ -24,7 +24,6 @@
             --text-dark: #1a1a1a;
             --text-gray: #5f7a75;
             --table-header: #d6e6e2;
-            --tr-even: #d9eae6;
             --card-shadow: 8px 8px 16px rgba(20, 50, 45, 0.15), -8px -8px 16px rgba(255, 255, 255, 0.8);
             --card-inset: inset 2px 2px 5px rgba(255,255,255,0.7), inset -2px -2px 5px rgba(20, 50, 45, 0.05);
             --btn-shadow: 6px 6px 12px rgba(20, 50, 45, 0.2), -6px -6px 12px rgba(255, 255, 255, 0.7);
@@ -37,7 +36,7 @@
             --primary-color: #8e24aa;
             --bg-color: #f3e5f5; --card-bg: #f3e5f5; 
             --text-dark: #2a0835; --text-gray: #7b1fa2;
-            --table-header: #ecd0f0; --tr-even: #eedcf2;
+            --table-header: #ecd0f0;
             --card-shadow: 8px 8px 16px rgba(74, 20, 140, 0.15), -8px -8px 16px rgba(255, 255, 255, 0.8);
             --btn-shadow: 6px 6px 12px rgba(74, 20, 140, 0.15), -6px -6px 12px rgba(255, 255, 255, 0.8);
             --input-shadow: inset 4px 4px 8px rgba(74, 20, 140, 0.15), inset -4px -4px 8px rgba(255, 255, 255, 0.8);
@@ -46,7 +45,7 @@
             --primary-color: #0277bd;
             --bg-color: #e1f5fe; --card-bg: #e1f5fe; 
             --text-dark: #012a44; --text-gray: #0288d1;
-            --table-header: #cdeefc; --tr-even: #d4f1fc;
+            --table-header: #cdeefc;
             --card-shadow: 8px 8px 16px rgba(1, 87, 155, 0.15), -8px -8px 16px rgba(255, 255, 255, 0.8);
             --btn-shadow: 6px 6px 12px rgba(1, 87, 155, 0.15), -6px -6px 12px rgba(255, 255, 255, 0.8);
             --input-shadow: inset 4px 4px 8px rgba(1, 87, 155, 0.15), inset -4px -4px 8px rgba(255, 255, 255, 0.8);
@@ -55,7 +54,7 @@
             --primary-color: #5d4037;
             --bg-color: #efebe9; --card-bg: #efebe9; 
             --text-dark: #3e2723; --text-gray: #795548;
-            --table-header: #e2d9d5; --tr-even: #e8e0dc;
+            --table-header: #e2d9d5;
             --card-shadow: 8px 8px 16px rgba(62, 39, 35, 0.15), -8px -8px 16px rgba(255, 255, 255, 0.8);
             --btn-shadow: 6px 6px 12px rgba(62, 39, 35, 0.15), -6px -6px 12px rgba(255, 255, 255, 0.8);
             --input-shadow: inset 4px 4px 8px rgba(62, 39, 35, 0.15), inset -4px -4px 8px rgba(255, 255, 255, 0.8);
@@ -64,7 +63,7 @@
             --primary-color: #424242;
             --bg-color: #f0f0f0; --card-bg: #f0f0f0; 
             --text-dark: #212121; --text-gray: #616161;
-            --table-header: #e8e8e8; --tr-even: #f5f5f5;
+            --table-header: #e8e8e8;
             --card-shadow: 8px 8px 16px rgba(0, 0, 0, 0.12), -8px -8px 16px rgba(255, 255, 255, 0.9);
             --btn-shadow: 6px 6px 12px rgba(0, 0, 0, 0.12), -6px -6px 12px rgba(255, 255, 255, 0.9);
             --input-shadow: inset 4px 4px 8px rgba(0, 0, 0, 0.12), inset -4px -4px 8px rgba(255, 255, 255, 0.9);
@@ -73,7 +72,7 @@
             --primary-color: #2e7d32;
             --bg-color: #e8f5e9; --card-bg: #e8f5e9; 
             --text-dark: #1b5e20; --text-gray: #388e3c;
-            --table-header: #dcedc8; --tr-even: #f1f8e9;
+            --table-header: #dcedc8;
             --card-shadow: 8px 8px 16px rgba(27, 94, 32, 0.15), -8px -8px 16px rgba(255, 255, 255, 0.8);
             --btn-shadow: 6px 6px 12px rgba(27, 94, 32, 0.15), -6px -6px 12px rgba(255, 255, 255, 0.8);
             --input-shadow: inset 4px 4px 8px rgba(27, 94, 32, 0.15), inset -4px -4px 8px rgba(255, 255, 255, 0.8);
@@ -117,6 +116,9 @@
             text-shadow: var(--text-engrave); background: transparent; box-shadow: var(--btn-shadow);
             display: flex; justify-content: center; align-items: center; gap: 6px; box-sizing: border-box;
         }
+        /* 特製加高按鈕 */
+        .btn-tall { height: 60px; font-size: 18px; }
+
         .header-btn { flex: none; height: 38px; min-width: auto; padding: 0 16px; background: var(--card-bg); text-shadow: none; font-size: 14px;}
         .btn-primary { border: 2px solid var(--primary-color); }
         .btn-outline { border: 1px solid var(--primary-color); }
@@ -125,11 +127,15 @@
         
         .hint-text { color: var(--primary-color); font-size: 13px; margin-bottom: 12px; font-weight: bold; text-shadow: var(--text-3d); }
         .table-responsive { width: 100%; overflow-x: auto; border-radius: 16px; box-shadow: var(--card-inset); border: 1px solid var(--primary-color); background: transparent; }
-        table { width: 100%; border-collapse: collapse; text-align: center; font-size: 15px; background: transparent; color: var(--text-dark); min-width: 600px; }
+        
+        /* 表格與純白/極淺灰記錄欄位 */
+        table { width: 100%; border-collapse: collapse; text-align: center; font-size: 15px; background: #ffffff; color: var(--text-dark); min-width: 600px; }
         th, td { padding: 10px 4px; border-bottom: 1px solid var(--primary-color); white-space: nowrap; }
         th { background-color: var(--table-header); font-weight: 900; color: var(--primary-color); text-shadow: var(--text-3d); border-bottom: 2px solid var(--primary-color); }
-        tr:nth-child(even) { background-color: var(--tr-even); }
+        tbody tr:nth-child(odd) { background-color: #ffffff; }
+        tbody tr:nth-child(even) { background-color: rgba(0, 0, 0, 0.04); }
         tr:last-child td { border-bottom: none; }
+        
         .col-date { width: 100px; font-weight: bold;} 
         .col-action { width: 50px; } 
         .col-data { width: auto; }  
@@ -270,12 +276,12 @@
             <div id="gist-connected-area" style="display: none;">
                 <div class="gist-id-display" id="gist-id-display"></div>
                 <div class="btn-group" style="flex-direction: column; gap: 10px;">
-                    <button class="btn-primary" onclick="importFromGist()">📥 從雲端還原資料</button>
-                    <button class="btn-danger" onclick="disconnectGist()">🔗 解除綁定連線</button>
+                    <button class="btn-primary btn-tall" onclick="importFromGist()">📥 從雲端還原資料</button>
+                    <button class="btn-danger btn-tall" onclick="disconnectGist()">🔗 解除綁定連線</button>
                 </div>
             </div>
 
-            <div class="version-text">Version 8.6 ✨ UI Refined Edition</div>
+            <div class="version-text">Version 8.7 ✨ UI Refined Edition</div>
         </div>
     </div>
 
@@ -307,7 +313,7 @@
                 </ol>
             </div>
 
-            <div class="version-text">Version 8.6 ✨ UI Refined Edition</div>
+            <div class="version-text">Version 8.7 ✨ UI Refined Edition</div>
         </div>
     </div>
 
@@ -351,7 +357,7 @@
             let savedTheme = localStorage.getItem('bpTheme') || 'light';
             const allowedThemes = Object.keys(themeColors);
             if (!allowedThemes.includes(savedTheme)) savedTheme = 'light';
-            document.documentElement.className = savedTheme; // 套用至 html
+            document.documentElement.className = savedTheme;
             document.getElementById('theme-selector').value = savedTheme;
             updateThemeMeta(savedTheme);
         }
@@ -679,10 +685,12 @@
         }
 
         function disconnectGist() {
-            gistConfig = { token: '', gistId: '' };
-            localStorage.setItem(GIST_STORAGE_KEY, JSON.stringify(gistConfig));
-            updateGistUI();
-            showToast('🔗 已解除 GitHub 連結');
+            if (confirm('確定要解除綁定嗎？')) {
+                gistConfig = { token: '', gistId: '' };
+                localStorage.setItem(GIST_STORAGE_KEY, JSON.stringify(gistConfig));
+                updateGistUI();
+                showToast('🔗 已解除 GitHub 連結');
+            }
         }
 
         function init() {
