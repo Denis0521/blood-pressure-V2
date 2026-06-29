@@ -19,7 +19,8 @@
         :root {
             --primary-color: #1a8c7d;
             --primary-gradient: linear-gradient(145deg, #2bb8a6, #14796c);
-            --bg-color: #e0ece9;
+            /* 經典綠拼色：柔和薄荷綠 */
+            --bg-color: linear-gradient(135deg, #e0ece9 50%, #cbe0da 50%);
             --card-bg: #e0ece9;
             --text-dark: #1a1a1a;
             --text-gray: #5f7a75;
@@ -34,7 +35,9 @@
         }
         html.purple {
             --primary-color: #8e24aa;
-            --bg-color: #f3e5f5; --card-bg: #f3e5f5; 
+            /* 夢幻紫拼色：柔和薰衣草紫 */
+            --bg-color: linear-gradient(135deg, #f3e5f5 50%, #e1bee7 50%); 
+            --card-bg: #f3e5f5; 
             --text-dark: #2a0835; --text-gray: #7b1fa2;
             --table-header: #ecd0f0;
             --card-shadow: 8px 8px 16px rgba(74, 20, 140, 0.15), -8px -8px 16px rgba(255, 255, 255, 0.8);
@@ -43,7 +46,9 @@
         }
         html.blue {
             --primary-color: #0277bd;
-            --bg-color: #e1f5fe; --card-bg: #e1f5fe; 
+            /* 海洋藍拼色：柔和天空藍 */
+            --bg-color: linear-gradient(135deg, #e1f5fe 50%, #b3e5fc 50%); 
+            --card-bg: #e1f5fe; 
             --text-dark: #012a44; --text-gray: #0288d1;
             --table-header: #cdeefc;
             --card-shadow: 8px 8px 16px rgba(1, 87, 155, 0.15), -8px -8px 16px rgba(255, 255, 255, 0.8);
@@ -52,7 +57,9 @@
         }
         html.brown {
             --primary-color: #5d4037;
-            --bg-color: #efebe9; --card-bg: #efebe9; 
+            /* 拿鐵棕拼色：柔和奶茶色 */
+            --bg-color: linear-gradient(135deg, #efebe9 50%, #d7ccc8 50%); 
+            --card-bg: #efebe9; 
             --text-dark: #3e2723; --text-gray: #795548;
             --table-header: #e2d9d5;
             --card-shadow: 8px 8px 16px rgba(62, 39, 35, 0.15), -8px -8px 16px rgba(255, 255, 255, 0.8);
@@ -61,7 +68,9 @@
         }
         html.gray {
             --primary-color: #424242;
-            --bg-color: linear-gradient(135deg, #cfcfcf 50%, #95a5a6 50%); --card-bg: #f0f0f0; 
+            /* 質感灰拼色：保留您的最愛設計 */
+            --bg-color: linear-gradient(135deg, #cfcfcf 50%, #95a5a6 50%); 
+            --card-bg: #f0f0f0; 
             --text-dark: #212121; --text-gray: #5d6d70;
             --table-header: #e0e4e5;
             --card-shadow: 8px 8px 16px rgba(0, 0, 0, 0.15), -8px -8px 16px rgba(255, 255, 255, 0.8);
@@ -70,7 +79,9 @@
         }
         html.green {
             --primary-color: #2e7d32;
-            --bg-color: #e8f5e9; --card-bg: #e8f5e9; 
+            /* 森林綠拼色：柔和抹茶綠 */
+            --bg-color: linear-gradient(135deg, #e8f5e9 50%, #c8e6c9 50%); 
+            --card-bg: #e8f5e9; 
             --text-dark: #1b5e20; --text-gray: #388e3c;
             --table-header: #dcedc8;
             --card-shadow: 8px 8px 16px rgba(27, 94, 32, 0.15), -8px -8px 16px rgba(255, 255, 255, 0.8);
@@ -81,6 +92,7 @@
         body { 
             font-family: 'Helvetica Neue', Helvetica, Arial, 'PingFang TC', sans-serif; 
             background: var(--bg-color); 
+            background-attachment: fixed; /* 確保漸層在捲動時不會斷裂 */
             color: var(--text-dark); margin: 0; padding: 12px; 
             min-height: 100vh; transition: background 0.4s ease, color 0.4s ease; 
         }
@@ -158,7 +170,10 @@
         
         .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; justify-content: center; align-items: center; backdrop-filter: blur(5px); }
         .modal-content { background: var(--card-bg); color: var(--text-dark); padding: 24px; border-radius: 24px; width: 90%; max-width: 380px; position: relative; box-shadow: 0 10px 30px rgba(0,0,0,0.3), var(--card-inset); border: 1px solid var(--primary-color); max-height: 90vh; overflow-y: auto; }
-        .modal-close { float: right; font-size: 28px; font-weight: bold; color: var(--text-gray); cursor: pointer; line-height: 1; margin-top: -5px; }
+        
+        /* 修改關閉按鈕，強制絕對定位在右上角 */
+        .modal-close { position: absolute; top: 16px; right: 20px; font-size: 28px; font-weight: bold; color: var(--text-gray); cursor: pointer; line-height: 1; z-index: 10; }
+        
         .theme-select { width: 100%; height: 48px; padding: 0 12px; border-radius: 12px; margin-bottom: 16px; background: #ffffff; color: var(--text-dark); border: 1px solid var(--primary-color); font-size: 15px; font-weight: bold; box-shadow: var(--input-shadow); outline: none; box-sizing: border-box; }
         .version-text { text-align: center; margin-top: 20px; font-size: 12px; color: var(--text-gray); font-weight: bold; letter-spacing: 1px; }
         
@@ -221,6 +236,7 @@
     <div class="card no-print" id="input-card">
         <div class="card-title">
             <span id="input-card-title">📝 新增 / 修改記錄</span>
+            <!-- 加入了 btn-badge 類別準備顯示紅點 -->
             <button id="todo-btn" class="header-btn btn-badge" onclick="openTodoModal()" style="height: 32px; font-size: 13px;">🔔 待辦</button>
         </div>
         <div class="input-group">
@@ -267,6 +283,7 @@
         </div>
     </div>
 
+    <!-- 待辦事項彈出視窗 -->
     <div id="todoModal" class="modal-overlay no-print">
         <div class="modal-content" style="max-height: 85vh; display: flex; flex-direction: column;">
             <span class="modal-close" onclick="closeTodoModal()">&times;</span>
@@ -288,10 +305,12 @@
             </div>
 
             <div id="todo-list" style="overflow-y: auto; flex: 1; padding-right: 4px;">
-                </div>
+                <!-- JS 生成區塊 -->
+            </div>
         </div>
     </div>
 
+    <!-- 佈景與雲端設定視窗 -->
     <div id="toolsModal" class="modal-overlay no-print">
         <div class="modal-content">
             <span class="modal-close" onclick="closeTools()">&times;</span>
@@ -334,6 +353,7 @@
         </div>
     </div>
 
+    <!-- 說明視窗 -->
     <div id="helpModal" class="modal-overlay no-print">
         <div class="modal-content" style="max-width: 90%; max-height: 85vh; overflow-y: auto;">
             <span class="modal-close" onclick="closeHelp()">&times;</span>
@@ -366,6 +386,7 @@
         </div>
     </div>
 
+    <!-- 選擇時段視窗 -->
     <div id="periodModal" class="modal-overlay no-print">
         <div class="modal-content" style="text-align: center;">
             <span class="modal-close" onclick="closePeriodModal()">&times;</span>
