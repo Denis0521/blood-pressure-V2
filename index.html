@@ -236,7 +236,6 @@
     <div class="card no-print" id="input-card">
         <div class="card-title">
             <span id="input-card-title">📝 新增 / 修改記錄</span>
-            <!-- 加入了 btn-badge 類別準備顯示紅點 -->
             <button id="todo-btn" class="header-btn btn-badge" onclick="openTodoModal()" style="height: 32px; font-size: 13px;">🔔 待辦</button>
         </div>
         <div class="input-group">
@@ -283,7 +282,6 @@
         </div>
     </div>
 
-    <!-- 待辦事項彈出視窗 -->
     <div id="todoModal" class="modal-overlay no-print">
         <div class="modal-content" style="max-height: 85vh; display: flex; flex-direction: column;">
             <span class="modal-close" onclick="closeTodoModal()">&times;</span>
@@ -305,12 +303,10 @@
             </div>
 
             <div id="todo-list" style="overflow-y: auto; flex: 1; padding-right: 4px;">
-                <!-- JS 生成區塊 -->
-            </div>
+                </div>
         </div>
     </div>
 
-    <!-- 佈景與雲端設定視窗 -->
     <div id="toolsModal" class="modal-overlay no-print">
         <div class="modal-content">
             <span class="modal-close" onclick="closeTools()">&times;</span>
@@ -332,8 +328,9 @@
             
             <div id="gist-setup-area">
                 <p style="font-size: 13px; color: var(--text-gray); margin-bottom: 12px; font-weight: bold; line-height: 1.6;">
-                    1. 前往 GitHub → Settings → Developer settings → Personal access tokens 產生 Token<br>
-                    2. 勾選「gist」權限，貼到下方進行安全綁定。
+                    1. 前往 GitHub → Settings → Developer settings → Tokens (classic)<br>
+                    2. 點 Generate new token (classic) → 期限選無限制、只勾選「gist」<br>
+                    3. 產生後立刻複製 Token，貼到下方進行安全綁定。
                 </p>
                 <input type="text" id="gist-token-input" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" class="token-input" placeholder="🔑 貼上 GitHub Token">
                 <div class="btn-group" style="flex-direction: column; gap: 10px;">
@@ -353,7 +350,6 @@
         </div>
     </div>
 
-    <!-- 說明視窗 -->
     <div id="helpModal" class="modal-overlay no-print">
         <div class="modal-content" style="max-width: 90%; max-height: 85vh; overflow-y: auto;">
             <span class="modal-close" onclick="closeHelp()">&times;</span>
@@ -372,13 +368,15 @@
             <div style="margin-bottom: 20px;">
                 <div class="card-title" style="font-size: 16px; margin-top: 10px;">☁️ 雲端備份教學</div>
                 <ol style="font-size: 14px; color: var(--text-gray); padding-left: 20px; line-height: 1.8; font-weight: bold;">
-                    <li>前往 <a href="https://github.com" target="_blank" style="color: var(--primary-color);">GitHub</a> 註冊免費帳號</li>
-                    <li>點選頭像 → Settings → 最左下方 Developer settings</li>
-                    <li>點選 Personal access tokens → Tokens (classic)</li>
-                    <li>點 Generate new token → Note 寫「血壓備份」</li>
-                    <li>期限 (Expiration) 選 No expiration</li>
-                    <li>權限 (Scopes) 只需勾選「gist」</li>
-                    <li>產生後複製 Token，貼回此 App 即可連線！</li>
+                    <li>前往 <a href="https://github.com" target="_blank" style="color: var(--primary-color);">GitHub</a> 註冊免費帳號並登入</li>
+                    <li>點選右上角個人頭像 → 選擇 <b>Settings</b></li>
+                    <li>左側選單滑到最下方 → 點選 <b>Developer settings</b></li>
+                    <li>展開 Personal access tokens → 點選 <b>Tokens (classic)</b></li>
+                    <li>點擊右上方 Generate new token → ⚠️ 務必在下拉選單選擇 <b>Generate new token (classic)</b></li>
+                    <li>Note 欄位填寫「血壓備份」</li>
+                    <li>期限 (Expiration) 選 <b>No expiration</b></li>
+                    <li>權限清單 (Scopes) 找到並只勾選 <b>gist</b></li>
+                    <li>滑至最底部點擊 Generate token，產生後<b>立刻複製</b>該串密碼，貼回此 App 即可連線！</li>
                 </ol>
             </div>
 
@@ -386,7 +384,6 @@
         </div>
     </div>
 
-    <!-- 選擇時段視窗 -->
     <div id="periodModal" class="modal-overlay no-print">
         <div class="modal-content" style="text-align: center;">
             <span class="modal-close" onclick="closePeriodModal()">&times;</span>
