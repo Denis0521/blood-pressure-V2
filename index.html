@@ -1,894 +1,1156 @@
 <!DOCTYPE html>
 <html lang="zh-TW">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>血壓記錄 - 水彩細框版</title>
-    <link rel="manifest" href="manifest.json">
-    <link rel="icon" type="image/svg+xml" href="icon.svg">
-    <link rel="apple-touch-icon" href="icon.svg">
-    <meta name="theme-color" content="#d8e8e5">
-    <script>
-        // 【防閃爍機制】在網頁渲染前立即套用主題 (將 gray 改為 orange)
-        let savedTheme = localStorage.getItem('bpTheme') || 'light';
-        const allowedThemes = ['light', 'green', 'purple', 'blue', 'brown', 'orange'];
-        if (!allowedThemes.includes(savedTheme)) savedTheme = 'light';
-        document.documentElement.className = savedTheme;
-    </script>
-    <style>
-        /* 水彩暈染與主題色深色細框線設計系統
-        */
-        :root {
-            /* 經典綠 (預設) - 柔和薄荷綠水彩 */
-            --theme-rgb: 26, 140, 125; 
-            --primary-color: rgb(var(--theme-rgb));
-            --text-dark: #11332e;
-            --text-gray: rgba(var(--theme-rgb), 0.8);
-        }
-        
-        html.green {
-            /* 森林綠 - 抹茶水彩 */
-            --theme-rgb: 46, 125, 50;
-            --primary-color: rgb(var(--theme-rgb));
-            --text-dark: #122b14;
-            --text-gray: rgba(var(--theme-rgb), 0.8);
-        }
-        
-        html.purple {
-            /* 夢幻紫 - 薰衣草水彩 */
-            --theme-rgb: 142, 36, 170;
-            --primary-color: rgb(var(--theme-rgb));
-            --text-dark: #290832;
-            --text-gray: rgba(var(--theme-rgb), 0.8);
-        }
-        
-        html.blue {
-            /* 海洋藍 - 天空水彩 */
-            --theme-rgb: 2, 119, 189;
-            --primary-color: rgb(var(--theme-rgb));
-            --text-dark: #011e30;
-            --text-gray: rgba(var(--theme-rgb), 0.8);
-        }
-        
-        html.brown {
-            /* 拿鐵棕 - 奶茶水彩 */
-            --theme-rgb: 109, 76, 65;
-            --primary-color: rgb(var(--theme-rgb));
-            --text-dark: #2a1c17;
-            --text-gray: rgba(var(--theme-rgb), 0.8);
-        }
-        
-        html.orange {
-            /* 活力橙 - 夕陽水彩 (取代原本的灰色) */
-            --theme-rgb: 240, 113, 20;
-            --primary-color: rgb(var(--theme-rgb));
-            --text-dark: #3e1b00;
-            --text-gray: rgba(var(--theme-rgb), 0.95);
-        }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>血壓記錄 - 水彩細框版</title>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#4CAF50">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<style>
+/* ========== CSS 變數：佈景主題 ========== */
+:root {
+  --bg: #f0f7f0;
+  --card-bg: rgba(255,255,255,0.85);
+  --primary: #5a9e6f;
+  --primary-light: #d4edda;
+  --primary-dark: #3d7a50;
+  --border: #b8d8c0;
+  --text: #2d4a35;
+  --text-light: #5a7d63;
+  --accent: #e8f5e9;
+  --danger: #d9534f;
+  --danger-light: #f8d7da;
+  --warning: #f0ad4e;
+  --shadow: rgba(90,158,111,0.15);
+  --row-hover: rgba(90,158,111,0.08);
+  --input-bg: rgba(255,255,255,0.9);
+}
+[data-theme="forest"] {
+  --bg: #eef5e8;
+  --card-bg: rgba(255,255,255,0.88);
+  --primary: #4a7c59;
+  --primary-light: #c8e6c9;
+  --primary-dark: #2e5e3e;
+  --border: #a5c9a5;
+  --text: #1b3a24;
+  --text-light: #4a7055;
+  --accent: #e0f2e1;
+  --shadow: rgba(74,124,89,0.18);
+  --row-hover: rgba(74,124,89,0.1);
+}
+[data-theme="purple"] {
+  --bg: #f3eef8;
+  --card-bg: rgba(255,255,255,0.88);
+  --primary: #7e57c2;
+  --primary-light: #e1d5f0;
+  --primary-dark: #5c3d99;
+  --border: #c5b3d9;
+  --text: #3a2560;
+  --text-light: #6a5088;
+  --accent: #ede7f6;
+  --shadow: rgba(126,87,194,0.15);
+  --row-hover: rgba(126,87,194,0.08);
+}
+[data-theme="ocean"] {
+  --bg: #eaf2f8;
+  --card-bg: rgba(255,255,255,0.88);
+  --primary: #4a90b8;
+  --primary-light: #d1e8f5;
+  --primary-dark: #2e6e94;
+  --border: #a8cfe0;
+  --text: #1a3a50;
+  --text-light: #4a7a95;
+  --accent: #e3f2fd;
+  --shadow: rgba(74,144,184,0.15);
+  --row-hover: rgba(74,144,184,0.08);
+}
+[data-theme="latte"] {
+  --bg: #f5f0e8;
+  --card-bg: rgba(255,255,255,0.88);
+  --primary: #a0785a;
+  --primary-light: #e8d8c8;
+  --primary-dark: #7a5a40;
+  --border: #d4bfa8;
+  --text: #4a3828;
+  --text-light: #7a6550;
+  --accent: #faf0e6;
+  --shadow: rgba(160,120,90,0.15);
+  --row-hover: rgba(160,120,90,0.08);
+}
+[data-theme="sunset"] {
+  --bg: #fdf2e8;
+  --card-bg: rgba(255,255,255,0.88);
+  --primary: #e07830;
+  --primary-light: #fde0c8;
+  --primary-dark: #b85a18;
+  --border: #f0c8a0;
+  --text: #5a3018;
+  --text-light: #8a6040;
+  --accent: #fff3e0;
+  --shadow: rgba(224,120,48,0.15);
+  --row-hover: rgba(224,120,48,0.08);
+}
 
-        /* 核心變數應用 (適用所有主題，加入 orange) */
-        :root, html.green, html.purple, html.blue, html.brown, html.orange {
-            /* 水彩暈染背景 */
-            --bg-color: 
-                radial-gradient(circle at 10% 0%, rgba(var(--theme-rgb), 0.25) 0%, transparent 45%),
-                radial-gradient(circle at 90% 15%, rgba(var(--theme-rgb), 0.15) 0%, transparent 55%),
-                radial-gradient(circle at 40% 100%, rgba(var(--theme-rgb), 0.2) 0%, transparent 50%),
-                linear-gradient(135deg, rgba(var(--theme-rgb), 0.1) 0%, rgba(255, 255, 255, 0.9) 100%);
-            
-            /* 深色細框線 */
-            --card-border: 1px solid rgba(var(--theme-rgb), 0.7);
-            --card-bg: rgba(255, 255, 255, 0.65);
-            --card-shadow: 0 12px 32px rgba(var(--theme-rgb), 0.1), 0 4px 12px rgba(0, 0, 0, 0.03);
-            
-            --table-header: rgba(var(--theme-rgb), 0.12);
-            --input-bg: rgba(255, 255, 255, 0.7);
-            --input-shadow: inset 0 2px 6px rgba(var(--theme-rgb), 0.05);
-            
-            --btn-shadow: 0 4px 12px rgba(var(--theme-rgb), 0.12);
-            --btn-shadow-active: inset 0 2px 4px rgba(var(--theme-rgb), 0.2);
-            
-            --text-3d: 1px 1px 0px rgba(255,255,255,0.7);
-        }
+/* ========== 全域重置 ========== */
+* { margin:0; padding:0; box-sizing:border-box; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans TC', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  line-height: 1.3;
+  font-size: 13px;
+}
 
-        body { 
-            font-family: 'Helvetica Neue', Helvetica, Arial, 'PingFang TC', sans-serif; 
-            background: var(--bg-color); 
-            background-attachment: fixed;
-            color: var(--text-dark); margin: 0; padding: 12px; 
-            min-height: 100vh; transition: background 0.6s ease, color 0.6s ease; 
-        }
-        
-        .header-container { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
-        h2 { margin: 0; font-size: 26px; font-weight: 900; color: var(--primary-color); text-shadow: var(--text-3d); letter-spacing: 1px; }
-        .subtitle { color: var(--text-gray); margin-bottom: 16px; font-size: 15px; font-weight: bold; text-shadow: var(--text-3d); }
-        
-        .card { 
-            background: var(--card-bg); 
-            backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
-            border-radius: 20px; padding: 18px; margin-bottom: 16px; 
-            box-shadow: var(--card-shadow); 
-            border: var(--card-border); 
-            transition: all 0.3s ease;
-        }
-        
-        .card-title { 
-            font-size: 18px; font-weight: 900; margin-bottom: 14px; padding-bottom: 8px; 
-            border-bottom: 2px dashed rgba(var(--theme-rgb), 0.6); 
-            color: var(--primary-color); 
-            text-shadow: var(--text-3d); display: flex; justify-content: space-between; align-items: center;
-        }
-        
-        .input-group { display: flex; gap: 12px; margin-bottom: 16px; align-items: center; }
-        .input-group input { 
-            flex: 1; width: 100%; height: 48px; padding: 0 10px; border-radius: 12px; font-size: 16px; font-weight: bold;
-            text-align: center; background: var(--input-bg); color: var(--text-dark); 
-            border: 1px solid rgba(var(--theme-rgb), 0.6); 
-            box-shadow: var(--input-shadow); transition: all 0.3s; box-sizing: border-box;
-        }
-        .input-group input:focus { 
-            outline: none; 
-            background: rgba(255, 255, 255, 0.95);
-            border-color: rgba(var(--theme-rgb), 1); 
-            box-shadow: 0 0 0 3px rgba(var(--theme-rgb), 0.15); 
-        }
-        
-        .btn-group { display: flex; gap: 12px; margin-bottom: 8px; flex-wrap: wrap; }
-        button { 
-            flex: 1; min-width: 100px; height: 48px; border-radius: 14px; font-size: 16px; font-weight: 900; 
-            cursor: pointer; transition: 0.2s; 
-            display: flex; justify-content: center; align-items: center; gap: 6px; box-sizing: border-box;
-            backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px);
-        }
-        .btn-tall { height: 60px; font-size: 18px; }
+/* ========== 容器 ========== */
+.container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 8px;
+}
 
-        .header-btn { 
-            flex: none; height: 38px; min-width: auto; padding: 0 16px; 
-            background: rgba(255, 255, 255, 0.5); border: var(--card-border);
-            color: var(--primary-color); font-size: 14px; box-shadow: var(--btn-shadow);
-        }
-        
-        .btn-primary { 
-            background: rgba(var(--theme-rgb), 0.85); 
-            color: white; border: 1px solid rgba(var(--theme-rgb), 0.9); 
-            box-shadow: 0 6px 16px rgba(var(--theme-rgb), 0.25); 
-        }
-        .btn-outline { 
-            background: rgba(255, 255, 255, 0.5); 
-            border: 1px solid rgba(var(--theme-rgb), 0.7); 
-            color: var(--primary-color); box-shadow: var(--btn-shadow);
-        }
-        .btn-danger { 
-            background: rgba(231, 76, 60, 0.85); color: white; border: 1px solid #c0392b; 
-            box-shadow: 0 6px 16px rgba(231, 76, 60, 0.25); 
-        }
-        
-        button:active { transform: translateY(2px); box-shadow: var(--btn-shadow-active); }
-        
-        /* 小紅點 */
-        .btn-badge { position: relative; overflow: visible !important; }
-        .btn-badge.has-notification::after {
-            content: ''; position: absolute; top: -4px; right: -4px;
-            width: 12px; height: 12px; background-color: #ff3b30;
-            border-radius: 50%; border: 2px solid white;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
-            animation: pulse-red 1.5s infinite;
-        }
-        @keyframes pulse-red { 
-            0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(255, 59, 48, 0.5); } 
-            70% { transform: scale(1); box-shadow: 0 0 0 6px rgba(255, 59, 48, 0); } 
-            100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(255, 59, 48, 0); } 
-        }
+/* ========== 標頭 ========== */
+.header {
+  text-align: center;
+  padding: 10px 0 6px;
+}
+.header h1 {
+  font-size: 1.3em;
+  color: var(--primary-dark);
+  font-weight: 700;
+}
+.header .subtitle {
+  font-size: 0.75em;
+  color: var(--text-light);
+  margin-top: 2px;
+}
 
-        .hint-text { color: var(--primary-color); font-size: 13px; margin-bottom: 12px; font-weight: bold; text-shadow: var(--text-3d); }
-        
-        .table-responsive { 
-            width: 100%; overflow-x: auto; border-radius: 16px; 
-            background: rgba(255, 255, 255, 0.3); border: var(--card-border);
-        }
-        table { width: 100%; border-collapse: collapse; text-align: center; font-size: 15px; background: transparent; color: var(--text-dark); min-width: 600px; }
-        
-        th, td { padding: 10px 4px; border-bottom: 1px solid rgba(var(--theme-rgb), 0.4); white-space: nowrap; }
-        th { background-color: var(--table-header); font-weight: 900; color: var(--primary-color); border-bottom: 2px solid rgba(var(--theme-rgb), 0.7); }
-        
-        tbody tr:nth-child(odd) { background-color: rgba(255, 255, 255, 0.5); }
-        tbody tr:nth-child(even) { background-color: rgba(255, 255, 255, 0.2); }
-        tr:last-child td { border-bottom: none; }
-        
-        .col-date { width: 100px; font-weight: bold;} 
-        .col-action { width: 50px; } 
-        .col-data { width: auto; }  
-        
-        .edit-btn { background: rgba(255, 255, 255, 0.6); height: 34px; font-size: 14px; cursor: pointer; padding: 0 10px; min-width: auto; flex: none; font-weight: bold; border-radius: 10px; border: 1px solid rgba(var(--theme-rgb), 0.6); color: var(--primary-color); }
-        .align-bottom { vertical-align: bottom !important; padding-bottom: 8px !important; }
-        .group-header { padding-top: 8px !important; padding-bottom: 4px !important; }
-        .sub-header th { padding-top: 4px !important; padding-bottom: 8px !important; border-bottom: 2px solid rgba(var(--theme-rgb), 0.6); }
-        
-        .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.3); z-index: 1000; justify-content: center; align-items: center; backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); }
-        .modal-content { 
-            background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px);
-            color: var(--text-dark); padding: 24px; border-radius: 24px; width: 90%; max-width: 380px; position: relative; 
-            box-shadow: 0 20px 40px rgba(0,0,0,0.15); border: 1px solid rgba(var(--theme-rgb), 0.8); max-height: 90vh; overflow-y: auto; 
-        }
-        .modal-close { position: absolute; top: 16px; right: 20px; font-size: 28px; font-weight: bold; color: var(--text-gray); cursor: pointer; line-height: 1; z-index: 10; }
-        
-        .theme-select { width: 100%; height: 48px; padding: 0 12px; border-radius: 12px; margin-bottom: 16px; background: rgba(255, 255, 255, 0.8); color: var(--text-dark); border: 1px solid rgba(var(--theme-rgb), 0.7); font-size: 15px; font-weight: bold; outline: none; box-sizing: border-box; }
-        .version-text { text-align: center; margin-top: 20px; font-size: 12px; color: var(--text-gray); font-weight: bold; letter-spacing: 1px; }
-        
-        .modal-period-btns { display: flex; gap: 12px; margin-top: 16px; }
-        .modal-period-btns button { flex: 1; height: 48px; border-radius: 14px; font-size: 16px; font-weight: 900; cursor: pointer; border: 1px solid rgba(255,255,255,0.4); color: white; }
-        .modal-btn-morning { background: linear-gradient(145deg, #fb8c00, #e65100); box-shadow: 0 4px 10px rgba(230, 81, 0, 0.3); border: 1px solid #c14400 !important; }
-        .modal-btn-evening { background: linear-gradient(145deg, #1e88e5, #0d47a1); box-shadow: 0 4px 10px rgba(13, 71, 161, 0.3); border: 1px solid #093375 !important; }
-        
-        .toast-container { position: fixed; bottom: 40px; left: 50%; transform: translateX(-50%); z-index: 9999; display: flex; flex-direction: column; align-items: center; gap: 10px; pointer-events: none; }
-        .toast { background: rgba(0,0,0,0.8); backdrop-filter: blur(10px); color: white; padding: 12px 24px; border-radius: 30px; font-size: 15px; font-weight: bold; box-shadow: 0 8px 20px rgba(0,0,0,0.2); opacity: 0; transform: translateY(20px); animation: toastIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards, toastOut 0.4s 2.5s forwards; pointer-events: auto; text-align: center; max-width: 85vw; border: 1px solid rgba(255,255,255,0.2); }
-        .toast.error { background: rgba(211, 47, 47, 0.9); border: 1px solid #b71c1c; }
-        .toast.warning { background: rgba(245, 124, 0, 0.9); border: 1px solid #e65100; }
-        @keyframes toastIn { to { opacity: 1; transform: translateY(0); } }
-        @keyframes toastOut { to { opacity: 0; transform: translateY(-20px); } }
-        
-        .print-only { display: none; }
-        @media print {
-            @page { size: A4 portrait; margin: 12mm 16mm; }
-            .no-print, .col-action { display: none !important; }
-            .print-only { display: block !important; text-align: center; font-size: 18px; font-weight: bold; margin-bottom: 10px; color: black; text-shadow: none !important; }
-            body { background: white !important; color: black !important; margin: 0; padding: 0; }
-            .card { border: none !important; box-shadow: none !important; padding: 0 !important; margin: 0 !important; background: white !important; }
-            .table-responsive { overflow: visible !important; border: none !important; box-shadow: none !important; background: transparent !important; }
-            table { width: 100% !important; min-width: 100% !important; border-collapse: collapse !important; font-size: 11px !important; color: black !important; background: white !important; table-layout: auto !important; }
-            th, td { border: 1px solid #444 !important; padding: 5px 4px !important; color: black !important; background: transparent !important; white-space: normal !important; line-height: 1.4 !important; text-shadow: none !important; }
-            th { background-color: #f0f0f0 !important; font-weight: bold; border-bottom: 1px solid #444 !important; }
-        }
-    
-        .gist-status { display: flex; align-items: center; gap: 10px; margin-bottom: 16px; padding: 12px; border-radius: 14px; background: rgba(255,255,255,0.5); border: 1px solid rgba(var(--theme-rgb), 0.6); font-size: 14px; font-weight: bold; }
-        .gist-status-dot { width: 12px; height: 12px; border-radius: 50%; background: #ccc; border: 1px solid rgba(0,0,0,0.2); }
-        .gist-status-dot.connected { background: #4caf50; box-shadow: 0 0 8px rgba(76, 175, 80, 0.6); }
-        .gist-status-dot.error { background: #f44336; box-shadow: 0 0 8px rgba(244, 67, 54, 0.6); }
-        .gist-status-dot.syncing { background: #ff9800; animation: pulse 1s infinite; }
-        @keyframes pulse { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: 0.6; transform: scale(1.2); } }
-        .token-input { width: 100%; height: 48px; padding: 0 12px; border-radius: 12px; font-size: 14px; font-family: monospace; background: rgba(255,255,255,0.8); color: var(--text-dark); border: 1px solid rgba(var(--theme-rgb), 0.7); margin-bottom: 12px; box-sizing: border-box; outline: none; }
-        .gist-id-display { font-family: monospace; font-size: 13px; color: var(--text-gray); background: rgba(255,255,255,0.6); padding: 8px 12px; border-radius: 10px; word-break: break-all; margin-bottom: 14px; border: 1px dashed rgba(var(--theme-rgb), 0.8); }
+/* ========== 卡片 ========== */
+.card {
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 10px 12px;
+  margin-bottom: 8px;
+  box-shadow: 0 2px 8px var(--shadow);
+  backdrop-filter: blur(8px);
+}
+.card-title {
+  font-size: 0.9em;
+  font-weight: 700;
+  color: var(--primary-dark);
+  margin-bottom: 6px;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
 
-        .todo-item { background: rgba(255,255,255,0.6); border: 1px solid rgba(var(--theme-rgb), 0.6); border-radius: 12px; padding: 12px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 8px rgba(0,0,0,0.02); }
-        .todo-info { flex: 1; }
-        .todo-title { font-weight: 900; color: var(--text-dark); margin-bottom: 4px; font-size: 15px; }
-        .todo-note { font-size: 13px; color: var(--text-gray); font-weight: bold; }
-        .todo-del-btn { background: rgba(255, 235, 238, 0.8); color: #c0392b; border: 1px solid rgba(229, 57, 53, 0.5); border-radius: 8px; width: 36px; height: 36px; min-width: 36px; display: flex; align-items: center; justify-content: center; cursor: pointer; padding: 0; box-shadow: none; font-size: 16px; transition: 0.2s; backdrop-filter: blur(4px); }
-        .todo-del-btn:active { transform: scale(0.9); }
-        .todo-input-row { display: flex; gap: 8px; margin-bottom: 8px; }
-        .todo-input-row select, .todo-input-row input { flex: 1; height: 42px; border-radius: 10px; border: 1px solid rgba(var(--theme-rgb), 0.7); padding: 0 10px; font-weight: bold; font-size: 14px; outline: none; background: rgba(255,255,255,0.8); color: var(--text-dark); }
-    </style>
+/* ========== 工具列按鈕 ========== */
+.toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  justify-content: center;
+  margin-bottom: 8px;
+}
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  padding: 5px 10px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--card-bg);
+  color: var(--text);
+  font-size: 0.8em;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-family: inherit;
+  white-space: nowrap;
+}
+.btn:hover { background: var(--primary-light); border-color: var(--primary); }
+.btn-primary {
+  background: var(--primary);
+  color: #fff;
+  border-color: var(--primary-dark);
+}
+.btn-primary:hover { background: var(--primary-dark); }
+.btn-danger { background: var(--danger); color: #fff; border-color: #c9302c; }
+.btn-danger:hover { background: #c9302c; }
+.btn-sm { padding: 2px 6px; font-size: 0.75em; }
+
+/* ========== 今日資訊列 ========== */
+.today-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 4px;
+  font-size: 0.82em;
+  color: var(--text-light);
+  margin-bottom: 6px;
+  padding: 4px 8px;
+  background: var(--accent);
+  border-radius: 6px;
+}
+
+/* ========== 輸入表單 ========== */
+.form-row {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  align-items: center;
+  margin-bottom: 5px;
+}
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+.form-group label {
+  font-size: 0.7em;
+  color: var(--text-light);
+  font-weight: 600;
+}
+.form-group input, .form-group select {
+  padding: 4px 6px;
+  border: 1px solid var(--border);
+  border-radius: 5px;
+  font-size: 0.85em;
+  background: var(--input-bg);
+  color: var(--text);
+  width: 72px;
+  font-family: inherit;
+  height: 28px;
+}
+.form-group input:focus, .form-group select:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 2px rgba(90,158,111,0.2);
+}
+.form-group input[type="date"] { width: 120px; }
+.form-actions {
+  display: flex;
+  gap: 5px;
+  margin-top: 4px;
+  flex-wrap: wrap;
+}
+
+/* ========== ★ 緊湊表格 ★ ========== */
+.table-wrap {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  margin: 0 -4px;
+  padding: 0 4px;
+}
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.8em;
+  table-layout: fixed;
+}
+thead th {
+  background: var(--primary);
+  color: #fff;
+  padding: 4px 2px;
+  font-weight: 600;
+  font-size: 0.78em;
+  text-align: center;
+  border: 1px solid var(--primary-dark);
+  white-space: nowrap;
+  line-height: 1.2;
+  position: sticky;
+  top: 0;
+  z-index: 2;
+}
+thead tr:first-child th {
+  padding: 3px 2px;
+  font-size: 0.72em;
+}
+tbody td {
+  padding: 3px 2px;
+  text-align: center;
+  border: 1px solid var(--border);
+  vertical-align: middle;
+  line-height: 1.2;
+  height: 26px;
+}
+tbody tr:hover { background: var(--row-hover); }
+tbody tr:nth-child(even) { background: rgba(255,255,255,0.3); }
+tbody tr:nth-child(even):hover { background: var(--row-hover); }
+
+/* 日期欄 */
+td.date-cell {
+  font-weight: 600;
+  font-size: 0.78em;
+  white-space: nowrap;
+  width: 72px;
+  min-width: 68px;
+  color: var(--primary-dark);
+}
+/* 數值欄 */
+td.val-cell {
+  width: 48px;
+  min-width: 44px;
+  font-variant-numeric: tabular-nums;
+}
+/* 動作欄 */
+td.act-cell {
+  width: 32px;
+  min-width: 30px;
+  padding: 2px;
+}
+td.act-cell .btn-sm {
+  padding: 1px 4px;
+  font-size: 0.85em;
+  line-height: 1.2;
+}
+
+/* 高血壓警示 */
+.val-high { color: var(--danger); font-weight: 700; }
+.val-normal { color: var(--primary-dark); }
+
+/* 群組標頭 */
+th.group-morning { background: #e8a030; border-color: #c88820; }
+th.group-evening { background: #5070a0; border-color: #3a5580; }
+
+/* 無資料 */
+.no-data {
+  text-align: center;
+  padding: 16px;
+  color: var(--text-light);
+  font-size: 0.85em;
+}
+
+/* ========== 查詢列 ========== */
+.query-bar {
+  display: flex;
+  gap: 5px;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  margin-bottom: 6px;
+}
+.query-bar .form-group input { width: 110px; }
+.hint-text {
+  font-size: 0.72em;
+  color: var(--text-light);
+  margin-bottom: 4px;
+  line-height: 1.3;
+}
+
+/* ========== Modal / Overlay ========== */
+.modal-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.4);
+  z-index: 1000;
+  justify-content: center;
+  align-items: center;
+  padding: 12px;
+}
+.modal-overlay.active { display: flex; }
+.modal {
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 14px;
+  max-width: 480px;
+  width: 100%;
+  max-height: 85vh;
+  overflow-y: auto;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+  backdrop-filter: blur(12px);
+}
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+.modal-header h3 { font-size: 0.95em; color: var(--primary-dark); }
+.modal-close {
+  background: none;
+  border: none;
+  font-size: 1.2em;
+  cursor: pointer;
+  color: var(--text-light);
+  padding: 0 4px;
+}
+
+/* ========== 待辦 ========== */
+.todo-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 0;
+  border-bottom: 1px dashed var(--border);
+  font-size: 0.82em;
+}
+.todo-item:last-child { border-bottom: none; }
+.todo-item input[type="checkbox"] { accent-color: var(--primary); }
+.todo-item .todo-text { flex: 1; }
+.todo-item .todo-done { text-decoration: line-through; color: var(--text-light); }
+.todo-add-row {
+  display: flex;
+  gap: 5px;
+  margin-top: 6px;
+}
+.todo-add-row input {
+  flex: 1;
+  padding: 4px 6px;
+  border: 1px solid var(--border);
+  border-radius: 5px;
+  font-size: 0.82em;
+  font-family: inherit;
+  height: 28px;
+}
+.todo-add-row select {
+  padding: 4px;
+  border: 1px solid var(--border);
+  border-radius: 5px;
+  font-size: 0.82em;
+  height: 28px;
+}
+
+/* ========== 主題選擇 ========== */
+.theme-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 5px;
+}
+.theme-option {
+  padding: 6px 8px;
+  border: 2px solid var(--border);
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 0.78em;
+  text-align: center;
+  transition: all 0.2s;
+  background: var(--card-bg);
+}
+.theme-option:hover { border-color: var(--primary); }
+.theme-option.active { border-color: var(--primary); background: var(--primary-light); font-weight: 700; }
+
+/* ========== Gist 設定 ========== */
+.gist-info {
+  font-size: 0.75em;
+  color: var(--text-light);
+  line-height: 1.4;
+  margin: 6px 0;
+  padding: 6px;
+  background: var(--accent);
+  border-radius: 6px;
+}
+.gist-info ol { padding-left: 16px; }
+.gist-input {
+  width: 100%;
+  padding: 5px 8px;
+  border: 1px solid var(--border);
+  border-radius: 5px;
+  font-size: 0.82em;
+  font-family: monospace;
+  margin: 4px 0;
+  height: 30px;
+}
+
+/* ========== 時段選擇 Modal ========== */
+.period-btns {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  margin: 12px 0;
+}
+.period-btn {
+  padding: 10px 24px;
+  border: 2px solid var(--border);
+  border-radius: 10px;
+  background: var(--card-bg);
+  cursor: pointer;
+  font-size: 1em;
+  transition: all 0.2s;
+  font-family: inherit;
+}
+.period-btn:hover { border-color: var(--primary); background: var(--primary-light); }
+
+/* ========== 版本號 ========== */
+.version-tag {
+  text-align: center;
+  font-size: 0.68em;
+  color: var(--text-light);
+  padding: 6px 0;
+}
+
+/* ========== Print / PDF ========== */
+@media print {
+  body { background: #fff; font-size: 11px; }
+  .no-print { display: none !important; }
+  .card { box-shadow: none; border: 1px solid #ccc; break-inside: avoid; }
+  table { font-size: 10px; }
+  thead th { background: #eee !important; color: #333 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  tbody td { border-color: #ccc; }
+}
+
+/* ========== 響應式 ========== */
+@media (max-width: 500px) {
+  .container { padding: 4px; }
+  .card { padding: 8px; }
+  table { font-size: 0.74em; }
+  thead th { padding: 3px 1px; font-size: 0.72em; }
+  tbody td { padding: 2px 1px; height: 24px; }
+  td.date-cell { width: 62px; min-width: 58px; font-size: 0.72em; }
+  td.val-cell { width: 40px; min-width: 38px; }
+  .form-group input { width: 62px; height: 26px; font-size: 0.8em; }
+  .form-group input[type="date"] { width: 110px; }
+  .btn { padding: 4px 7px; font-size: 0.75em; }
+}
+</style>
 </head>
 <body>
-    <div class="toast-container" id="toast-container"></div>
-    
-    <div class="header-container no-print">
-        <h2>🩺 血壓記錄</h2>
-        <div style="display: flex; gap: 10px;">
-            <button class="header-btn" onclick="openHelp()">📖 說明</button>
-            <button class="header-btn" onclick="openTools()">⚙️ 進階</button>
-        </div>
+
+<div class="container">
+  <!-- 標頭 -->
+  <div class="header no-print">
+    <h1>🩺 血壓記錄</h1>
+    <div class="subtitle">水彩細框版</div>
+  </div>
+
+  <!-- 工具列 -->
+  <div class="toolbar no-print">
+    <button class="btn" onclick="openModal('helpModal')">📖 說明</button>
+    <button class="btn" onclick="openModal('themeModal')">🎨 佈景</button>
+    <button class="btn" onclick="openModal('todoModal')">🔔 待辦</button>
+    <button class="btn" onclick="openModal('gistModal')">☁️ 雲端</button>
+  </div>
+
+  <!-- 今日資訊 -->
+  <div class="today-bar no-print">
+    <span>📅 今日：<strong id="todayDate">載入中...</strong></span>
+    <span>🕒 時段：<strong id="todayPeriod">載入中...</strong></span>
+  </div>
+
+  <!-- 新增/修改記錄 -->
+  <div class="card no-print" id="formCard">
+    <div class="card-title">📝 新增 / 修改記錄</div>
+    <div class="form-row">
+      <div class="form-group">
+        <label>日期</label>
+        <input type="date" id="inputDate">
+      </div>
+      <div class="form-group">
+        <label>時段</label>
+        <select id="inputPeriod">
+          <option value="morning">☀️ 早上</option>
+          <option value="evening">🌙 晚上</option>
+        </select>
+      </div>
     </div>
-    <div class="subtitle no-print" id="current-time-display">📅 今日：載入中... 🕒 時段：載入中...</div>
-    
-    <div class="card no-print" id="input-card">
-        <div class="card-title">
-            <span id="input-card-title">📝 新增 / 修改記錄</span>
-            <button id="todo-btn" class="header-btn btn-badge" onclick="openTodoModal()" style="height: 32px; font-size: 13px; border-radius: 10px;">🔔 待辦</button>
-        </div>
-        <div class="input-group">
-            <input type="number" id="sys" placeholder="收縮壓" inputmode="numeric">
-            <input type="number" id="dia" placeholder="舒張壓" inputmode="numeric">
-            <input type="number" id="hr" placeholder="心率" inputmode="numeric">
-        </div>
-        <div class="btn-group">
-            <button class="btn-primary" onclick="saveRecord()">💾 儲存本時段</button>
-            <button class="btn-outline" onclick="clearInputs()">❌ 取消修改</button>
-            <button class="btn-danger" id="btn-delete" onclick="deleteCurrentRecord()" style="display: none;">🗑️ 刪除此筆</button>
-        </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label>收縮壓</label>
+        <input type="number" id="inputSys" placeholder="120" min="60" max="260">
+      </div>
+      <div class="form-group">
+        <label>舒張壓</label>
+        <input type="number" id="inputDia" placeholder="80" min="30" max="160">
+      </div>
+      <div class="form-group">
+        <label>心率</label>
+        <input type="number" id="inputHr" placeholder="72" min="30" max="220">
+      </div>
     </div>
-
-    <div class="card" id="print-area">
-        <div class="card-title no-print">📊 記錄查詢與輸出</div>
-        <div class="print-only" id="print-title">血壓記錄表</div>
-        <div class="hint-text no-print">💡 提示：點擊右側「✏️」可修改或補填早晚記錄。</div>
-        <div class="input-group no-print" style="justify-content: center; max-width: 400px; margin: 0 auto 16px auto;">
-            <input type="date" id="start-date" style="flex: 1;">
-            <span style="color: var(--primary-color); font-weight: bold; flex: none;">至</span>
-            <input type="date" id="end-date" style="flex: 1;">
-        </div>
-        <div class="btn-group no-print">
-            <button class="btn-outline" onclick="renderTable()">🔍 開始查詢</button>
-            <button class="btn-primary" onclick="printNative()">🖨️ 產出 PDF</button>
-        </div>
-        <div class="table-responsive">
-            <table id="bp-table">
-                <thead>
-                    <tr>
-                        <th rowspan="2" class="align-bottom col-date">🗓️ 日期</th>
-                        <th colspan="3" class="group-header">☀️ 早上記錄</th>
-                        <th colspan="3" class="group-header">🌙 晚上記錄</th>
-                        <th rowspan="2" class="align-bottom col-action no-print">動作</th>
-                    </tr>
-                    <tr class="sub-header">
-                        <th class="col-data">收縮</th><th class="col-data">舒張</th><th class="col-data">心率</th>
-                        <th class="col-data">收縮</th><th class="col-data">舒張</th><th class="col-data">心率</th>
-                    </tr>
-                </thead>
-                <tbody id="record-table-body"></tbody>
-            </table>
-        </div>
+    <div class="form-actions">
+      <button class="btn btn-primary" onclick="saveRecord()">💾 儲存本時段</button>
+      <button class="btn" onclick="cancelEdit()">❌ 取消修改</button>
+      <button class="btn btn-danger" onclick="deleteRecord()" id="btnDelete" style="display:none;">🗑️ 刪除此筆</button>
     </div>
+    <input type="hidden" id="editKey" value="">
+  </div>
 
-    <div id="todoModal" class="modal-overlay no-print">
-        <div class="modal-content" style="max-height: 85vh; display: flex; flex-direction: column;">
-            <span class="modal-close" onclick="closeTodoModal()">&times;</span>
-            <div class="card-title" style="margin-top: 5px;">🔔 待辦提醒</div>
-            
-            <div style="background: rgba(255,255,255,0.4); padding: 14px; border-radius: 14px; margin-bottom: 16px; border: 1px dashed rgba(var(--theme-rgb), 0.6);">
-                <div class="todo-input-row">
-                    <select id="todo-type">
-                        <option value="💊 領藥">💊 領藥</option>
-                        <option value="🏥 門診">🏥 門診</option>
-                        <option value="📌 其他">📌 其他</option>
-                    </select>
-                    <input type="date" id="todo-date">
-                </div>
-                <div class="todo-input-row" style="margin-bottom: 0;">
-                    <input type="text" id="todo-note" placeholder="備註內容 (選填)">
-                    <button onclick="addTodo()" class="btn-primary" style="flex: none; width: 42px; height: 42px; min-width: 42px; padding: 0; border-radius: 10px; font-size: 20px;">➕</button>
-                </div>
-            </div>
-
-            <div id="todo-list" style="overflow-y: auto; flex: 1; padding-right: 4px;">
-            </div>
-        </div>
+  <!-- 查詢與輸出 -->
+  <div class="card">
+    <div class="card-title no-print">📊 記錄查詢與輸出</div>
+    <div class="query-bar no-print">
+      <div class="form-group">
+        <label>起</label>
+        <input type="date" id="queryStart">
+      </div>
+      <div class="form-group">
+        <label>迄</label>
+        <input type="date" id="queryEnd">
+      </div>
+      <button class="btn btn-primary" onclick="renderTable()">🔍 查詢</button>
+      <button class="btn" onclick="printPDF()">🖨️ 產出 PDF</button>
     </div>
-
-    <div id="toolsModal" class="modal-overlay no-print">
-        <div class="modal-content">
-            <span class="modal-close" onclick="closeTools()">&times;</span>
-            <div class="card-title" style="margin-top: 5px;">🎨 佈景主題設定</div>
-            <select id="theme-selector" class="theme-select" onchange="changeTheme()">
-                <option value="light">⚪ 經典綠 (薄荷水彩)</option>
-                <option value="green">🌿 森林綠 (抹茶水彩)</option>
-                <option value="purple">🔮 夢幻紫 (薰衣草水彩)</option>
-                <option value="blue">🌊 海洋藍 (天空水彩)</option>
-                <option value="brown">☕ 拿鐵棕 (奶茶水彩)</option>
-                <option value="orange">🍊 活力橙 (夕陽水彩)</option> </select>
-
-            <div class="card-title" style="margin-top: 24px;">☁️ GitHub Gist 雲端同步</div>
-            <div id="gist-status" class="gist-status">
-                <div class="gist-status-dot" id="gist-dot"></div>
-                <span id="gist-status-text">尚未設定雲端備份</span>
-            </div>
-            
-            <div id="gist-setup-area">
-                <p style="font-size: 13px; color: var(--text-gray); margin-bottom: 12px; font-weight: bold; line-height: 1.6;">
-                    1. 前往 GitHub → Settings → Developer settings → Tokens (classic)<br>
-                    2. 點 Generate new token (classic) → 期限選無限制、只勾選「gist」<br>
-                    3. 產生後立刻複製 Token，貼到下方進行安全綁定。
-                </p>
-                <input type="text" id="gist-token-input" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" class="token-input" placeholder="🔑 貼上 GitHub Token">
-                <div class="btn-group" style="flex-direction: column; gap: 10px;">
-                    <button class="btn-primary" onclick="saveGistToken()">🔌 儲存並連線測試</button>
-                </div>
-            </div>
-            
-            <div id="gist-connected-area" style="display: none;">
-                <div class="gist-id-display" id="gist-id-display"></div>
-                <div class="btn-group" style="flex-direction: column; gap: 10px;">
-                    <button class="btn-primary btn-tall" onclick="importFromGist()">📥 從雲端還原資料</button>
-                    <button class="btn-danger btn-tall" onclick="disconnectGist()">🔗 解除綁定連線</button>
-                </div>
-            </div>
-
-            <div class="version-text">Version 9.2 ✨ Watercolor Sunset Edition</div>
-        </div>
+    <p class="hint-text no-print">💡 提示：點擊右側「✏️」可修改或補填早晚記錄。</p>
+    <div class="table-wrap">
+      <table id="bpTable">
+        <thead>
+          <tr>
+            <th rowspan="2" style="width:72px;">🗓️ 日期</th>
+            <th colspan="3" class="group-morning">☀️ 早上記錄</th>
+            <th colspan="3" class="group-evening">🌙 晚上記錄</th>
+            <th rowspan="2" style="width:32px;" class="no-print">動作</th>
+          </tr>
+          <tr>
+            <th class="group-morning">收縮</th>
+            <th class="group-morning">舒張</th>
+            <th class="group-morning">心率</th>
+            <th class="group-evening">收縮</th>
+            <th class="group-evening">舒張</th>
+            <th class="group-evening">心率</th>
+          </tr>
+        </thead>
+        <tbody id="bpBody">
+          <tr><td colspan="8" class="no-data">尚無記錄</td></tr>
+        </tbody>
+      </table>
     </div>
+  </div>
 
-    <div id="helpModal" class="modal-overlay no-print">
-        <div class="modal-content" style="max-width: 90%; max-height: 85vh; overflow-y: auto;">
-            <span class="modal-close" onclick="closeHelp()">&times;</span>
-            <div class="card-title" style="margin-top: 5px;">📖 使用說明書</div>
+  <div class="version-tag no-print">Version 9.3 ✨ Compact Edition</div>
+</div>
 
-            <div style="margin-bottom: 20px;">
-                <div class="card-title" style="font-size: 16px; margin-top: 10px;">🩺 核心功能</div>
-                <ul style="font-size: 14px; color: var(--text-gray); padding-left: 20px; line-height: 1.8; font-weight: bold;">
-                    <li>記錄每日 ☀️ 早上與 🌙 晚上的血壓數值</li>
-                    <li>點擊列表右側的「✏️」即可隨時補填或修改</li>
-                    <li>每次點擊儲存，系統將完全自動進行雲端安全覆蓋</li>
-                    <li>一鍵產出乾淨的 PDF，方便回診給醫師看</li>
-                </ul>
-            </div>
-
-            <div style="margin-bottom: 20px;">
-                <div class="card-title" style="font-size: 16px; margin-top: 10px;">☁️ 雲端備份教學</div>
-                <ol style="font-size: 14px; color: var(--text-gray); padding-left: 20px; line-height: 1.8; font-weight: bold;">
-                    <li>前往 <a href="https://github.com" target="_blank" style="color: var(--primary-color);">GitHub</a> 註冊免費帳號並登入</li>
-                    <li>點選右上角個人頭像 → 選擇 <b>Settings</b></li>
-                    <li>左側選單滑到最下方 → 點選 <b>Developer settings</b></li>
-                    <li>展開 Personal access tokens → 點選 <b>Tokens (classic)</b></li>
-                    <li>點擊右上方 Generate new token → ⚠️ 務必在下拉選單選擇 <b>Generate new token (classic)</b></li>
-                    <li>Note 欄位填寫「血壓備份」</li>
-                    <li>期限 (Expiration) 選 <b>No expiration</b></li>
-                    <li>權限清單 (Scopes) 找到並只勾選 <b>gist</b></li>
-                    <li>滑至最底部點擊 Generate token，產生後<b>立刻複製</b>該串密碼，貼回此 App 即可連線！</li>
-                </ol>
-            </div>
-
-            <div class="version-text">Version 9.2 ✨ Watercolor Sunset Edition</div>
-        </div>
+<!-- ====== Modal: 說明 ====== -->
+<div class="modal-overlay" id="helpModal">
+  <div class="modal">
+    <div class="modal-header">
+      <h3>📖 使用說明書</h3>
+      <button class="modal-close" onclick="closeModal('helpModal')">×</button>
     </div>
-
-    <div id="periodModal" class="modal-overlay no-print">
-        <div class="modal-content" style="text-align: center;">
-            <span class="modal-close" onclick="closePeriodModal()">&times;</span>
-            <div class="card-title" id="period-modal-title">⏱️ 選擇修改時段</div>
-            <p style="color: var(--text-gray); font-size: 14px; margin-bottom: 12px; font-weight: bold;">請選擇您欲修改的記錄時段：</p>
-            <div class="modal-period-btns">
-                <button class="modal-btn-morning" onclick="confirmEdit('morning')">☀️ 早上</button>
-                <button class="modal-btn-evening" onclick="confirmEdit('evening')">🌙 晚上</button>
-            </div>
-        </div>
+    <div style="font-size:0.82em; line-height:1.5;">
+      <p><strong>🩺 核心功能</strong></p>
+      <ul style="padding-left:16px; margin:4px 0 8px;">
+        <li>記錄每日 ☀️ 早上與 🌙 晚上的血壓數值</li>
+        <li>點擊列表右側的「✏️」即可隨時補填或修改</li>
+        <li>每次點擊儲存，系統將自動進行雲端安全覆蓋</li>
+        <li>一鍵產出乾淨的 PDF，方便回診給醫師看</li>
+      </ul>
+      <p><strong>☁️ 雲端備份教學</strong></p>
+      <ol style="padding-left:16px; margin:4px 0;">
+        <li>前往 <a href="https://github.com" target="_blank">GitHub</a> 註冊免費帳號並登入</li>
+        <li>點選右上角個人頭像 → Settings</li>
+        <li>左側選單最下方 → Developer settings</li>
+        <li>Personal access tokens → Tokens (classic)</li>
+        <li>Generate new token (classic)</li>
+        <li>Note 填「血壓備份」，期限選 No expiration</li>
+        <li>權限只勾選 <strong>gist</strong></li>
+        <li>產生後立刻複製 Token，貼回此 App</li>
+      </ol>
     </div>
+  </div>
+</div>
 
-    <script>
-        let appData = JSON.parse(localStorage.getItem('bpRecords')) || {};
-        let editDate = null, editPeriod = null;
-        let pendingEditDate = null;
-        
-        let todos = JSON.parse(localStorage.getItem('bpTodos')) || [];
+<!-- ====== Modal: 佈景主題 ====== -->
+<div class="modal-overlay" id="themeModal">
+  <div class="modal">
+    <div class="modal-header">
+      <h3>🎨 佈景主題設定</h3>
+      <button class="modal-close" onclick="closeModal('themeModal')">×</button>
+    </div>
+    <div class="theme-grid">
+      <div class="theme-option active" data-theme="default" onclick="setTheme('default',this)">⚪ 經典綠<br><small>(薄荷水彩)</small></div>
+      <div class="theme-option" data-theme="forest" onclick="setTheme('forest',this)">🌿 森林綠<br><small>(抹茶水彩)</small></div>
+      <div class="theme-option" data-theme="purple" onclick="setTheme('purple',this)">🔮 夢幻紫<br><small>(薰衣草水彩)</small></div>
+      <div class="theme-option" data-theme="ocean" onclick="setTheme('ocean',this)">🌊 海洋藍<br><small>(天空水彩)</small></div>
+      <div class="theme-option" data-theme="latte" onclick="setTheme('latte',this)">☕ 拿鐵棕<br><small>(奶茶水彩)</small></div>
+      <div class="theme-option" data-theme="sunset" onclick="setTheme('sunset',this)">🍊 活力橙<br><small>(夕陽水彩)</small></div>
+    </div>
+  </div>
+</div>
 
-        function showToast(message, type = 'success') {
-            const container = document.getElementById('toast-container');
-            const toast = document.createElement('div');
-            toast.className = `toast ${type}`;
-            toast.textContent = message;
-            container.appendChild(toast);
-            setTimeout(() => { if (container.contains(toast)) container.removeChild(toast); }, 3000);
+<!-- ====== Modal: 待辦 ====== -->
+<div class="modal-overlay" id="todoModal">
+  <div class="modal">
+    <div class="modal-header">
+      <h3>🔔 待辦提醒</h3>
+      <button class="modal-close" onclick="closeModal('todoModal')">×</button>
+    </div>
+    <div id="todoList"></div>
+    <div class="todo-add-row">
+      <select id="todoIcon">
+        <option value="💊">💊 領藥</option>
+        <option value="🏥">🏥 門診</option>
+        <option value="📌">📌 其他</option>
+      </select>
+      <input type="text" id="todoInput" placeholder="輸入待辦事項..." onkeydown="if(event.key==='Enter')addTodo()">
+      <button class="btn btn-primary btn-sm" onclick="addTodo()">➕</button>
+    </div>
+  </div>
+</div>
+
+<!-- ====== Modal: Gist 雲端 ====== -->
+<div class="modal-overlay" id="gistModal">
+  <div class="modal">
+    <div class="modal-header">
+      <h3>☁️ GitHub Gist 雲端同步</h3>
+      <button class="modal-close" onclick="closeModal('gistModal')">×</button>
+    </div>
+    <div id="gistStatus" style="font-size:0.82em; margin-bottom:6px;">尚未設定雲端備份</div>
+    <div class="gist-info">
+      <ol>
+        <li>前往 GitHub → Settings → Developer settings → Tokens (classic)</li>
+        <li>點 Generate new token (classic) → 期限選無限制、只勾選「gist」</li>
+        <li>產生後立刻複製 Token，貼到下方進行安全綁定。</li>
+      </ol>
+    </div>
+    <input type="password" class="gist-input" id="gistToken" placeholder="貼上 GitHub Personal Access Token">
+    <div style="display:flex; gap:5px; flex-wrap:wrap; margin-top:6px;">
+      <button class="btn btn-primary" onclick="connectGist()">🔌 儲存並連線測試</button>
+      <button class="btn" onclick="restoreFromGist()">📥 從雲端還原資料</button>
+      <button class="btn btn-danger" onclick="disconnectGist()">🔗 解除綁定連線</button>
+    </div>
+  </div>
+</div>
+
+<!-- ====== Modal: 選擇時段 ====== -->
+<div class="modal-overlay" id="periodModal">
+  <div class="modal" style="max-width:320px;">
+    <div class="modal-header">
+      <h3>⏱️ 選擇修改時段</h3>
+      <button class="modal-close" onclick="closeModal('periodModal')">×</button>
+    </div>
+    <p style="font-size:0.82em; text-align:center; margin-bottom:8px;">請選擇您欲修改的記錄時段：</p>
+    <div class="period-btns">
+      <button class="period-btn" onclick="editByPeriod('morning')">☀️ 早上</button>
+      <button class="period-btn" onclick="editByPeriod('evening')">🌙 晚上</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ==================== 資料存取 ====================
+const STORAGE_KEY = 'bp_records';
+const TODO_KEY = 'bp_todos';
+const THEME_KEY = 'bp_theme';
+const GIST_TOKEN_KEY = 'bp_gist_token';
+const GIST_ID_KEY = 'bp_gist_id';
+
+function getRecords() {
+  try { return JSON.parse(localStorage.getItem(STORAGE_KEY)) || {}; } catch { return {}; }
+}
+function setRecords(data) {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+}
+function getTodos() {
+  try { return JSON.parse(localStorage.getItem(TODO_KEY)) || []; } catch { return []; }
+}
+function setTodos(data) {
+  localStorage.setItem(TODO_KEY, JSON.stringify(data));
+}
+
+// ==================== 日期工具 ====================
+function fmtDate(d) {
+  const y = d.getFullYear();
+  const m = String(d.getMonth()+1).padStart(2,'0');
+  const dd = String(d.getDate()).padStart(2,'0');
+  return `${y}-${m}-${dd}`;
+}
+function fmtDateShort(dateStr) {
+  const parts = dateStr.split('-');
+  return `${parts[1]}/${parts[2]}`;
+}
+function getWeekday(dateStr) {
+  const days = ['日','一','二','三','四','五','六'];
+  return '週' + days[new Date(dateStr+'T00:00:00').getDay()];
+}
+function addDays(dateStr, n) {
+  const d = new Date(dateStr+'T00:00:00');
+  d.setDate(d.getDate() + n);
+  return fmtDate(d);
+}
+function getPeriod() {
+  const h = new Date().getHours();
+  return h < 12 ? 'morning' : 'evening';
+}
+
+// ==================== 初始化 ====================
+let pendingEditDate = '';
+
+document.addEventListener('DOMContentLoaded', () => {
+  // 今日資訊
+  const today = fmtDate(new Date());
+  document.getElementById('todayDate').textContent = today;
+  const period = getPeriod();
+  document.getElementById('todayPeriod').textContent = period === 'morning' ? '☀️ 早上' : '🌙 晚上';
+
+  // 表單預設
+  document.getElementById('inputDate').value = today;
+  document.getElementById('inputPeriod').value = period;
+
+  // ★ 預設查詢 4 天 ★
+  document.getElementById('queryEnd').value = today;
+  document.getElementById('queryStart').value = addDays(today, -3);
+
+  // 載入主題
+  const savedTheme = localStorage.getItem(THEME_KEY) || 'default';
+  if (savedTheme !== 'default') {
+    document.documentElement.setAttribute('data-theme', savedTheme);
+  }
+  document.querySelectorAll('.theme-option').forEach(el => {
+    el.classList.toggle('active', el.dataset.theme === savedTheme);
+  });
+
+  // 渲染表格
+  renderTable();
+
+  // 渲染待辦
+  renderTodos();
+
+  // Gist 狀態
+  updateGistStatus();
+
+  // 註冊 SW
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('./sw.js').catch(() => {});
+  }
+});
+
+// ==================== 儲存記錄 ====================
+function saveRecord() {
+  const date = document.getElementById('inputDate').value;
+  const period = document.getElementById('inputPeriod').value;
+  const sys = document.getElementById('inputSys').value.trim();
+  const dia = document.getElementById('inputDia').value.trim();
+  const hr = document.getElementById('inputHr').value.trim();
+
+  if (!date) { alert('請選擇日期'); return; }
+  if (!sys && !dia && !hr) { alert('請至少填寫一項數值'); return; }
+
+  const records = getRecords();
+  if (!records[date]) records[date] = {};
+  records[date][period] = {
+    sys: sys ? Number(sys) : null,
+    dia: dia ? Number(dia) : null,
+    hr: hr ? Number(hr) : null
+  };
+  setRecords(records);
+
+  // 自動雲端同步
+  autoSyncToGist();
+
+  // 重置表單
+  cancelEdit();
+  renderTable();
+}
+
+function cancelEdit() {
+  const today = fmtDate(new Date());
+  document.getElementById('inputDate').value = today;
+  document.getElementById('inputPeriod').value = getPeriod();
+  document.getElementById('inputSys').value = '';
+  document.getElementById('inputDia').value = '';
+  document.getElementById('inputHr').value = '';
+  document.getElementById('editKey').value = '';
+  document.getElementById('btnDelete').style.display = 'none';
+}
+
+function deleteRecord() {
+  const date = document.getElementById('inputDate').value;
+  const period = document.getElementById('inputPeriod').value;
+  if (!confirm(`確定刪除 ${date} ${period==='morning'?'早上':'晚上'} 的記錄？`)) return;
+  const records = getRecords();
+  if (records[date]) {
+    delete records[date][period];
+    if (Object.keys(records[date]).length === 0) delete records[date];
+  }
+  setRecords(records);
+  autoSyncToGist();
+  cancelEdit();
+  renderTable();
+}
+
+// ==================== 編輯 ====================
+function openEditModal(date) {
+  pendingEditDate = date;
+  openModal('periodModal');
+}
+
+function editByPeriod(period) {
+  closeModal('periodModal');
+  const date = pendingEditDate;
+  const records = getRecords();
+  const rec = records[date] && records[date][period];
+
+  document.getElementById('inputDate').value = date;
+  document.getElementById('inputPeriod').value = period;
+  document.getElementById('inputSys').value = rec ? (rec.sys || '') : '';
+  document.getElementById('inputDia').value = rec ? (rec.dia || '') : '';
+  document.getElementById('inputHr').value = rec ? (rec.hr || '') : '';
+  document.getElementById('editKey').value = date + '|' + period;
+  document.getElementById('btnDelete').style.display = rec ? 'inline-flex' : 'none';
+
+  // 滾動到表單
+  document.getElementById('formCard').scrollIntoView({ behavior: 'smooth', block: 'center' });
+}
+
+// ==================== 渲染表格 ====================
+function valClass(v, type) {
+  if (v == null) return '';
+  if (type === 'sys' && v >= 140) return 'val-high';
+  if (type === 'dia' && v >= 90) return 'val-high';
+  if (type === 'hr' && (v > 100 || v < 50)) return 'val-high';
+  return 'val-normal';
+}
+
+function renderTable() {
+  const start = document.getElementById('queryStart').value;
+  const end = document.getElementById('queryEnd').value;
+  if (!start || !end) return;
+
+  const records = getRecords();
+  const tbody = document.getElementById('bpBody');
+  tbody.innerHTML = '';
+
+  // 產生日期範圍
+  const dates = [];
+  let cur = start;
+  while (cur <= end) {
+    dates.push(cur);
+    cur = addDays(cur, 1);
+  }
+
+  // ★ 只取最後 N 天（預設4天）★
+  // 若查詢範圍大於4天則全部顯示，若小於則照實際顯示
+  // 此處直接使用查詢範圍
+
+  if (dates.length === 0) {
+    tbody.innerHTML = '<tr><td colspan="8" class="no-data">尚無記錄</td></tr>';
+    return;
+  }
+
+  dates.forEach(date => {
+    const dayRec = records[date] || {};
+    const m = dayRec.morning || {};
+    const e = dayRec.evening || {};
+
+    const hasData = (m.sys || m.dia || m.hr || e.sys || e.dia || e.hr);
+
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td class="date-cell">${fmtDateShort(date)}<br><small>${getWeekday(date)}</small></td>
+      <td class="val-cell ${valClass(m.sys,'sys')}">${m.sys||''}</td>
+      <td class="val-cell ${valClass(m.dia,'dia')}">${m.dia||''}</td>
+      <td class="val-cell ${valClass(m.hr,'hr')}">${m.hr||''}</td>
+      <td class="val-cell ${valClass(e.sys,'sys')}">${e.sys||''}</td>
+      <td class="val-cell ${valClass(e.dia,'dia')}">${e.dia||''}</td>
+      <td class="val-cell ${valClass(e.hr,'hr')}">${e.hr||''}</td>
+      <td class="act-cell no-print">
+        <button class="btn btn-sm" onclick="openEditModal('${date}')" title="修改">✏️</button>
+      </td>
+    `;
+    if (!hasData) tr.style.opacity = '0.5';
+    tbody.appendChild(tr);
+  });
+}
+
+// ==================== PDF ====================
+function printPDF() {
+  window.print();
+}
+
+// ==================== Modal ====================
+function openModal(id) { document.getElementById(id).classList.add('active'); }
+function closeModal(id) { document.getElementById(id).classList.remove('active'); }
+// 點擊遮罩關閉
+document.querySelectorAll('.modal-overlay').forEach(overlay => {
+  overlay.addEventListener('click', e => {
+    if (e.target === overlay) overlay.classList.remove('active');
+  });
+});
+
+// ==================== 主題 ====================
+function setTheme(theme, el) {
+  if (theme === 'default') {
+    document.documentElement.removeAttribute('data-theme');
+  } else {
+    document.documentElement.setAttribute('data-theme', theme);
+  }
+  localStorage.setItem(THEME_KEY, theme);
+  document.querySelectorAll('.theme-option').forEach(o => o.classList.remove('active'));
+  if (el) el.classList.add('active');
+}
+
+// ==================== 待辦 ====================
+function renderTodos() {
+  const todos = getTodos();
+  const list = document.getElementById('todoList');
+  list.innerHTML = '';
+  if (todos.length === 0) {
+    list.innerHTML = '<p style="font-size:0.82em; color:var(--text-light); text-align:center; padding:8px;">尚無待辦事項</p>';
+    return;
+  }
+  todos.forEach((t, i) => {
+    const div = document.createElement('div');
+    div.className = 'todo-item';
+    div.innerHTML = `
+      <input type="checkbox" ${t.done?'checked':''} onchange="toggleTodo(${i})">
+      <span class="todo-text ${t.done?'todo-done':''}">${t.icon} ${t.text}</span>
+      <button class="btn btn-sm btn-danger" onclick="removeTodo(${i})">×</button>
+    `;
+    list.appendChild(div);
+  });
+}
+function addTodo() {
+  const input = document.getElementById('todoInput');
+  const icon = document.getElementById('todoIcon').value;
+  const text = input.value.trim();
+  if (!text) return;
+  const todos = getTodos();
+  todos.push({ icon, text, done: false });
+  setTodos(todos);
+  input.value = '';
+  renderTodos();
+}
+function toggleTodo(i) {
+  const todos = getTodos();
+  todos[i].done = !todos[i].done;
+  setTodos(todos);
+  renderTodos();
+}
+function removeTodo(i) {
+  const todos = getTodos();
+  todos.splice(i, 1);
+  setTodos(todos);
+  renderTodos();
+}
+
+// ==================== Gist 雲端 ====================
+function updateGistStatus() {
+  const token = localStorage.getItem(GIST_TOKEN_KEY);
+  const gistId = localStorage.getItem(GIST_ID_KEY);
+  const el = document.getElementById('gistStatus');
+  if (token && gistId) {
+    el.innerHTML = `✅ 已連線 (Gist: <code>${gistId.substring(0,8)}...</code>)`;
+    el.style.color = 'var(--primary-dark)';
+    document.getElementById('gistToken').value = token;
+  } else if (token) {
+    el.innerHTML = '⚠️ Token 已儲存，但尚未建立 Gist';
+    el.style.color = 'var(--warning)';
+    document.getElementById('gistToken').value = token;
+  } else {
+    el.innerHTML = '尚未設定雲端備份';
+    el.style.color = 'var(--text-light)';
+  }
+}
+
+async function connectGist() {
+  const token = document.getElementById('gistToken').value.trim();
+  if (!token) { alert('請輸入 Token'); return; }
+  localStorage.setItem(GIST_TOKEN_KEY, token);
+
+  try {
+    // 測試連線 & 建立 Gist
+    const existingGistId = localStorage.getItem(GIST_ID_KEY);
+    if (existingGistId) {
+      // 測試現有 Gist
+      const res = await fetch(`https://api.github.com/gists/${existingGistId}`, {
+        headers: { 'Authorization': `token ${token}`, 'Accept': 'application/vnd.github.v3+json' }
+      });
+      if (res.ok) {
+        alert('✅ 連線成功！Gist 已驗證。');
+        updateGistStatus();
+        return;
+      }
+    }
+
+    // 建立新 Gist
+    const data = getRecords();
+    const createRes = await fetch('https://api.github.com/gists', {
+      method: 'POST',
+      headers: {
+        'Authorization': `token ${token}`,
+        'Accept': 'application/vnd.github.v3+json',
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        description: '血壓記錄備份',
+        public: false,
+        files: {
+          'bp_records.json': { content: JSON.stringify(data, null, 2) },
+          'bp_todos.json': { content: JSON.stringify(getTodos(), null, 2) }
         }
+      })
+    });
 
-        // 修改頂部 Meta 主題色，將 gray 換成橘色系 (fce2cd)
-        const themeMetaColors = { 
-            'light': '#d8e8e5', 'green': '#d8efda',
-            'purple': '#eedaf2', 'blue': '#d4effc', 'brown': '#e9e2df', 
-            'orange': '#fce2cd' 
-        };
-        
-        function updateThemeMeta(theme) { 
-            document.querySelector('meta[name="theme-color"]').setAttribute('content', themeMetaColors[theme] || '#d8e8e5'); 
+    if (createRes.ok) {
+      const gist = await createRes.json();
+      localStorage.setItem(GIST_ID_KEY, gist.id);
+      alert('✅ Gist 建立成功！雲端備份已啟動。');
+      updateGistStatus();
+    } else {
+      const err = await createRes.text();
+      alert('❌ 建立失敗：' + err);
+    }
+  } catch (e) {
+    alert('❌ 連線錯誤：' + e.message);
+  }
+}
+
+async function autoSyncToGist() {
+  const token = localStorage.getItem(GIST_TOKEN_KEY);
+  const gistId = localStorage.getItem(GIST_ID_KEY);
+  if (!token || !gistId) return;
+
+  try {
+    await fetch(`https://api.github.com/gists/${gistId}`, {
+      method: 'PATCH',
+      headers: {
+        'Authorization': `token ${token}`,
+        'Accept': 'application/vnd.github.v3+json',
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        files: {
+          'bp_records.json': { content: JSON.stringify(getRecords(), null, 2) },
+          'bp_todos.json': { content: JSON.stringify(getTodos(), null, 2) }
         }
-        
-        function loadTheme() {
-            let savedTheme = localStorage.getItem('bpTheme') || 'light';
-            const allowedThemes = Object.keys(themeMetaColors);
-            if (!allowedThemes.includes(savedTheme)) savedTheme = 'light';
-            document.documentElement.className = savedTheme;
-            document.getElementById('theme-selector').value = savedTheme;
-            updateThemeMeta(savedTheme);
-        }
-        
-        function changeTheme() {
-            const theme = document.getElementById('theme-selector').value;
-            document.documentElement.className = theme;
-            localStorage.setItem('bpTheme', theme);
-            updateThemeMeta(theme);
-        }
+      })
+    });
+  } catch (e) {
+    console.warn('自動同步失敗:', e);
+  }
+}
 
-        function formatDate(date) { const y = date.getFullYear(); const m = String(date.getMonth() + 1).padStart(2, '0'); const d = String(date.getDate()).padStart(2, '0'); return `${y}-${m}-${d}`; }
-        function getCurrentInfo() { const now = new Date(); const date = formatDate(now); const period = now.getHours() < 12 ? 'morning' : 'evening'; return { date, period, periodText: period === 'morning' ? '☀️ 早上' : '🌙 晚上' }; }
+async function restoreFromGist() {
+  const token = localStorage.getItem(GIST_TOKEN_KEY);
+  const gistId = localStorage.getItem(GIST_ID_KEY);
+  if (!token || !gistId) { alert('請先設定並連線 Gist'); return; }
+  if (!confirm('確定要從雲端還原資料？這將覆蓋本機現有記錄。')) return;
 
-        function clearInputs() {
-            document.getElementById('sys').value = '';
-            document.getElementById('dia').value = '';
-            document.getElementById('hr').value = '';
-            editDate = null; editPeriod = null;
-            document.getElementById('input-card-title').innerText = '📝 新增 / 修改記錄';
-            document.getElementById('btn-delete').style.display = 'none';
-        }
+  try {
+    const res = await fetch(`https://api.github.com/gists/${gistId}`, {
+      headers: { 'Authorization': `token ${token}`, 'Accept': 'application/vnd.github.v3+json' }
+    });
+    if (!res.ok) throw new Error('讀取失敗');
+    const gist = await res.json();
 
-        function saveRecord() {
-            const sys = parseInt(document.getElementById('sys').value, 10);
-            const dia = parseInt(document.getElementById('dia').value, 10);
-            const hr = parseInt(document.getElementById('hr').value, 10);
+    if (gist.files['bp_records.json']) {
+      const data = JSON.parse(gist.files['bp_records.json'].content);
+      setRecords(data);
+    }
+    if (gist.files['bp_todos.json']) {
+      const todos = JSON.parse(gist.files['bp_todos.json'].content);
+      setTodos(todos);
+    }
 
-            if (isNaN(sys) && isNaN(dia) && isNaN(hr)) { showToast('⚠️ 請至少輸入一項數值！', 'error'); return; }
-            if (!isNaN(sys) && !isNaN(dia) && sys <= dia) { showToast('❌ 錯誤：收縮壓必須大於舒張壓！', 'error'); return; }
-            if ((sys && (sys < 60 || sys > 250)) || (dia && (dia < 40 || dia > 150)) || (hr && (hr < 30 || hr > 220))) { showToast('⚠️ 警告：數值超出正常範圍，但已儲存。', 'warning'); }
+    alert('✅ 還原成功！');
+    renderTable();
+    renderTodos();
+  } catch (e) {
+    alert('❌ 還原失敗：' + e.message);
+  }
+}
 
-            const info = getCurrentInfo();
-            const targetDate = editDate || info.date;
-            const targetPeriod = editPeriod || info.period;
-
-            if (!appData[targetDate]) appData[targetDate] = { morning: {}, evening: {} };
-            appData[targetDate][targetPeriod] = { sys: isNaN(sys) ? '' : String(sys), dia: isNaN(dia) ? '' : String(dia), hr: isNaN(hr) ? '' : String(hr) };
-            localStorage.setItem('bpRecords', JSON.stringify(appData));
-            showToast(`✅ ${targetDate} ${targetPeriod === 'morning' ? '早上' : '晚上'} 本地已存檔！`);
-            
-            clearInputs();
-            renderTable();
-
-            if (gistConfig.gistId && gistConfig.gistId !== 'pending') {
-                setTimeout(() => syncToGist(), 300);
-            } else if (gistConfig.token) {
-                setTimeout(() => syncToGist(), 300);
-            }
-        }
-
-        function deleteCurrentRecord() {
-            if (!editDate || !editPeriod) return;
-            if (confirm(`確定要刪除 ${editDate} 的 ${editPeriod === 'morning' ? '早上' : '晚上'} 記錄嗎？`)) {
-                appData[editDate][editPeriod] = { sys: '', dia: '', hr: '' };
-                localStorage.setItem('bpRecords', JSON.stringify(appData));
-                showToast('🗑️ 記錄已刪除');
-                clearInputs();
-                renderTable();
-                if (gistConfig.gistId) {
-                    setTimeout(() => syncToGist(), 300);
-                }
-            }
-        }
-
-        function openTools() { document.getElementById('toolsModal').style.display = 'flex'; }
-        function closeTools() { document.getElementById('toolsModal').style.display = 'none'; }
-        function openHelp() { document.getElementById('helpModal').style.display = 'flex'; }
-        function closeHelp() { document.getElementById('helpModal').style.display = 'none'; }
-
-        function checkTodayTodos() {
-            const today = formatDate(new Date());
-            const todayTodos = todos.filter(t => t.date === today);
-            const btn = document.getElementById('todo-btn');
-            
-            if (todayTodos.length > 0) {
-                btn.classList.add('has-notification');
-                const sessionKey = 'todoNotified_' + today;
-                if (!sessionStorage.getItem(sessionKey)) {
-                    setTimeout(() => {
-                        showToast(`💡 溫馨提醒：今天有 ${todayTodos.length} 個排定事項喔！`, 'warning');
-                    }, 800);
-                    sessionStorage.setItem(sessionKey, 'true');
-                }
-            } else {
-                btn.classList.remove('has-notification');
-            }
-        }
-
-        function openTodoModal() {
-            document.getElementById('todoModal').style.display = 'flex';
-            document.getElementById('todo-date').value = formatDate(new Date());
-            renderTodos();
-        }
-        function closeTodoModal() {
-            document.getElementById('todoModal').style.display = 'none';
-        }
-        function renderTodos() {
-            const list = document.getElementById('todo-list');
-            list.innerHTML = '';
-            if (todos.length === 0) {
-                list.innerHTML = '<div style="text-align: center; color: var(--text-gray); font-size: 14px; font-weight: bold; margin-top: 20px;">目前沒有待辦事項 🎉</div>';
-                return;
-            }
-
-            const sortedTodos = [...todos].sort((a, b) => new Date(a.date) - new Date(b.date));
-
-            sortedTodos.forEach(item => {
-                const div = document.createElement('div');
-                div.className = 'todo-item';
-                div.innerHTML = `
-                    <div class="todo-info">
-                        <div class="todo-title">${item.type} <span style="font-size: 13px; color: var(--primary-color);">${item.date}</span></div>
-                        ${item.note ? `<div class="todo-note">${item.note}</div>` : ''}
-                    </div>
-                    <button class="todo-del-btn" onclick="deleteTodo(${item.id})">🗑️</button>
-                `;
-                list.appendChild(div);
-            });
-        }
-        function addTodo() {
-            const type = document.getElementById('todo-type').value;
-            const date = document.getElementById('todo-date').value;
-            const note = document.getElementById('todo-note').value.trim();
-
-            if (!date) {
-                showToast('⚠️ 請選擇待辦日期！', 'error');
-                return;
-            }
-
-            const newTodo = { id: Date.now(), type, date, note };
-            todos.push(newTodo);
-            localStorage.setItem('bpTodos', JSON.stringify(todos));
-            
-            document.getElementById('todo-note').value = '';
-            renderTodos();
-            checkTodayTodos(); 
-            showToast('✅ 待辦事項已新增！');
-        }
-        function deleteTodo(id) {
-            if (confirm('確定要刪除此待辦事項嗎？')) {
-                todos = todos.filter(t => t.id !== id);
-                localStorage.setItem('bpTodos', JSON.stringify(todos));
-                renderTodos();
-                checkTodayTodos(); 
-                showToast('🗑️ 待辦已刪除');
-            }
-        }
-
-        function openPeriodModal(date) {
-            pendingEditDate = date;
-            document.getElementById('period-modal-title').innerText = `⏱️ 修改日期: ${date}`;
-            document.getElementById('periodModal').style.display = 'flex';
-        }
-        function closePeriodModal() { document.getElementById('periodModal').style.display = 'none'; }
-        function confirmEdit(period) {
-            closePeriodModal();
-            editRecord(pendingEditDate, period);
-        }
-
-        function editRecord(date, period) {
-            editDate = date; editPeriod = period;
-            const record = appData[date]?.[period] || {};
-            document.getElementById('sys').value = record.sys || '';
-            document.getElementById('dia').value = record.dia || '';
-            document.getElementById('hr').value = record.hr || '';
-            document.getElementById('input-card-title').innerText = `✏️ 修改模式：${date} (${period === 'morning' ? '早上' : '晚上'})`;
-            document.getElementById('btn-delete').style.display = 'flex';
-            showToast(`已鎖定：${date} (${period === 'morning' ? '早上' : '晚上'})，請修改後按儲存`, 'warning');
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-        }
-
-        function renderTable() {
-            const tbody = document.getElementById('record-table-body');
-            const startDateStr = document.getElementById('start-date').value;
-            const endDateStr = document.getElementById('end-date').value;
-            if (!startDateStr || !endDateStr) return;
-
-            const fragment = document.createDocumentFragment();
-            let currentDate = new Date(startDateStr);
-            const endDate = new Date(endDateStr);
-
-            while (currentDate <= endDate) {
-                const date = formatDate(currentDate);
-                const data = appData[date] || { morning: {}, evening: {} };
-                const m = data.morning || {}; const e = data.evening || {};
-                const tr = document.createElement('tr');
-                tr.innerHTML = `
-                    <td class="col-date">${date.slice(5)}</td>
-                    <td class="col-data">${m.sys || '-'}</td><td class="col-data">${m.dia || '-'}</td><td class="col-data">${m.hr || '-'}</td>
-                    <td class="col-data">${e.sys || '-'}</td><td class="col-data">${e.dia || '-'}</td><td class="col-data">${e.hr || '-'}</td>
-                    <td class="col-action no-print"><button class="edit-btn" onclick="openPeriodModal('${date}')">✏️</button></td>
-                `;
-                fragment.appendChild(tr);
-                currentDate.setDate(currentDate.getDate() + 1);
-            }
-            tbody.innerHTML = '';
-            tbody.appendChild(fragment);
-        }
-
-        function printNative() {
-            const startDateStr = document.getElementById('start-date').value;
-            const endDateStr = document.getElementById('end-date').value;
-            if (!startDateStr || !endDateStr) { showToast('⚠️ 請先選擇匯出範圍', 'error'); return; }
-            document.getElementById('print-title').innerText = `🩺 血壓記錄表\n(${startDateStr} 至 ${endDateStr})`;
-            window.print();
-        }
-
-        if ('serviceWorker' in navigator) {
-            window.addEventListener('load', () => {
-                navigator.serviceWorker.register('./sw.js').then(reg => { console.log('SW 註冊成功'); }).catch(err => { console.log('SW 註冊失敗:', err); });
-            });
-        }
-    
-        const GIST_STORAGE_KEY = 'bpGistConfig';
-        let gistConfig = JSON.parse(localStorage.getItem(GIST_STORAGE_KEY)) || { token: '', gistId: '' };
-        let isSyncing = false;
-
-        function updateGistUI() {
-            const dot = document.getElementById('gist-dot');
-            const statusText = document.getElementById('gist-status-text');
-            const setupArea = document.getElementById('gist-setup-area');
-            const connectedArea = document.getElementById('gist-connected-area');
-            const idDisplay = document.getElementById('gist-id-display');
-
-            if (!gistConfig.token) {
-                dot.className = 'gist-status-dot';
-                statusText.textContent = '尚未設定雲端備份';
-                setupArea.style.display = 'block';
-                connectedArea.style.display = 'none';
-                return;
-            }
-
-            if (gistConfig.gistId && gistConfig.gistId !== 'pending') {
-                dot.className = 'gist-status-dot connected';
-                statusText.textContent = '✅ 已啟用自動雲端覆蓋';
-                setupArea.style.display = 'none';
-                connectedArea.style.display = 'block';
-                idDisplay.innerHTML = `<strong>Gist ID:</strong> ${gistConfig.gistId}<br><small>儲存時系統將會全自動背景更新</small>`;
-            } else {
-                dot.className = 'gist-status-dot';
-                statusText.textContent = 'Token 已驗證，等待上傳初次建立';
-                setupArea.style.display = 'none';
-                connectedArea.style.display = 'block';
-                idDisplay.innerHTML = '<small>請點擊儲存一筆新紀錄，或直接執行還原。</small>';
-            }
-        }
-
-        async function saveGistToken() {
-            const tokenInput = document.getElementById('gist-token-input');
-            const token = tokenInput.value.trim();
-            if (!token) { showToast('⚠️ 請輸入 GitHub Token', 'error'); return; }
-
-            gistConfig.token = token;
-            localStorage.setItem(GIST_STORAGE_KEY, JSON.stringify(gistConfig));
-            tokenInput.value = '';
-
-            const dot = document.getElementById('gist-dot');
-            const statusText = document.getElementById('gist-status-text');
-            dot.className = 'gist-status-dot syncing';
-            statusText.textContent = '正在連線並自動尋找雲端舊備份... 🔌';
-
-            try {
-                const response = await fetch('https://api.github.com/user', {
-                    headers: { 'Authorization': `token ${token}`, 'Accept': 'application/vnd.github.v3+json' }
-                });
-                
-                if (response.ok) {
-                    const user = await response.json();
-                    
-                    try {
-                        const gistsResponse = await fetch('https://api.github.com/gists', {
-                            headers: { 'Authorization': `token ${token}`, 'Accept': 'application/vnd.github.v3+json' }
-                        });
-                        
-                        if (gistsResponse.ok) {
-                            const gists = await gistsResponse.json();
-                            const existingBackup = gists.find(gist => gist.files && gist.files['bp-records.json']);
-                            
-                            if (existingBackup) {
-                                gistConfig.gistId = existingBackup.id;
-                                localStorage.setItem(GIST_STORAGE_KEY, JSON.stringify(gistConfig));
-                                showToast(`🎉 成功連結！已自動找回 ${user.login} 的雲端資料夾`);
-                            } else {
-                                gistConfig.gistId = 'pending';
-                                localStorage.setItem(GIST_STORAGE_KEY, JSON.stringify(gistConfig));
-                                showToast(`🎉 帳號已驗證！歡迎，${user.login}。將於下次存檔時為您建立新雲端檔案`);
-                            }
-                        }
-                    } catch (gistErr) {
-                        showToast(`🎉 連結成功！歡迎，${user.login}`);
-                    }
-                    updateGistUI();
-                } else {
-                    showToast('❌ Token 驗證失敗，請檢查權限設定', 'error');
-                    disconnectGist();
-                }
-            } catch (e) {
-                showToast('❌ 網路連線錯誤', 'error');
-                disconnectGist();
-            }
-        }
-
-        async function syncToGist() {
-            if (isSyncing || !gistConfig.token) return;
-            if (Object.keys(appData).length === 0) return;
-            
-            isSyncing = true;
-            const dot = document.getElementById('gist-dot');
-            const statusText = document.getElementById('gist-status-text');
-            dot.className = 'gist-status-dot syncing';
-            statusText.textContent = '☁️ 正在全自動同步至雲端...';
-
-            try {
-                const payload = {
-                    description: `血壓記錄備份 - 自動更新`,
-                    public: false,
-                    files: { 'bp-records.json': { content: JSON.stringify(appData, null, 2) } }
-                };
-
-                let url = 'https://api.github.com/gists';
-                let method = 'POST';
-                if (gistConfig.gistId && gistConfig.gistId !== 'pending') {
-                    url = `https://api.github.com/gists/${gistConfig.gistId}`;
-                    method = 'PATCH';
-                }
-
-                const response = await fetch(url, {
-                    method: method,
-                    headers: { 'Authorization': `token ${gistConfig.token}`, 'Accept': 'application/vnd.github.v3+json', 'Content-Type': 'application/json' },
-                    body: JSON.stringify(payload)
-                });
-
-                if (response.ok) {
-                    const result = await response.json();
-                    if (!gistConfig.gistId || gistConfig.gistId === 'pending') {
-                        gistConfig.gistId = result.id;
-                        localStorage.setItem(GIST_STORAGE_KEY, JSON.stringify(gistConfig));
-                    }
-                    showToast('☁️ 雲端數據已安全覆蓋更新！');
-                }
-            } catch (e) {
-                console.log('背景同步失敗，將於下次操作時重試');
-            } finally {
-                isSyncing = false;
-                updateGistUI();
-            }
-        }
-
-        async function importFromGist() {
-            if (!gistConfig.token || !gistConfig.gistId || gistConfig.gistId === 'pending') { 
-                showToast('⚠️ 雲端尚未完全綁定或無備份', 'error'); return; 
-            }
-
-            const dot = document.getElementById('gist-dot');
-            const statusText = document.getElementById('gist-status-text');
-            dot.className = 'gist-status-dot syncing';
-            statusText.textContent = '📥 正在自 GitHub 下載歷史備份...';
-
-            try {
-                const response = await fetch(`https://api.github.com/gists/${gistConfig.gistId}`, {
-                    headers: { 'Authorization': `token ${gistConfig.token}`, 'Accept': 'application/vnd.github.v3+json' }
-                });
-
-                if (response.ok) {
-                    const result = await response.json();
-                    const file = result.files['bp-records.json'];
-                    if (file && file.content) {
-                        const importedData = JSON.parse(file.content);
-                        
-                        for (const date in importedData) {
-                            if (!appData[date]) {
-                                appData[date] = importedData[date];
-                            } else {
-                                ['morning', 'evening'].forEach(period => {
-                                    if (importedData[date][period] && importedData[date][period].sys) {
-                                        if (!appData[date][period] || !appData[date][period].sys) {
-                                            appData[date][period] = importedData[date][period];
-                                        }
-                                    }
-                                });
-                            }
-                        }
-                        localStorage.setItem('bpRecords', JSON.stringify(appData));
-                        showToast('🎉 雲端備份已完美還原並合併！');
-                        renderTable();
-                    } else {
-                        showToast('⚠️ 檔案庫中無有效的血壓記錄資料', 'error');
-                    }
-                } else {
-                    showToast('❌ 下載失敗，請檢查 Token 權限', 'error');
-                }
-            } catch (e) {
-                showToast('❌ 讀取失敗，請檢查網路連線', 'error');
-            } finally {
-                updateGistUI();
-            }
-        }
-
-        function disconnectGist() {
-            if (confirm('確定要解除綁定嗎？')) {
-                gistConfig = { token: '', gistId: '' };
-                localStorage.setItem(GIST_STORAGE_KEY, JSON.stringify(gistConfig));
-                updateGistUI();
-                showToast('🔗 已解除 GitHub 連結');
-            }
-        }
-
-        function init() {
-            loadTheme();
-            const info = getCurrentInfo();
-            document.getElementById('current-time-display').innerText = `📅 今日：${info.date} 🕒 時段：${info.periodText}`;
-            
-            const pastDate = new Date(); 
-            pastDate.setDate(pastDate.getDate() - 2); 
-            
-            document.getElementById('start-date').value = formatDate(pastDate);
-            document.getElementById('end-date').value = info.date;
-            renderTable();
-            updateGistUI();
-            checkTodayTodos();
-        }
-
-        init();
-    </script>
+function disconnectGist() {
+  if (!confirm('確定要解除雲端綁定？本機資料不會被刪除。')) return;
+  localStorage.removeItem(GIST_TOKEN_KEY);
+  localStorage.removeItem(GIST_ID_KEY);
+  document.getElementById('gistToken').value = '';
+  updateGistStatus();
+  alert('已解除綁定。');
+}
+</script>
 </body>
 </html>
