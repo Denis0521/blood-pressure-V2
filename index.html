@@ -3,189 +3,227 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>血壓記錄</title>
+    <title>血壓記錄 - 水彩細框版</title>
     <link rel="manifest" href="manifest.json">
     <link rel="icon" type="image/svg+xml" href="icon.svg">
     <link rel="apple-touch-icon" href="icon.svg">
-    <meta name="theme-color" content="#e0ece9">
+    <meta name="theme-color" content="#d8e8e5">
     <script>
-        // 【防閃爍機制】在網頁渲染前立即套用主題
+        // 【防閃爍機制】在網頁渲染前立即套用主題 (將 gray 改為 orange)
         let savedTheme = localStorage.getItem('bpTheme') || 'light';
-        const allowedThemes = ['light', 'green', 'purple', 'blue', 'brown', 'gray'];
+        const allowedThemes = ['light', 'green', 'purple', 'blue', 'brown', 'orange'];
         if (!allowedThemes.includes(savedTheme)) savedTheme = 'light';
         document.documentElement.className = savedTheme;
     </script>
     <style>
+        /* 水彩暈染與主題色深色細框線設計系統
+        */
         :root {
-            --primary-color: #1a8c7d;
-            --primary-gradient: linear-gradient(145deg, #2bb8a6, #14796c);
-            /* 經典綠拼色：柔和薄荷綠 */
-            --bg-color: linear-gradient(135deg, #e0ece9 50%, #cbe0da 50%);
-            --card-bg: #e0ece9;
-            --text-dark: #1a1a1a;
-            --text-gray: #5f7a75;
-            --table-header: #d6e6e2;
-            --card-shadow: 8px 8px 16px rgba(20, 50, 45, 0.15), -8px -8px 16px rgba(255, 255, 255, 0.8);
-            --card-inset: inset 2px 2px 5px rgba(255,255,255,0.7), inset -2px -2px 5px rgba(20, 50, 45, 0.05);
-            --btn-shadow: 6px 6px 12px rgba(20, 50, 45, 0.2), -6px -6px 12px rgba(255, 255, 255, 0.7);
-            --btn-shadow-active: inset 4px 4px 8px rgba(0,0,0,0.2), inset -4px -4px 8px rgba(255,255,255,0.3);
-            --input-shadow: inset 4px 4px 8px rgba(20, 50, 45, 0.15), inset -4px -4px 8px rgba(255, 255, 255, 0.7);
-            --text-3d: 1px 1px 0px rgba(255,255,255,0.5), 2px 2px 2px rgba(20,50,45,0.15);
-            --text-engrave: 1px 1px 1px rgba(0,0,0,0.2), inset 1px 1px 1px rgba(255,255,255,0.4);
+            /* 經典綠 (預設) - 柔和薄荷綠水彩 */
+            --theme-rgb: 26, 140, 125; 
+            --primary-color: rgb(var(--theme-rgb));
+            --text-dark: #11332e;
+            --text-gray: rgba(var(--theme-rgb), 0.8);
         }
-        html.purple {
-            --primary-color: #8e24aa;
-            /* 夢幻紫拼色：柔和薰衣草紫 */
-            --bg-color: linear-gradient(135deg, #f3e5f5 50%, #e1bee7 50%); 
-            --card-bg: #f3e5f5; 
-            --text-dark: #2a0835; --text-gray: #7b1fa2;
-            --table-header: #ecd0f0;
-            --card-shadow: 8px 8px 16px rgba(74, 20, 140, 0.15), -8px -8px 16px rgba(255, 255, 255, 0.8);
-            --btn-shadow: 6px 6px 12px rgba(74, 20, 140, 0.15), -6px -6px 12px rgba(255, 255, 255, 0.8);
-            --input-shadow: inset 4px 4px 8px rgba(74, 20, 140, 0.15), inset -4px -4px 8px rgba(255, 255, 255, 0.8);
-        }
-        html.blue {
-            --primary-color: #0277bd;
-            /* 海洋藍拼色：柔和天空藍 */
-            --bg-color: linear-gradient(135deg, #e1f5fe 50%, #b3e5fc 50%); 
-            --card-bg: #e1f5fe; 
-            --text-dark: #012a44; --text-gray: #0288d1;
-            --table-header: #cdeefc;
-            --card-shadow: 8px 8px 16px rgba(1, 87, 155, 0.15), -8px -8px 16px rgba(255, 255, 255, 0.8);
-            --btn-shadow: 6px 6px 12px rgba(1, 87, 155, 0.15), -6px -6px 12px rgba(255, 255, 255, 0.8);
-            --input-shadow: inset 4px 4px 8px rgba(1, 87, 155, 0.15), inset -4px -4px 8px rgba(255, 255, 255, 0.8);
-        }
-        html.brown {
-            --primary-color: #5d4037;
-            /* 拿鐵棕拼色：柔和奶茶色 */
-            --bg-color: linear-gradient(135deg, #efebe9 50%, #d7ccc8 50%); 
-            --card-bg: #efebe9; 
-            --text-dark: #3e2723; --text-gray: #795548;
-            --table-header: #e2d9d5;
-            --card-shadow: 8px 8px 16px rgba(62, 39, 35, 0.15), -8px -8px 16px rgba(255, 255, 255, 0.8);
-            --btn-shadow: 6px 6px 12px rgba(62, 39, 35, 0.15), -6px -6px 12px rgba(255, 255, 255, 0.8);
-            --input-shadow: inset 4px 4px 8px rgba(62, 39, 35, 0.15), inset -4px -4px 8px rgba(255, 255, 255, 0.8);
-        }
-        html.gray {
-            --primary-color: #424242;
-            /* 質感灰拼色：保留您的最愛設計 */
-            --bg-color: linear-gradient(135deg, #cfcfcf 50%, #95a5a6 50%); 
-            --card-bg: #f0f0f0; 
-            --text-dark: #212121; --text-gray: #5d6d70;
-            --table-header: #e0e4e5;
-            --card-shadow: 8px 8px 16px rgba(0, 0, 0, 0.15), -8px -8px 16px rgba(255, 255, 255, 0.8);
-            --btn-shadow: 6px 6px 12px rgba(0, 0, 0, 0.15), -6px -6px 12px rgba(255, 255, 255, 0.8);
-            --input-shadow: inset 4px 4px 8px rgba(0, 0, 0, 0.15), inset -4px -4px 8px rgba(255, 255, 255, 0.8);
-        }
+        
         html.green {
-            --primary-color: #2e7d32;
-            /* 森林綠拼色：柔和抹茶綠 */
-            --bg-color: linear-gradient(135deg, #e8f5e9 50%, #c8e6c9 50%); 
-            --card-bg: #e8f5e9; 
-            --text-dark: #1b5e20; --text-gray: #388e3c;
-            --table-header: #dcedc8;
-            --card-shadow: 8px 8px 16px rgba(27, 94, 32, 0.15), -8px -8px 16px rgba(255, 255, 255, 0.8);
-            --btn-shadow: 6px 6px 12px rgba(27, 94, 32, 0.15), -6px -6px 12px rgba(255, 255, 255, 0.8);
-            --input-shadow: inset 4px 4px 8px rgba(27, 94, 32, 0.15), inset -4px -4px 8px rgba(255, 255, 255, 0.8);
+            /* 森林綠 - 抹茶水彩 */
+            --theme-rgb: 46, 125, 50;
+            --primary-color: rgb(var(--theme-rgb));
+            --text-dark: #122b14;
+            --text-gray: rgba(var(--theme-rgb), 0.8);
+        }
+        
+        html.purple {
+            /* 夢幻紫 - 薰衣草水彩 */
+            --theme-rgb: 142, 36, 170;
+            --primary-color: rgb(var(--theme-rgb));
+            --text-dark: #290832;
+            --text-gray: rgba(var(--theme-rgb), 0.8);
+        }
+        
+        html.blue {
+            /* 海洋藍 - 天空水彩 */
+            --theme-rgb: 2, 119, 189;
+            --primary-color: rgb(var(--theme-rgb));
+            --text-dark: #011e30;
+            --text-gray: rgba(var(--theme-rgb), 0.8);
+        }
+        
+        html.brown {
+            /* 拿鐵棕 - 奶茶水彩 */
+            --theme-rgb: 109, 76, 65;
+            --primary-color: rgb(var(--theme-rgb));
+            --text-dark: #2a1c17;
+            --text-gray: rgba(var(--theme-rgb), 0.8);
+        }
+        
+        html.orange {
+            /* 活力橙 - 夕陽水彩 (取代原本的灰色) */
+            --theme-rgb: 240, 113, 20;
+            --primary-color: rgb(var(--theme-rgb));
+            --text-dark: #3e1b00;
+            --text-gray: rgba(var(--theme-rgb), 0.95);
+        }
+
+        /* 核心變數應用 (適用所有主題，加入 orange) */
+        :root, html.green, html.purple, html.blue, html.brown, html.orange {
+            /* 水彩暈染背景 */
+            --bg-color: 
+                radial-gradient(circle at 10% 0%, rgba(var(--theme-rgb), 0.25) 0%, transparent 45%),
+                radial-gradient(circle at 90% 15%, rgba(var(--theme-rgb), 0.15) 0%, transparent 55%),
+                radial-gradient(circle at 40% 100%, rgba(var(--theme-rgb), 0.2) 0%, transparent 50%),
+                linear-gradient(135deg, rgba(var(--theme-rgb), 0.1) 0%, rgba(255, 255, 255, 0.9) 100%);
+            
+            /* 深色細框線 */
+            --card-border: 1px solid rgba(var(--theme-rgb), 0.7);
+            --card-bg: rgba(255, 255, 255, 0.65);
+            --card-shadow: 0 12px 32px rgba(var(--theme-rgb), 0.1), 0 4px 12px rgba(0, 0, 0, 0.03);
+            
+            --table-header: rgba(var(--theme-rgb), 0.12);
+            --input-bg: rgba(255, 255, 255, 0.7);
+            --input-shadow: inset 0 2px 6px rgba(var(--theme-rgb), 0.05);
+            
+            --btn-shadow: 0 4px 12px rgba(var(--theme-rgb), 0.12);
+            --btn-shadow-active: inset 0 2px 4px rgba(var(--theme-rgb), 0.2);
+            
+            --text-3d: 1px 1px 0px rgba(255,255,255,0.7);
         }
 
         body { 
             font-family: 'Helvetica Neue', Helvetica, Arial, 'PingFang TC', sans-serif; 
             background: var(--bg-color); 
-            background-attachment: fixed; /* 確保漸層在捲動時不會斷裂 */
+            background-attachment: fixed;
             color: var(--text-dark); margin: 0; padding: 12px; 
-            min-height: 100vh; transition: background 0.4s ease, color 0.4s ease; 
+            min-height: 100vh; transition: background 0.6s ease, color 0.6s ease; 
         }
+        
         .header-container { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
         h2 { margin: 0; font-size: 26px; font-weight: 900; color: var(--primary-color); text-shadow: var(--text-3d); letter-spacing: 1px; }
         .subtitle { color: var(--text-gray); margin-bottom: 16px; font-size: 15px; font-weight: bold; text-shadow: var(--text-3d); }
         
         .card { 
-            background: var(--card-bg); border-radius: 20px; padding: 18px; margin-bottom: 16px; 
-            box-shadow: var(--card-shadow), var(--card-inset); border: 1px solid var(--primary-color);
+            background: var(--card-bg); 
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border-radius: 20px; padding: 18px; margin-bottom: 16px; 
+            box-shadow: var(--card-shadow); 
+            border: var(--card-border); 
             transition: all 0.3s ease;
         }
+        
         .card-title { 
             font-size: 18px; font-weight: 900; margin-bottom: 14px; padding-bottom: 8px; 
-            border-bottom: 2px dashed var(--primary-color); color: var(--primary-color); 
+            border-bottom: 2px dashed rgba(var(--theme-rgb), 0.6); 
+            color: var(--primary-color); 
             text-shadow: var(--text-3d); display: flex; justify-content: space-between; align-items: center;
         }
         
         .input-group { display: flex; gap: 12px; margin-bottom: 16px; align-items: center; }
         .input-group input { 
             flex: 1; width: 100%; height: 48px; padding: 0 10px; border-radius: 12px; font-size: 16px; font-weight: bold;
-            text-align: center; background: #ffffff; color: var(--text-dark); border: 1px solid var(--primary-color); 
+            text-align: center; background: var(--input-bg); color: var(--text-dark); 
+            border: 1px solid rgba(var(--theme-rgb), 0.6); 
             box-shadow: var(--input-shadow); transition: all 0.3s; box-sizing: border-box;
         }
-        .input-group input:focus { outline: none; box-shadow: var(--input-shadow), 0 0 0 3px rgba(255, 255, 255, 0.5); }
+        .input-group input:focus { 
+            outline: none; 
+            background: rgba(255, 255, 255, 0.95);
+            border-color: rgba(var(--theme-rgb), 1); 
+            box-shadow: 0 0 0 3px rgba(var(--theme-rgb), 0.15); 
+        }
         
         .btn-group { display: flex; gap: 12px; margin-bottom: 8px; flex-wrap: wrap; }
         button { 
             flex: 1; min-width: 100px; height: 48px; border-radius: 14px; font-size: 16px; font-weight: 900; 
-            cursor: pointer; border: 1px solid var(--primary-color); transition: 0.2s; color: var(--primary-color); 
-            text-shadow: var(--text-engrave); background: transparent; box-shadow: var(--btn-shadow);
+            cursor: pointer; transition: 0.2s; 
             display: flex; justify-content: center; align-items: center; gap: 6px; box-sizing: border-box;
+            backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px);
         }
         .btn-tall { height: 60px; font-size: 18px; }
 
-        .header-btn { flex: none; height: 38px; min-width: auto; padding: 0 16px; background: var(--card-bg); text-shadow: none; font-size: 14px;}
-        .btn-primary { border: 2px solid var(--primary-color); }
-        .btn-outline { border: 1px solid var(--primary-color); }
-        .btn-danger { background: #e74c3c; color: white; border: 1px solid #c0392b; text-shadow: none; box-shadow: 0 4px 10px rgba(231, 76, 60, 0.3); }
-        button:active { transform: translateY(3px); box-shadow: var(--btn-shadow-active); }
+        .header-btn { 
+            flex: none; height: 38px; min-width: auto; padding: 0 16px; 
+            background: rgba(255, 255, 255, 0.5); border: var(--card-border);
+            color: var(--primary-color); font-size: 14px; box-shadow: var(--btn-shadow);
+        }
         
-        /* 待辦事項小紅點樣式 */
+        .btn-primary { 
+            background: rgba(var(--theme-rgb), 0.85); 
+            color: white; border: 1px solid rgba(var(--theme-rgb), 0.9); 
+            box-shadow: 0 6px 16px rgba(var(--theme-rgb), 0.25); 
+        }
+        .btn-outline { 
+            background: rgba(255, 255, 255, 0.5); 
+            border: 1px solid rgba(var(--theme-rgb), 0.7); 
+            color: var(--primary-color); box-shadow: var(--btn-shadow);
+        }
+        .btn-danger { 
+            background: rgba(231, 76, 60, 0.85); color: white; border: 1px solid #c0392b; 
+            box-shadow: 0 6px 16px rgba(231, 76, 60, 0.25); 
+        }
+        
+        button:active { transform: translateY(2px); box-shadow: var(--btn-shadow-active); }
+        
+        /* 小紅點 */
         .btn-badge { position: relative; overflow: visible !important; }
         .btn-badge.has-notification::after {
             content: ''; position: absolute; top: -4px; right: -4px;
             width: 12px; height: 12px; background-color: #ff3b30;
-            border-radius: 50%; border: 2px solid var(--card-bg);
-            box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+            border-radius: 50%; border: 2px solid white;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
             animation: pulse-red 1.5s infinite;
         }
         @keyframes pulse-red { 
-            0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(255, 59, 48, 0.7); } 
+            0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(255, 59, 48, 0.5); } 
             70% { transform: scale(1); box-shadow: 0 0 0 6px rgba(255, 59, 48, 0); } 
             100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(255, 59, 48, 0); } 
         }
 
         .hint-text { color: var(--primary-color); font-size: 13px; margin-bottom: 12px; font-weight: bold; text-shadow: var(--text-3d); }
-        .table-responsive { width: 100%; overflow-x: auto; border-radius: 16px; box-shadow: var(--card-inset); border: 1px solid var(--primary-color); background: transparent; }
         
-        table { width: 100%; border-collapse: collapse; text-align: center; font-size: 15px; background: #ffffff; color: var(--text-dark); min-width: 600px; }
-        th, td { padding: 10px 4px; border-bottom: 1px solid var(--primary-color); white-space: nowrap; }
-        th { background-color: var(--table-header); font-weight: 900; color: var(--primary-color); text-shadow: var(--text-3d); border-bottom: 2px solid var(--primary-color); }
-        tbody tr:nth-child(odd) { background-color: #ffffff; }
-        tbody tr:nth-child(even) { background-color: rgba(0, 0, 0, 0.04); }
+        .table-responsive { 
+            width: 100%; overflow-x: auto; border-radius: 16px; 
+            background: rgba(255, 255, 255, 0.3); border: var(--card-border);
+        }
+        table { width: 100%; border-collapse: collapse; text-align: center; font-size: 15px; background: transparent; color: var(--text-dark); min-width: 600px; }
+        
+        th, td { padding: 10px 4px; border-bottom: 1px solid rgba(var(--theme-rgb), 0.4); white-space: nowrap; }
+        th { background-color: var(--table-header); font-weight: 900; color: var(--primary-color); border-bottom: 2px solid rgba(var(--theme-rgb), 0.7); }
+        
+        tbody tr:nth-child(odd) { background-color: rgba(255, 255, 255, 0.5); }
+        tbody tr:nth-child(even) { background-color: rgba(255, 255, 255, 0.2); }
         tr:last-child td { border-bottom: none; }
         
         .col-date { width: 100px; font-weight: bold;} 
         .col-action { width: 50px; } 
         .col-data { width: auto; }  
         
-        .edit-btn { background: var(--card-bg); height: 34px; font-size: 14px; cursor: pointer; padding: 0 10px; min-width: auto; flex: none; font-weight: bold; text-shadow: none; border-radius: 10px; }
+        .edit-btn { background: rgba(255, 255, 255, 0.6); height: 34px; font-size: 14px; cursor: pointer; padding: 0 10px; min-width: auto; flex: none; font-weight: bold; border-radius: 10px; border: 1px solid rgba(var(--theme-rgb), 0.6); color: var(--primary-color); }
         .align-bottom { vertical-align: bottom !important; padding-bottom: 8px !important; }
         .group-header { padding-top: 8px !important; padding-bottom: 4px !important; }
-        .sub-header th { padding-top: 4px !important; padding-bottom: 8px !important; border-bottom: 2px solid var(--primary-color); }
+        .sub-header th { padding-top: 4px !important; padding-bottom: 8px !important; border-bottom: 2px solid rgba(var(--theme-rgb), 0.6); }
         
-        .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; justify-content: center; align-items: center; backdrop-filter: blur(5px); }
-        .modal-content { background: var(--card-bg); color: var(--text-dark); padding: 24px; border-radius: 24px; width: 90%; max-width: 380px; position: relative; box-shadow: 0 10px 30px rgba(0,0,0,0.3), var(--card-inset); border: 1px solid var(--primary-color); max-height: 90vh; overflow-y: auto; }
-        
-        /* 修改關閉按鈕，強制絕對定位在右上角 */
+        .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.3); z-index: 1000; justify-content: center; align-items: center; backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); }
+        .modal-content { 
+            background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px);
+            color: var(--text-dark); padding: 24px; border-radius: 24px; width: 90%; max-width: 380px; position: relative; 
+            box-shadow: 0 20px 40px rgba(0,0,0,0.15); border: 1px solid rgba(var(--theme-rgb), 0.8); max-height: 90vh; overflow-y: auto; 
+        }
         .modal-close { position: absolute; top: 16px; right: 20px; font-size: 28px; font-weight: bold; color: var(--text-gray); cursor: pointer; line-height: 1; z-index: 10; }
         
-        .theme-select { width: 100%; height: 48px; padding: 0 12px; border-radius: 12px; margin-bottom: 16px; background: #ffffff; color: var(--text-dark); border: 1px solid var(--primary-color); font-size: 15px; font-weight: bold; box-shadow: var(--input-shadow); outline: none; box-sizing: border-box; }
+        .theme-select { width: 100%; height: 48px; padding: 0 12px; border-radius: 12px; margin-bottom: 16px; background: rgba(255, 255, 255, 0.8); color: var(--text-dark); border: 1px solid rgba(var(--theme-rgb), 0.7); font-size: 15px; font-weight: bold; outline: none; box-sizing: border-box; }
         .version-text { text-align: center; margin-top: 20px; font-size: 12px; color: var(--text-gray); font-weight: bold; letter-spacing: 1px; }
         
         .modal-period-btns { display: flex; gap: 12px; margin-top: 16px; }
-        .modal-period-btns button { flex: 1; height: 48px; border-radius: 14px; font-size: 16px; font-weight: 900; cursor: pointer; border: 1px solid var(--primary-color); color: white; text-shadow: 1px 1px 2px rgba(0,0,0,0.3); }
-        .modal-btn-morning { background: linear-gradient(145deg, #fb8c00, #e65100); border-color: #e65100; box-shadow: 0 4px 10px rgba(230, 81, 0, 0.3); }
-        .modal-btn-evening { background: linear-gradient(145deg, #1e88e5, #0d47a1); border-color: #0d47a1; box-shadow: 0 4px 10px rgba(13, 71, 161, 0.3); }
+        .modal-period-btns button { flex: 1; height: 48px; border-radius: 14px; font-size: 16px; font-weight: 900; cursor: pointer; border: 1px solid rgba(255,255,255,0.4); color: white; }
+        .modal-btn-morning { background: linear-gradient(145deg, #fb8c00, #e65100); box-shadow: 0 4px 10px rgba(230, 81, 0, 0.3); border: 1px solid #c14400 !important; }
+        .modal-btn-evening { background: linear-gradient(145deg, #1e88e5, #0d47a1); box-shadow: 0 4px 10px rgba(13, 71, 161, 0.3); border: 1px solid #093375 !important; }
         
         .toast-container { position: fixed; bottom: 40px; left: 50%; transform: translateX(-50%); z-index: 9999; display: flex; flex-direction: column; align-items: center; gap: 10px; pointer-events: none; }
-        .toast { background: var(--text-dark); color: var(--bg-color); padding: 12px 24px; border-radius: 30px; font-size: 15px; font-weight: bold; box-shadow: 0 8px 20px rgba(0,0,0,0.4); opacity: 0; transform: translateY(20px); animation: toastIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards, toastOut 0.4s 2.5s forwards; pointer-events: auto; text-align: center; max-width: 85vw; border: 1px solid rgba(255,255,255,0.1); }
-        .toast.error { background: #d32f2f; color: white; }
-        .toast.warning { background: #f57c00; color: white; }
+        .toast { background: rgba(0,0,0,0.8); backdrop-filter: blur(10px); color: white; padding: 12px 24px; border-radius: 30px; font-size: 15px; font-weight: bold; box-shadow: 0 8px 20px rgba(0,0,0,0.2); opacity: 0; transform: translateY(20px); animation: toastIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards, toastOut 0.4s 2.5s forwards; pointer-events: auto; text-align: center; max-width: 85vw; border: 1px solid rgba(255,255,255,0.2); }
+        .toast.error { background: rgba(211, 47, 47, 0.9); border: 1px solid #b71c1c; }
+        .toast.warning { background: rgba(245, 124, 0, 0.9); border: 1px solid #e65100; }
         @keyframes toastIn { to { opacity: 1; transform: translateY(0); } }
         @keyframes toastOut { to { opacity: 0; transform: translateY(-20px); } }
         
@@ -196,34 +234,34 @@
             .print-only { display: block !important; text-align: center; font-size: 18px; font-weight: bold; margin-bottom: 10px; color: black; text-shadow: none !important; }
             body { background: white !important; color: black !important; margin: 0; padding: 0; }
             .card { border: none !important; box-shadow: none !important; padding: 0 !important; margin: 0 !important; background: white !important; }
-            .table-responsive { overflow: visible !important; border: none !important; box-shadow: none !important; }
+            .table-responsive { overflow: visible !important; border: none !important; box-shadow: none !important; background: transparent !important; }
             table { width: 100% !important; min-width: 100% !important; border-collapse: collapse !important; font-size: 11px !important; color: black !important; background: white !important; table-layout: auto !important; }
             th, td { border: 1px solid #444 !important; padding: 5px 4px !important; color: black !important; background: transparent !important; white-space: normal !important; line-height: 1.4 !important; text-shadow: none !important; }
-            th { background-color: #f0f0f0 !important; font-weight: bold; }
+            th { background-color: #f0f0f0 !important; font-weight: bold; border-bottom: 1px solid #444 !important; }
         }
     
-        .gist-status { display: flex; align-items: center; gap: 10px; margin-bottom: 16px; padding: 12px; border-radius: 14px; background: var(--tr-even); border: 1px solid var(--primary-color); font-size: 14px; font-weight: bold; box-shadow: var(--card-inset);}
+        .gist-status { display: flex; align-items: center; gap: 10px; margin-bottom: 16px; padding: 12px; border-radius: 14px; background: rgba(255,255,255,0.5); border: 1px solid rgba(var(--theme-rgb), 0.6); font-size: 14px; font-weight: bold; }
         .gist-status-dot { width: 12px; height: 12px; border-radius: 50%; background: #ccc; border: 1px solid rgba(0,0,0,0.2); }
-        .gist-status-dot.connected { background: #4caf50; box-shadow: 0 0 8px #4caf50; }
-        .gist-status-dot.error { background: #f44336; box-shadow: 0 0 8px #f44336; }
+        .gist-status-dot.connected { background: #4caf50; box-shadow: 0 0 8px rgba(76, 175, 80, 0.6); }
+        .gist-status-dot.error { background: #f44336; box-shadow: 0 0 8px rgba(244, 67, 54, 0.6); }
         .gist-status-dot.syncing { background: #ff9800; animation: pulse 1s infinite; }
         @keyframes pulse { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: 0.6; transform: scale(1.2); } }
-        .token-input { width: 100%; height: 48px; padding: 0 12px; border-radius: 12px; font-size: 14px; font-family: monospace; background: #ffffff; color: var(--text-dark); border: 1px solid var(--primary-color); box-shadow: var(--input-shadow); margin-bottom: 12px; box-sizing: border-box; }
-        .gist-id-display { font-family: monospace; font-size: 13px; color: var(--text-gray); background: #ffffff; padding: 8px 12px; border-radius: 10px; word-break: break-all; margin-bottom: 14px; border: 1px dashed var(--primary-color); box-shadow: var(--card-inset);}
+        .token-input { width: 100%; height: 48px; padding: 0 12px; border-radius: 12px; font-size: 14px; font-family: monospace; background: rgba(255,255,255,0.8); color: var(--text-dark); border: 1px solid rgba(var(--theme-rgb), 0.7); margin-bottom: 12px; box-sizing: border-box; outline: none; }
+        .gist-id-display { font-family: monospace; font-size: 13px; color: var(--text-gray); background: rgba(255,255,255,0.6); padding: 8px 12px; border-radius: 10px; word-break: break-all; margin-bottom: 14px; border: 1px dashed rgba(var(--theme-rgb), 0.8); }
 
-        /* 待辦事項清單樣式 */
-        .todo-item { background: #ffffff; border: 1px solid var(--primary-color); border-radius: 12px; padding: 12px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; box-shadow: var(--card-inset); }
+        .todo-item { background: rgba(255,255,255,0.6); border: 1px solid rgba(var(--theme-rgb), 0.6); border-radius: 12px; padding: 12px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 8px rgba(0,0,0,0.02); }
         .todo-info { flex: 1; }
         .todo-title { font-weight: 900; color: var(--text-dark); margin-bottom: 4px; font-size: 15px; }
         .todo-note { font-size: 13px; color: var(--text-gray); font-weight: bold; }
-        .todo-del-btn { background: #ffebee; color: #c0392b; border: 1px solid #e53935; border-radius: 8px; width: 36px; height: 36px; min-width: 36px; display: flex; align-items: center; justify-content: center; cursor: pointer; padding: 0; box-shadow: none; text-shadow: none; font-size: 16px; transition: 0.2s; }
+        .todo-del-btn { background: rgba(255, 235, 238, 0.8); color: #c0392b; border: 1px solid rgba(229, 57, 53, 0.5); border-radius: 8px; width: 36px; height: 36px; min-width: 36px; display: flex; align-items: center; justify-content: center; cursor: pointer; padding: 0; box-shadow: none; font-size: 16px; transition: 0.2s; backdrop-filter: blur(4px); }
         .todo-del-btn:active { transform: scale(0.9); }
         .todo-input-row { display: flex; gap: 8px; margin-bottom: 8px; }
-        .todo-input-row select, .todo-input-row input { flex: 1; height: 42px; border-radius: 10px; border: 1px solid var(--primary-color); padding: 0 10px; font-weight: bold; font-size: 14px; box-shadow: var(--input-shadow); outline: none; background: #fff; color: var(--text-dark); }
+        .todo-input-row select, .todo-input-row input { flex: 1; height: 42px; border-radius: 10px; border: 1px solid rgba(var(--theme-rgb), 0.7); padding: 0 10px; font-weight: bold; font-size: 14px; outline: none; background: rgba(255,255,255,0.8); color: var(--text-dark); }
     </style>
 </head>
 <body>
     <div class="toast-container" id="toast-container"></div>
+    
     <div class="header-container no-print">
         <h2>🩺 血壓記錄</h2>
         <div style="display: flex; gap: 10px;">
@@ -236,7 +274,7 @@
     <div class="card no-print" id="input-card">
         <div class="card-title">
             <span id="input-card-title">📝 新增 / 修改記錄</span>
-            <button id="todo-btn" class="header-btn btn-badge" onclick="openTodoModal()" style="height: 32px; font-size: 13px;">🔔 待辦</button>
+            <button id="todo-btn" class="header-btn btn-badge" onclick="openTodoModal()" style="height: 32px; font-size: 13px; border-radius: 10px;">🔔 待辦</button>
         </div>
         <div class="input-group">
             <input type="number" id="sys" placeholder="收縮壓" inputmode="numeric">
@@ -287,7 +325,7 @@
             <span class="modal-close" onclick="closeTodoModal()">&times;</span>
             <div class="card-title" style="margin-top: 5px;">🔔 待辦提醒</div>
             
-            <div style="background: var(--bg-color); padding: 14px; border-radius: 14px; margin-bottom: 16px; border: 1px dashed var(--primary-color); box-shadow: var(--card-inset);">
+            <div style="background: rgba(255,255,255,0.4); padding: 14px; border-radius: 14px; margin-bottom: 16px; border: 1px dashed rgba(var(--theme-rgb), 0.6);">
                 <div class="todo-input-row">
                     <select id="todo-type">
                         <option value="💊 領藥">💊 領藥</option>
@@ -303,7 +341,7 @@
             </div>
 
             <div id="todo-list" style="overflow-y: auto; flex: 1; padding-right: 4px;">
-                </div>
+            </div>
         </div>
     </div>
 
@@ -312,13 +350,12 @@
             <span class="modal-close" onclick="closeTools()">&times;</span>
             <div class="card-title" style="margin-top: 5px;">🎨 佈景主題設定</div>
             <select id="theme-selector" class="theme-select" onchange="changeTheme()">
-                <option value="light">⚪ 經典綠 (預設)</option>
-                <option value="green">🌿 森林綠</option>
-                <option value="purple">🔮 夢幻紫</option>
-                <option value="blue">🌊 海洋藍</option>
-                <option value="brown">☕ 拿鐵棕</option>
-                <option value="gray">🌫️ 質感灰</option>
-            </select>
+                <option value="light">⚪ 經典綠 (薄荷水彩)</option>
+                <option value="green">🌿 森林綠 (抹茶水彩)</option>
+                <option value="purple">🔮 夢幻紫 (薰衣草水彩)</option>
+                <option value="blue">🌊 海洋藍 (天空水彩)</option>
+                <option value="brown">☕ 拿鐵棕 (奶茶水彩)</option>
+                <option value="orange">🍊 活力橙 (夕陽水彩)</option> </select>
 
             <div class="card-title" style="margin-top: 24px;">☁️ GitHub Gist 雲端同步</div>
             <div id="gist-status" class="gist-status">
@@ -346,7 +383,7 @@
                 </div>
             </div>
 
-            <div class="version-text">Version 8.7 ✨ UI Refined Edition</div>
+            <div class="version-text">Version 9.2 ✨ Watercolor Sunset Edition</div>
         </div>
     </div>
 
@@ -380,7 +417,7 @@
                 </ol>
             </div>
 
-            <div class="version-text">Version 8.7 ✨ UI Refined Edition</div>
+            <div class="version-text">Version 9.2 ✨ Watercolor Sunset Edition</div>
         </div>
     </div>
 
@@ -401,7 +438,6 @@
         let editDate = null, editPeriod = null;
         let pendingEditDate = null;
         
-        // --- 待辦事項資料儲存 ---
         let todos = JSON.parse(localStorage.getItem('bpTodos')) || [];
 
         function showToast(message, type = 'success') {
@@ -413,19 +449,20 @@
             setTimeout(() => { if (container.contains(toast)) container.removeChild(toast); }, 3000);
         }
 
-        const themeColors = { 
-            'light': '#e0ece9', 'green': '#e8f5e9',
-            'purple': '#f3e5f5', 'blue': '#e1f5fe', 'brown': '#efebe9', 
-            'gray': '#cfcfcf'
+        // 修改頂部 Meta 主題色，將 gray 換成橘色系 (fce2cd)
+        const themeMetaColors = { 
+            'light': '#d8e8e5', 'green': '#d8efda',
+            'purple': '#eedaf2', 'blue': '#d4effc', 'brown': '#e9e2df', 
+            'orange': '#fce2cd' 
         };
         
         function updateThemeMeta(theme) { 
-            document.querySelector('meta[name="theme-color"]').setAttribute('content', themeColors[theme] || '#e0ece9'); 
+            document.querySelector('meta[name="theme-color"]').setAttribute('content', themeMetaColors[theme] || '#d8e8e5'); 
         }
         
         function loadTheme() {
             let savedTheme = localStorage.getItem('bpTheme') || 'light';
-            const allowedThemes = Object.keys(themeColors);
+            const allowedThemes = Object.keys(themeMetaColors);
             if (!allowedThemes.includes(savedTheme)) savedTheme = 'light';
             document.documentElement.className = savedTheme;
             document.getElementById('theme-selector').value = savedTheme;
@@ -498,17 +535,13 @@
         function openHelp() { document.getElementById('helpModal').style.display = 'flex'; }
         function closeHelp() { document.getElementById('helpModal').style.display = 'none'; }
 
-        // --- 待辦事項相關函數 ---
         function checkTodayTodos() {
             const today = formatDate(new Date());
             const todayTodos = todos.filter(t => t.date === today);
             const btn = document.getElementById('todo-btn');
             
             if (todayTodos.length > 0) {
-                // 有今日待辦，顯示小紅點
                 btn.classList.add('has-notification');
-                
-                // 防干擾機制：今天這組待辦如果還沒提醒過，才跳出 Toast 通知
                 const sessionKey = 'todoNotified_' + today;
                 if (!sessionStorage.getItem(sessionKey)) {
                     setTimeout(() => {
@@ -517,7 +550,6 @@
                     sessionStorage.setItem(sessionKey, 'true');
                 }
             } else {
-                // 沒有今日待辦，移除小紅點
                 btn.classList.remove('has-notification');
             }
         }
@@ -569,7 +601,7 @@
             
             document.getElementById('todo-note').value = '';
             renderTodos();
-            checkTodayTodos(); // 更新小紅點狀態
+            checkTodayTodos(); 
             showToast('✅ 待辦事項已新增！');
         }
         function deleteTodo(id) {
@@ -577,11 +609,10 @@
                 todos = todos.filter(t => t.id !== id);
                 localStorage.setItem('bpTodos', JSON.stringify(todos));
                 renderTodos();
-                checkTodayTodos(); // 更新小紅點狀態
+                checkTodayTodos(); 
                 showToast('🗑️ 待辦已刪除');
             }
         }
-        // -------------------------
 
         function openPeriodModal(date) {
             pendingEditDate = date;
@@ -648,7 +679,6 @@
             });
         }
     
-        // ========== GitHub Gist 雲端核心邏輯 ==========
         const GIST_STORAGE_KEY = 'bpGistConfig';
         let gistConfig = JSON.parse(localStorage.getItem(GIST_STORAGE_KEY)) || { token: '', gistId: '' };
         let isSyncing = false;
@@ -855,12 +885,9 @@
             document.getElementById('end-date').value = info.date;
             renderTable();
             updateGistUI();
-            
-            // 啟動時檢查今天是否有待辦事項
             checkTodayTodos();
         }
 
-        // 啟動初始化
         init();
     </script>
 </body>
