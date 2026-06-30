@@ -383,7 +383,7 @@
                 </div>
             </div>
 
-            <div class="version-text">Version 10.1 ✨ Cloudflare Edition</div>
+            <div class="version-text">Version 10.2 ✨ Cloudflare Edition</div>
         </div>
     </div>
 
@@ -400,10 +400,8 @@
     </div>
 
     <script>
-        // ==================== Cloudflare 雲端設定 ====================
+        // ==================== Cloudflare 雲端設定 (簡化版，無需 Secret) ====================
         const API_BASE = 'https://bp-api.denis0521.workers.dev';
-        const API_KEY = 'bp-api-key-2026';
-        const IMPORT_SECRET = 'bp-import-2026';
         let currentCloudEmail = localStorage.getItem('bpCloudEmail') || null;
 
         let appData = JSON.parse(localStorage.getItem('bpRecords')) || {};
@@ -637,16 +635,13 @@
             });
         }
 
-        // ==================== Cloudflare 雲端同步邏輯 ====================
+        // ==================== Cloudflare 雲端同步邏輯 (簡化版) ====================
         async function syncToCloud() {
             if (!currentCloudEmail) return;
             try {
                 await fetch(`${API_BASE}/api/data?email=${encodeURIComponent(currentCloudEmail)}`, {
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-API-Key': API_KEY
-                    },
+                    headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
                         records: appData,
                         todos: todos,
@@ -705,10 +700,7 @@
             try {
                 const res = await fetch(`${API_BASE}/api/import?email=${encodeURIComponent(email)}`, {
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-Import-Secret': IMPORT_SECRET
-                    },
+                    headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(payload)
                 });
                 if (res.ok) {
