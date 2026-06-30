@@ -1,7 +1,6 @@
-// 每次更新網頁有大改動時，更改這個版本號，強制讓瀏覽器更新快取
-const CACHE_NAME = 'bp-tracker-v10.2'; // 👈 改成 v10.2
+const CACHE_NAME = 'bp-record-v8.7';
 
-// 需要被快取的檔案清單
+// 需要快取的檔案清單
 const urlsToCache = [
   './',
   './index.html',
@@ -9,56 +8,50 @@ const urlsToCache = [
   './icon.svg'
 ];
 
-// 1. 安裝階段 (Install) - 建立快取並把指定的檔案存進去
+// 1. 安裝階段：將指定的檔案存入快取
 self.addEventListener('install', event => {
   event.waitUntil(
     caches.open(CACHE_NAME)
       .then(cache => {
-        console.log('快取已開啟');
+        console.log('[Service Worker] 快取已建立:', CACHE_NAME);
         return cache.addAll(urlsToCache);
       })
   );
-  // 強制立刻接管控制權
+  // 強制立刻進入 activate 階段，不要等待舊版 Service Worker 關閉
   self.skipWaiting();
 });
 
-// 2. 啟動階段 (Activate) - 清除舊版無用的快取檔案
+// 2. 啟用階段：清除與目前版本不符的舊快取
 self.addEventListener('activate', event => {
   event.waitUntil(
     caches.keys().then(cacheNames => {
       return Promise.all(
         cacheNames.map(cacheName => {
           if (cacheName !== CACHE_NAME) {
-            console.log('清除舊版快取:', cacheName);
+            console.log('[Service Worker] 刪除舊快取:', cacheName);
             return caches.delete(cacheName);
           }
         })
       );
     })
   );
-  // 確保 Service Worker 立即控制所有的客戶端 (Client)
-  event.waitUntil(self.clients.claim());
+  // 讓新的 Service Worker 立刻接管所有的網頁
+  self.clients.claim();
 });
 
-// 3. 攔截請求階段 (Fetch) - 優先從網路抓取，如果沒網路才從快取拿 (Network First)
+// 3. 攔截請求階段：快取優先 (Cache First) 策略
 self.addEventListener('fetch', event => {
   event.respondWith(
-    fetch(event.request)
+    caches.match(event.request)
       .then(response => {
-        // 如果網路請求成功，就更新一下快取，然後回傳結果
-        if (response && response.status === 200 && response.type === 'basic') {
-          const responseToCache = response.clone();
-          caches.open(CACHE_NAME)
-            .then(cache => {
-              cache.put(event.request, responseToCache);
-            });
+        // 如果在快取中找到對應的檔案，就直接回傳快取
+        if (response) {
+          return response;
         }
-        return response;
-      })
-      .catch(() => {
-        // 如果斷網（fetch 失敗），就嘗試從快取裡找有沒有存過的檔案
-        return caches.match(event.request);
+        // 如果快取沒有，才透過網路抓取
+        return fetch(event.request).catch(() => {
+          console.log('[Service Worker] 網路請求失敗且無快取可對應');
+        });
       })
   );
 });
-
