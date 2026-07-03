@@ -1,5 +1,5 @@
 // 每次更新網頁有大改動時，更改這個版本號，強制讓瀏覽器更新快取
-const CACHE_NAME = 'bp-tracker-v11.0'; // 👈 從 v10.2 改成 v11.0
+const CACHE_NAME = 'bp-tracker-v10.2'; // 👈 從 v10.2 改成 v10.2
 
 // 需要被快取的檔案清單
 const urlsToCache = [
