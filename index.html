@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>血壓記錄 - 專業立體版</title>
+    <title>血壓記錄 - 緊湊立體版</title>
     <link rel="manifest" href="manifest.json">
     <link rel="icon" type="image/svg+xml" href="icon.svg">
     <link rel="apple-touch-icon" href="icon.svg">
@@ -18,7 +18,6 @@
     <style>
         /* 專業立體設計系統 (Professional 3D UI) */
         :root {
-            /* 經典綠 (預設) */
             --theme-rgb: 26, 140, 125; 
             --theme-dark: 17, 95, 85;
             --primary-color: rgb(var(--theme-rgb));
@@ -60,50 +59,56 @@
         /* 核心變數與立體效果設定 */
         :root, html.green, html.purple, html.blue, html.brown, html.orange {
             --card-bg: #ffffff;
-            --card-shadow: 0 10px 25px rgba(0, 0, 0, 0.08), 0 4px 10px rgba(0, 0, 0, 0.04);
+            --card-shadow: 0 8px 20px rgba(0, 0, 0, 0.06), 0 3px 6px rgba(0, 0, 0, 0.03);
             --card-border: 1px solid rgba(255, 255, 255, 0.8);
             
             --input-bg: #f8fafd;
-            --input-shadow: inset 0 3px 6px rgba(0, 0, 0, 0.06), inset 0 1px 3px rgba(0,0,0,0.04), 0 1px 0 rgba(255,255,255,1);
-            
+            --input-shadow: inset 0 3px 5px rgba(0, 0, 0, 0.06), inset 0 1px 2px rgba(0,0,0,0.04), 0 1px 0 rgba(255,255,255,1);
             --table-header: rgba(var(--theme-rgb), 0.1);
+            
+            /* 全局 3D 文字效果 (高光 + 實體陰影 + 柔和擴散) */
+            --text-3d-effect: 1px 1px 0px rgba(255,255,255,0.9), 2px 2px 0px rgba(var(--theme-dark), 0.25), 3px 3px 5px rgba(0,0,0,0.15);
         }
 
+        /* 縮小內邊距，讓版面更緊湊 */
         body { 
             font-family: 'Helvetica Neue', Helvetica, Arial, 'PingFang TC', sans-serif; 
             background: var(--bg-gradient); 
             background-attachment: fixed;
-            color: var(--text-dark); margin: 0; padding: 16px; 
+            color: var(--text-dark); margin: 0; padding: 10px; 
             min-height: 100vh; transition: background 0.4s ease; 
         }
         
-        .header-container { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
-        h2 { margin: 0; font-size: 24px; font-weight: 800; color: var(--primary-color); white-space: nowrap; }
-        .subtitle { color: var(--text-gray); margin-bottom: 20px; font-size: 14px; font-weight: 600; white-space: nowrap; }
+        .header-container { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+        h2 { 
+            margin: 0; font-size: 22px; font-weight: 900; color: var(--primary-color); 
+            white-space: nowrap; text-shadow: var(--text-3d-effect); letter-spacing: 0.5px;
+        }
+        .subtitle { color: var(--text-gray); margin-bottom: 12px; font-size: 13px; font-weight: 700; white-space: nowrap; }
         
-        /* 卡片設計 - 厚實立體感 */
+        /* 卡片設計 - 緊湊感 */
         .card { 
             background: var(--card-bg); 
             border-radius: 16px; 
-            padding: 20px; 
-            margin-bottom: 20px; 
+            padding: 16px; 
+            margin-bottom: 12px; 
             box-shadow: var(--card-shadow); 
             border: var(--card-border); 
             position: relative;
         }
         
         .card-title { 
-            font-size: 16px; font-weight: 800; margin-bottom: 16px; padding-bottom: 10px; 
+            font-size: 16px; font-weight: 900; margin-bottom: 12px; padding-bottom: 8px; 
             border-bottom: 2px solid rgba(var(--theme-rgb), 0.15); 
             color: var(--text-dark); 
             display: flex; justify-content: space-between; align-items: center;
-            white-space: nowrap;
+            white-space: nowrap; text-shadow: var(--text-3d-effect); letter-spacing: 0.5px;
         }
         
-        /* 凹陷的輸入框 */
-        .input-group { display: flex; gap: 12px; margin-bottom: 20px; align-items: center; }
+        /* 橢圓形、降低高度的凹陷輸入框 */
+        .input-group { display: flex; gap: 8px; margin-bottom: 14px; align-items: center; }
         .input-group input { 
-            flex: 1; width: 100%; height: 48px; padding: 0 12px; border-radius: 10px; font-size: 16px; font-weight: 700;
+            flex: 1; width: 100%; height: 40px; padding: 0 14px; border-radius: 20px; font-size: 15px; font-weight: 700;
             text-align: center; background: var(--input-bg); color: var(--text-dark); 
             border: 1px solid rgba(0, 0, 0, 0.08); 
             box-shadow: var(--input-shadow); transition: all 0.2s; box-sizing: border-box;
@@ -116,89 +121,87 @@
             box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.05), 0 0 0 3px rgba(var(--theme-rgb), 0.2); 
         }
         
-        /* 立體按鈕群組 */
-        .btn-group { display: flex; gap: 12px; margin-bottom: 8px; flex-wrap: nowrap; }
+        /* 橢圓形立體按鈕群組 */
+        .btn-group { display: flex; gap: 8px; margin-bottom: 4px; flex-wrap: nowrap; }
         button { 
-            flex: 1; height: 46px; border-radius: 10px; font-size: 15px; font-weight: 800; 
+            flex: 1; height: 40px; border-radius: 20px; font-size: 14px; font-weight: 800; 
             cursor: pointer; transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1); 
-            display: flex; justify-content: center; align-items: center; gap: 6px; box-sizing: border-box;
+            display: flex; justify-content: center; align-items: center; gap: 4px; box-sizing: border-box;
             white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
             position: relative; top: 0;
         }
-        .btn-tall { height: 54px; font-size: 16px; }
+        .btn-tall { height: 46px; font-size: 15px; border-radius: 23px; }
 
         .header-btn { 
-            flex: none; height: 36px; padding: 0 14px; 
+            flex: none; height: 32px; padding: 0 14px; border-radius: 16px;
             background: linear-gradient(180deg, #ffffff 0%, #f0f0f0 100%);
             border: 1px solid #dcdcdc;
-            color: var(--text-dark); font-size: 14px; 
-            box-shadow: 0 3px 0 #cccccc, 0 4px 6px rgba(0,0,0,0.05);
+            color: var(--text-dark); font-size: 13px; 
+            box-shadow: 0 3px 0 #cccccc, 0 3px 5px rgba(0,0,0,0.05);
         }
         .header-btn:active { top: 3px; box-shadow: 0 0 0 #cccccc, 0 1px 2px rgba(0,0,0,0.1); }
         
         .btn-primary { 
             background: linear-gradient(180deg, rgba(var(--theme-rgb), 0.9) 0%, rgba(var(--theme-dark), 1) 100%); 
-            color: #ffffff; 
-            border: 1px solid rgba(var(--theme-dark), 1); 
-            box-shadow: 0 4px 0 rgba(var(--theme-dark), 0.8), 0 6px 10px rgba(var(--theme-rgb), 0.3);
+            color: #ffffff; border: 1px solid rgba(var(--theme-dark), 1); 
+            box-shadow: 0 4px 0 rgba(var(--theme-dark), 0.8), 0 5px 8px rgba(var(--theme-rgb), 0.3);
             text-shadow: 0 -1px 1px rgba(0,0,0,0.2);
         }
         .btn-primary:active { 
-            top: 4px; box-shadow: 0 0 0 rgba(var(--theme-dark), 0.8), 0 2px 4px rgba(var(--theme-rgb), 0.3); 
+            top: 4px; box-shadow: 0 0 0 rgba(var(--theme-dark), 0.8), 0 2px 3px rgba(var(--theme-rgb), 0.3); 
         }
 
         .btn-outline { 
             background: linear-gradient(180deg, #ffffff 0%, #f4f7f6 100%); 
-            border: 1px solid rgba(var(--theme-rgb), 0.4); 
-            color: var(--primary-color); 
-            box-shadow: 0 4px 0 rgba(var(--theme-rgb), 0.2), 0 6px 10px rgba(0,0,0,0.05);
+            border: 1px solid rgba(var(--theme-rgb), 0.4); color: var(--primary-color); 
+            box-shadow: 0 4px 0 rgba(var(--theme-rgb), 0.2), 0 5px 8px rgba(0,0,0,0.05);
         }
         .btn-outline:active { 
-            top: 4px; box-shadow: 0 0 0 rgba(var(--theme-rgb), 0.2), 0 2px 4px rgba(0,0,0,0.05); 
+            top: 4px; box-shadow: 0 0 0 rgba(var(--theme-rgb), 0.2), 0 2px 3px rgba(0,0,0,0.05); 
         }
 
         .btn-danger { 
             background: linear-gradient(180deg, #f05a4f 0%, #d32f2f 100%); 
             color: white; border: 1px solid #b71c1c; 
-            box-shadow: 0 4px 0 #9a0007, 0 6px 10px rgba(211, 47, 47, 0.2); 
+            box-shadow: 0 4px 0 #9a0007, 0 5px 8px rgba(211, 47, 47, 0.2); 
             text-shadow: 0 -1px 1px rgba(0,0,0,0.2);
         }
         .btn-danger:active { 
-            top: 4px; box-shadow: 0 0 0 #9a0007, 0 2px 4px rgba(211, 47, 47, 0.2); 
+            top: 4px; box-shadow: 0 0 0 #9a0007, 0 2px 3px rgba(211, 47, 47, 0.2); 
         }
         
         /* 小紅點 */
         .btn-badge { overflow: visible !important; }
         .btn-badge.has-notification::after {
-            content: ''; position: absolute; top: -6px; right: -6px;
-            width: 12px; height: 12px; background-color: #ff3b30;
+            content: ''; position: absolute; top: -4px; right: -2px;
+            width: 10px; height: 10px; background-color: #ff3b30;
             border-radius: 50%; border: 2px solid white;
             box-shadow: 0 2px 4px rgba(0,0,0,0.2);
         }
 
-        .hint-text { color: var(--text-gray); font-size: 13px; margin-bottom: 12px; font-weight: 600; white-space: nowrap; }
+        .hint-text { color: var(--text-gray); font-size: 12px; margin-bottom: 10px; font-weight: 700; white-space: nowrap; }
         
-        /* 專業表格 */
+        /* 專業表格 - 緊湊靠左對齊 */
         .table-responsive { 
             width: 100%; overflow-x: auto; border-radius: 12px; 
             background: #ffffff; border: 1px solid rgba(0,0,0,0.05);
             box-shadow: inset 0 0 0 1px rgba(0,0,0,0.05);
         }
-        table { width: 100%; border-collapse: collapse; text-align: center; font-size: 14px; min-width: 600px; }
+        table { width: 100%; border-collapse: collapse; text-align: left; font-size: 13px; min-width: 580px; }
         
-        th, td { padding: 12px 6px; border-bottom: 1px solid #eaeff5; white-space: nowrap; }
+        th, td { padding: 8px 10px; border-bottom: 1px solid #eaeff5; white-space: nowrap; }
         th { background: var(--table-header); font-weight: 800; color: var(--text-dark); border-bottom: 2px solid rgba(var(--theme-rgb), 0.3); }
         
         tbody tr:hover { background-color: rgba(var(--theme-rgb), 0.03); }
         tr:last-child td { border-bottom: none; }
         
-        .col-date { width: 100px; font-weight: 700; color: var(--primary-color);} 
-        .col-action { width: 50px; } 
-        .col-data { width: auto; font-family: monospace; font-size: 15px; font-weight: 600; }  
+        .col-date { width: 80px; font-weight: 700; color: var(--primary-color); } 
+        .col-action { width: 40px; text-align: center; } 
+        .col-data { width: auto; font-family: monospace; font-size: 14px; font-weight: 600; }  
         
         .edit-btn { 
-            background: #f0f4f8; height: 32px; font-size: 13px; cursor: pointer; padding: 0 12px; 
-            border-radius: 6px; border: 1px solid #dcdcdc; color: var(--text-dark); 
+            background: #f0f4f8; height: 28px; width: 100%; font-size: 12px; cursor: pointer; padding: 0; 
+            border-radius: 14px; border: 1px solid #dcdcdc; color: var(--text-dark); 
             box-shadow: 0 2px 0 #cccccc; top: 0;
         }
         .edit-btn:active { top: 2px; box-shadow: 0 0 0 #cccccc; }
@@ -207,37 +210,37 @@
         .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15, 23, 42, 0.6); z-index: 1000; justify-content: center; align-items: center; backdrop-filter: blur(4px); }
         .modal-content { 
             background: #ffffff; 
-            color: var(--text-dark); padding: 24px; border-radius: 20px; width: 90%; max-width: 380px; position: relative; 
+            color: var(--text-dark); padding: 20px; border-radius: 20px; width: 90%; max-width: 360px; position: relative; 
             box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25); border: 1px solid rgba(255,255,255,0.2); max-height: 90vh; overflow-y: auto; 
         }
-        .modal-close { position: absolute; top: 16px; right: 20px; font-size: 24px; font-weight: bold; color: #94a3b8; cursor: pointer; transition: 0.2s; }
+        .modal-close { position: absolute; top: 12px; right: 16px; font-size: 24px; font-weight: bold; color: #94a3b8; cursor: pointer; transition: 0.2s; }
         .modal-close:hover { color: #0f172a; }
         
         .theme-select { 
-            width: 100%; height: 48px; padding: 0 12px; border-radius: 10px; margin-bottom: 16px; 
+            width: 100%; height: 40px; padding: 0 16px; border-radius: 20px; margin-bottom: 12px; 
             background: var(--input-bg); color: var(--text-dark); 
             border: 1px solid rgba(0,0,0,0.1); box-shadow: var(--input-shadow);
-            font-size: 15px; font-weight: 700; outline: none; box-sizing: border-box; 
+            font-size: 14px; font-weight: 700; outline: none; box-sizing: border-box; 
         }
-        .version-text { text-align: center; margin-top: 24px; font-size: 12px; color: #94a3b8; font-weight: 700; letter-spacing: 1px; }
+        .version-text { text-align: center; margin-top: 16px; font-size: 12px; color: #94a3b8; font-weight: 700; letter-spacing: 1px; }
         
-        .modal-period-btns { display: flex; gap: 12px; margin-top: 20px; flex-wrap: nowrap; }
-        .modal-period-btns button { flex: 1; height: 50px; font-size: 16px; }
+        .modal-period-btns { display: flex; gap: 8px; margin-top: 16px; flex-wrap: nowrap; }
+        .modal-period-btns button { flex: 1; height: 44px; font-size: 15px; border-radius: 22px; }
         .modal-btn-morning { 
             background: linear-gradient(180deg, #ff9800 0%, #e65100 100%); color: white;
-            border: 1px solid #bf360c; box-shadow: 0 4px 0 #bf360c, 0 6px 10px rgba(230, 81, 0, 0.2);
+            border: 1px solid #bf360c; box-shadow: 0 4px 0 #bf360c, 0 5px 8px rgba(230, 81, 0, 0.2);
         }
-        .modal-btn-morning:active { top: 4px; box-shadow: 0 0 0 #bf360c, 0 2px 4px rgba(230, 81, 0, 0.2); }
+        .modal-btn-morning:active { top: 4px; box-shadow: 0 0 0 #bf360c, 0 2px 3px rgba(230, 81, 0, 0.2); }
         
         .modal-btn-evening { 
             background: linear-gradient(180deg, #2196f3 0%, #0d47a1 100%); color: white;
-            border: 1px solid #0a2a66; box-shadow: 0 4px 0 #0a2a66, 0 6px 10px rgba(13, 71, 161, 0.2);
+            border: 1px solid #0a2a66; box-shadow: 0 4px 0 #0a2a66, 0 5px 8px rgba(13, 71, 161, 0.2);
         }
-        .modal-btn-evening:active { top: 4px; box-shadow: 0 0 0 #0a2a66, 0 2px 4px rgba(13, 71, 161, 0.2); }
+        .modal-btn-evening:active { top: 4px; box-shadow: 0 0 0 #0a2a66, 0 2px 3px rgba(13, 71, 161, 0.2); }
         
         /* Toast 提示 */
-        .toast-container { position: fixed; bottom: 40px; left: 50%; transform: translateX(-50%); z-index: 9999; display: flex; flex-direction: column; align-items: center; gap: 10px; pointer-events: none; }
-        .toast { background: #334155; color: white; padding: 12px 24px; border-radius: 30px; font-size: 14px; font-weight: 700; box-shadow: 0 10px 25px rgba(0,0,0,0.2); opacity: 0; transform: translateY(20px); animation: toastIn 0.3s cubic-bezier(0.2, 0.8, 0.2, 1) forwards, toastOut 0.3s 2.5s forwards; white-space: nowrap; }
+        .toast-container { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); z-index: 9999; display: flex; flex-direction: column; align-items: center; gap: 10px; pointer-events: none; }
+        .toast { background: #334155; color: white; padding: 10px 20px; border-radius: 30px; font-size: 13px; font-weight: 700; box-shadow: 0 8px 20px rgba(0,0,0,0.2); opacity: 0; transform: translateY(20px); animation: toastIn 0.3s cubic-bezier(0.2, 0.8, 0.2, 1) forwards, toastOut 0.3s 2.5s forwards; white-space: nowrap; }
         .toast.error { background: #dc2626; }
         .toast.warning { background: #ea580c; }
         @keyframes toastIn { to { opacity: 1; transform: translateY(0); } }
@@ -248,37 +251,37 @@
         @media print {
             @page { size: A4 portrait; margin: 12mm 16mm; }
             .no-print, .col-action { display: none !important; }
-            .print-only { display: block !important; text-align: center; font-size: 18px; font-weight: bold; margin-bottom: 10px; color: black; }
+            .print-only { display: block !important; text-align: left; font-size: 18px; font-weight: bold; margin-bottom: 10px; color: black; }
             body { background: white !important; color: black !important; margin: 0; padding: 0; }
             .card { border: none !important; box-shadow: none !important; padding: 0 !important; margin: 0 !important; background: white !important; }
             .table-responsive { overflow: visible !important; border: none !important; box-shadow: none !important; }
-            table { width: 100% !important; border-collapse: collapse !important; font-size: 12px !important; color: black !important; }
+            table { width: 100% !important; border-collapse: collapse !important; font-size: 12px !important; color: black !important; text-align: left !important; }
             th, td { border: 1px solid #444 !important; padding: 6px 4px !important; color: black !important; }
             th { background-color: #f0f0f0 !important; font-weight: bold; }
         }
     
         /* Gist 狀態 */
-        .gist-status { display: flex; align-items: center; gap: 10px; margin-bottom: 16px; padding: 14px; border-radius: 12px; background: #f8fafc; border: 1px solid #e2e8f0; font-size: 14px; font-weight: 700; white-space: nowrap; }
-        .gist-status-dot { width: 12px; height: 12px; border-radius: 50%; background: #cbd5e1; box-shadow: inset 0 2px 4px rgba(0,0,0,0.2); }
+        .gist-status { display: flex; align-items: center; gap: 8px; margin-bottom: 12px; padding: 12px 14px; border-radius: 20px; background: #f8fafc; border: 1px solid #e2e8f0; font-size: 13px; font-weight: 700; white-space: nowrap; }
+        .gist-status-dot { width: 10px; height: 10px; border-radius: 50%; background: #cbd5e1; box-shadow: inset 0 2px 4px rgba(0,0,0,0.2); }
         .gist-status-dot.connected { background: #22c55e; box-shadow: 0 0 8px rgba(34, 197, 94, 0.4), inset 0 2px 4px rgba(0,0,0,0.1); }
         .gist-status-dot.error { background: #ef4444; }
         .gist-status-dot.syncing { background: #f59e0b; animation: pulse 1s infinite; }
         @keyframes pulse { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: 0.6; transform: scale(1.1); } }
         
-        .token-input { width: 100%; height: 48px; padding: 0 12px; border-radius: 10px; font-size: 14px; font-family: monospace; background: var(--input-bg); color: var(--text-dark); border: 1px solid rgba(0,0,0,0.1); box-shadow: var(--input-shadow); margin-bottom: 16px; box-sizing: border-box; outline: none; }
+        .token-input { width: 100%; height: 40px; padding: 0 16px; border-radius: 20px; font-size: 13px; font-family: monospace; background: var(--input-bg); color: var(--text-dark); border: 1px solid rgba(0,0,0,0.1); box-shadow: var(--input-shadow); margin-bottom: 12px; box-sizing: border-box; outline: none; }
         .token-input:focus { background: #fff; border-color: var(--primary-color); }
-        .gist-id-display { font-family: monospace; font-size: 13px; color: var(--text-gray); background: #f1f5f9; padding: 10px 12px; border-radius: 8px; word-break: break-all; margin-bottom: 16px; border: 1px solid #cbd5e1; }
+        .gist-id-display { font-family: monospace; font-size: 12px; color: var(--text-gray); background: #f1f5f9; padding: 8px 12px; border-radius: 12px; word-break: break-all; margin-bottom: 12px; border: 1px solid #cbd5e1; }
 
         /* 待辦事項 */
-        .todo-item { background: #ffffff; border: 1px solid #e2e8f0; border-radius: 10px; padding: 14px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 6px rgba(0,0,0,0.03); transition: 0.2s; }
+        .todo-item { background: #ffffff; border: 1px solid #e2e8f0; border-radius: 14px; padding: 10px 14px; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 6px rgba(0,0,0,0.03); transition: 0.2s; }
         .todo-item:hover { border-color: var(--primary-color); box-shadow: 0 4px 10px rgba(0,0,0,0.06); }
         .todo-info { flex: 1; overflow: hidden; }
-        .todo-title { font-weight: 800; color: var(--text-dark); margin-bottom: 6px; font-size: 15px; white-space: nowrap; }
-        .todo-note { font-size: 13px; color: var(--text-gray); font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        .todo-del-btn { background: #fee2e2; color: #dc2626; border: 1px solid #f87171; border-radius: 8px; width: 36px; height: 36px; min-width: 36px; display: flex; align-items: center; justify-content: center; padding: 0; box-shadow: 0 2px 0 #fca5a5; top: 0; }
+        .todo-title { font-weight: 800; color: var(--text-dark); margin-bottom: 4px; font-size: 14px; white-space: nowrap; }
+        .todo-note { font-size: 12px; color: var(--text-gray); font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .todo-del-btn { background: #fee2e2; color: #dc2626; border: 1px solid #f87171; border-radius: 50%; width: 34px; height: 34px; min-width: 34px; display: flex; align-items: center; justify-content: center; padding: 0; box-shadow: 0 2px 0 #fca5a5; top: 0; }
         .todo-del-btn:active { top: 2px; box-shadow: 0 0 0 #fca5a5; }
-        .todo-input-row { display: flex; gap: 8px; margin-bottom: 10px; flex-wrap: nowrap; }
-        .todo-input-row select, .todo-input-row input { flex: 1; height: 44px; border-radius: 8px; border: 1px solid rgba(0,0,0,0.1); padding: 0 10px; font-weight: 700; font-size: 14px; outline: none; background: var(--input-bg); color: var(--text-dark); box-shadow: var(--input-shadow); white-space: nowrap; }
+        .todo-input-row { display: flex; gap: 8px; margin-bottom: 8px; flex-wrap: nowrap; }
+        .todo-input-row select, .todo-input-row input { flex: 1; height: 40px; border-radius: 20px; border: 1px solid rgba(0,0,0,0.1); padding: 0 14px; font-weight: 700; font-size: 13px; outline: none; background: var(--input-bg); color: var(--text-dark); box-shadow: var(--input-shadow); white-space: nowrap; }
     </style>
 </head>
 <body>
@@ -286,7 +289,7 @@
     
     <div class="header-container no-print">
         <h2>🩺 血壓記錄</h2>
-        <div style="display: flex; gap: 8px;">
+        <div style="display: flex; gap: 6px;">
             <button class="header-btn" onclick="openHelp()">📖 說明</button>
             <button class="header-btn" onclick="openTools()">⚙️ 進階</button>
         </div>
@@ -296,7 +299,7 @@
     <div class="card no-print" id="input-card">
         <div class="card-title">
             <span id="input-card-title">📝 新增 / 修改記錄</span>
-            <button id="todo-btn" class="header-btn btn-badge" onclick="openTodoModal()" style="height: 32px; font-size: 13px; border-radius: 8px;">🔔 待辦</button>
+            <button id="todo-btn" class="header-btn btn-badge" onclick="openTodoModal()" style="height: 28px; font-size: 12px;">🔔 待辦</button>
         </div>
         <div class="input-group">
             <input type="number" id="sys" placeholder="收縮壓" inputmode="numeric">
@@ -314,9 +317,9 @@
         <div class="card-title no-print">📊 記錄查詢與輸出</div>
         <div class="print-only" id="print-title">血壓記錄表</div>
         <div class="hint-text no-print">💡 提示：點擊右側「✏️」可修改或補填早晚記錄。</div>
-        <div class="input-group no-print" style="justify-content: center; max-width: 100%; margin: 0 auto 16px auto;">
+        <div class="input-group no-print" style="justify-content: flex-start; max-width: 100%; margin: 0 0 12px 0;">
             <input type="date" id="start-date" style="flex: 1;">
-            <span style="color: var(--text-gray); font-weight: bold; flex: none;">至</span>
+            <span style="color: var(--text-gray); font-weight: bold; flex: none; font-size: 14px;">至</span>
             <input type="date" id="end-date" style="flex: 1;">
         </div>
         <div class="btn-group no-print">
@@ -347,7 +350,7 @@
             <span class="modal-close" onclick="closeTodoModal()">&times;</span>
             <div class="card-title" style="margin-top: 5px;">🔔 待辦提醒</div>
             
-            <div style="background: #f8fafc; padding: 16px; border-radius: 12px; margin-bottom: 16px; border: 1px solid #e2e8f0;">
+            <div style="background: #f8fafc; padding: 14px; border-radius: 16px; margin-bottom: 12px; border: 1px solid #e2e8f0;">
                 <div class="todo-input-row">
                     <select id="todo-type">
                         <option value="💊 領藥">💊 領藥</option>
@@ -358,7 +361,7 @@
                 </div>
                 <div class="todo-input-row" style="margin-bottom: 0;">
                     <input type="text" id="todo-note" placeholder="備註內容 (選填)">
-                    <button onclick="addTodo()" class="btn-primary" style="flex: none; width: 44px; height: 44px; min-width: 44px; padding: 0; border-radius: 8px; font-size: 20px;">➕</button>
+                    <button onclick="addTodo()" class="btn-primary" style="flex: none; width: 40px; height: 40px; min-width: 40px; padding: 0; border-radius: 50%; font-size: 18px;">➕</button>
                 </div>
             </div>
 
@@ -372,41 +375,41 @@
             <span class="modal-close" onclick="closeTools()">&times;</span>
             <div class="card-title" style="margin-top: 5px;">🎨 佈景主題設定</div>
             <select id="theme-selector" class="theme-select" onchange="changeTheme()">
-                <option value="light">⚪ 經典綠 (立體光影)</option>
-                <option value="green">🌿 森林綠 (立體光影)</option>
-                <option value="purple">🔮 夢幻紫 (立體光影)</option>
-                <option value="blue">🌊 海洋藍 (立體光影)</option>
-                <option value="brown">☕ 拿鐵棕 (立體光影)</option>
-                <option value="orange">🍊 活力橙 (立體光影)</option> 
+                <option value="light">⚪ 經典綠 (立體緊湊)</option>
+                <option value="green">🌿 森林綠 (立體緊湊)</option>
+                <option value="purple">🔮 夢幻紫 (立體緊湊)</option>
+                <option value="blue">🌊 海洋藍 (立體緊湊)</option>
+                <option value="brown">☕ 拿鐵棕 (立體緊湊)</option>
+                <option value="orange">🍊 活力橙 (立體緊湊)</option> 
             </select>
 
-            <div class="card-title" style="margin-top: 24px;">☁️ GitHub Gist 雲端同步</div>
+            <div class="card-title" style="margin-top: 20px;">☁️ GitHub 雲端同步</div>
             <div id="gist-status" class="gist-status">
                 <div class="gist-status-dot" id="gist-dot"></div>
                 <span id="gist-status-text">尚未設定雲端備份</span>
             </div>
             
             <div id="gist-setup-area">
-                <p style="font-size: 13px; color: var(--text-gray); margin-bottom: 12px; font-weight: 600; line-height: 1.6;">
+                <p style="font-size: 12px; color: var(--text-gray); margin-bottom: 12px; font-weight: 600; line-height: 1.5;">
                     1. 前往 GitHub → Settings → Developer settings → Tokens (classic)<br>
-                    2. 點 Generate new token (classic) → 期限選無限制、只勾選「gist」<br>
-                    3. 產生後立刻複製 Token，貼到下方進行安全綁定。
+                    2. 點 Generate new token (classic) → 勾選「gist」<br>
+                    3. 複製 Token，貼到下方綁定。
                 </p>
                 <input type="text" id="gist-token-input" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" class="token-input" placeholder="🔑 貼上 GitHub Token">
-                <div class="btn-group" style="flex-direction: column; gap: 10px;">
+                <div class="btn-group" style="flex-direction: column; gap: 8px;">
                     <button class="btn-primary" onclick="saveGistToken()">🔌 儲存並連線測試</button>
                 </div>
             </div>
             
             <div id="gist-connected-area" style="display: none;">
                 <div class="gist-id-display" id="gist-id-display"></div>
-                <div class="btn-group" style="flex-direction: column; gap: 12px;">
+                <div class="btn-group" style="flex-direction: column; gap: 8px;">
                     <button class="btn-primary btn-tall" onclick="importFromGist()">📥 從雲端還原資料</button>
                     <button class="btn-danger btn-tall" onclick="disconnectGist()">🔗 解除綁定連線</button>
                 </div>
             </div>
 
-            <div class="version-text">Version 9.3 ✨ Professional 3D Edition</div>
+            <div class="version-text">Version 9.4 ✨ Compact Pill 3D</div>
         </div>
     </div>
 
@@ -415,9 +418,9 @@
             <span class="modal-close" onclick="closeHelp()">&times;</span>
             <div class="card-title" style="margin-top: 5px;">📖 使用說明書</div>
 
-            <div style="margin-bottom: 20px;">
-                <div class="card-title" style="font-size: 15px; margin-top: 10px;">🩺 核心功能</div>
-                <ul style="font-size: 14px; color: var(--text-gray); padding-left: 20px; line-height: 1.8; font-weight: 600;">
+            <div style="margin-bottom: 16px;">
+                <div class="card-title" style="font-size: 14px; margin-top: 10px;">🩺 核心功能</div>
+                <ul style="font-size: 13px; color: var(--text-gray); padding-left: 20px; line-height: 1.6; font-weight: 600;">
                     <li>記錄每日 ☀️ 早上與 🌙 晚上的血壓數值</li>
                     <li>點擊列表右側的「✏️」即可隨時補填或修改</li>
                     <li>每次點擊儲存，系統將完全自動進行雲端安全覆蓋</li>
@@ -425,30 +428,28 @@
                 </ul>
             </div>
 
-            <div style="margin-bottom: 20px;">
-                <div class="card-title" style="font-size: 15px; margin-top: 10px;">☁️ 雲端備份教學</div>
-                <ol style="font-size: 14px; color: var(--text-gray); padding-left: 20px; line-height: 1.8; font-weight: 600;">
+            <div style="margin-bottom: 16px;">
+                <div class="card-title" style="font-size: 14px; margin-top: 10px;">☁️ 雲端備份教學</div>
+                <ol style="font-size: 13px; color: var(--text-gray); padding-left: 20px; line-height: 1.6; font-weight: 600;">
                     <li>前往 GitHub 註冊免費帳號並登入</li>
-                    <li>點選右上角個人頭像 → 選擇 <b>Settings</b></li>
-                    <li>左側選單滑到最下方 → 點選 <b>Developer settings</b></li>
+                    <li>點選頭像 → 選擇 <b>Settings</b></li>
+                    <li>滑到最下方 → 點選 <b>Developer settings</b></li>
                     <li>展開 Personal access tokens → 點選 <b>Tokens (classic)</b></li>
-                    <li>點擊右上方 Generate new token → ⚠️ 選擇 <b>Generate new token (classic)</b></li>
-                    <li>Note 欄位填寫「血壓備份」</li>
-                    <li>期限 (Expiration) 選 <b>No expiration</b></li>
-                    <li>權限清單 (Scopes) 找到並只勾選 <b>gist</b></li>
-                    <li>滑至最底部點擊 Generate token，產生後<b>立刻複製</b>密碼貼回 App！</li>
+                    <li>點擊 Generate new token → ⚠️ 選擇 <b>Generate new token (classic)</b></li>
+                    <li>期限 (Expiration) 選 <b>No expiration</b>，並勾選 <b>gist</b></li>
+                    <li>滑至最底部點擊 Generate token，產生後<b>立刻複製</b>貼回 App！</li>
                 </ol>
             </div>
 
-            <div class="version-text">Version 9.3 ✨ Professional 3D Edition</div>
+            <div class="version-text">Version 9.4 ✨ Compact Pill 3D</div>
         </div>
     </div>
 
     <div id="periodModal" class="modal-overlay no-print">
         <div class="modal-content" style="text-align: center;">
             <span class="modal-close" onclick="closePeriodModal()">&times;</span>
-            <div class="card-title" id="period-modal-title">⏱️ 選擇修改時段</div>
-            <p style="color: var(--text-gray); font-size: 14px; margin-bottom: 12px; font-weight: 700;">請選擇您欲修改的記錄時段：</p>
+            <div class="card-title" id="period-modal-title" style="justify-content: center;">⏱️ 選擇修改時段</div>
+            <p style="color: var(--text-gray); font-size: 13px; margin-bottom: 12px; font-weight: 700;">請選擇您欲修改的記錄時段：</p>
             <div class="modal-period-btns">
                 <button class="modal-btn-morning" onclick="confirmEdit('morning')">☀️ 早上</button>
                 <button class="modal-btn-evening" onclick="confirmEdit('evening')">🌙 晚上</button>
@@ -587,7 +588,7 @@
             const list = document.getElementById('todo-list');
             list.innerHTML = '';
             if (todos.length === 0) {
-                list.innerHTML = '<div style="text-align: center; color: var(--text-gray); font-size: 14px; font-weight: bold; margin-top: 20px;">目前沒有待辦事項 🎉</div>';
+                list.innerHTML = '<div style="text-align: center; color: var(--text-gray); font-size: 13px; font-weight: bold; margin-top: 16px;">目前沒有待辦事項 🎉</div>';
                 return;
             }
 
@@ -598,7 +599,7 @@
                 div.className = 'todo-item';
                 div.innerHTML = `
                     <div class="todo-info">
-                        <div class="todo-title">${item.type} <span style="font-size: 13px; color: var(--primary-color); margin-left: 6px;">${item.date}</span></div>
+                        <div class="todo-title">${item.type} <span style="font-size: 12px; color: var(--primary-color); margin-left: 6px;">${item.date}</span></div>
                         ${item.note ? `<div class="todo-note">${item.note}</div>` : ''}
                     </div>
                     <button class="todo-del-btn" onclick="deleteTodo(${item.id})">🗑️</button>
