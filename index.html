@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>血壓記錄 - 緊湊立體版</title>
+    <title>血壓記錄 - 空心居中版</title>
     <link rel="manifest" href="manifest.json">
     <link rel="icon" type="image/svg+xml" href="icon.svg">
     <link rel="apple-touch-icon" href="icon.svg">
@@ -56,7 +56,6 @@
             --bg-gradient: linear-gradient(135deg, #fff3e0 0%, #ffe0b2 100%);
         }
 
-        /* 核心變數與立體效果設定 */
         :root, html.green, html.purple, html.blue, html.brown, html.orange {
             --card-bg: #ffffff;
             --card-shadow: 0 8px 20px rgba(0, 0, 0, 0.06), 0 3px 6px rgba(0, 0, 0, 0.03);
@@ -66,11 +65,9 @@
             --input-shadow: inset 0 3px 5px rgba(0, 0, 0, 0.06), inset 0 1px 2px rgba(0,0,0,0.04), 0 1px 0 rgba(255,255,255,1);
             --table-header: rgba(var(--theme-rgb), 0.1);
             
-            /* 全局 3D 文字效果 (高光 + 實體陰影 + 柔和擴散) */
             --text-3d-effect: 1px 1px 0px rgba(255,255,255,0.9), 2px 2px 0px rgba(var(--theme-dark), 0.25), 3px 3px 5px rgba(0,0,0,0.15);
         }
 
-        /* 縮小內邊距，讓版面更緊湊 */
         body { 
             font-family: 'Helvetica Neue', Helvetica, Arial, 'PingFang TC', sans-serif; 
             background: var(--bg-gradient); 
@@ -86,12 +83,11 @@
         }
         .subtitle { color: var(--text-gray); margin-bottom: 12px; font-size: 13px; font-weight: 700; white-space: nowrap; }
         
-        /* 卡片設計 - 緊湊感 */
         .card { 
             background: var(--card-bg); 
             border-radius: 16px; 
             padding: 16px; 
-            margin-bottom: 12px; 
+            margin-bottom: 16px; /* 增加卡片間距 */
             box-shadow: var(--card-shadow); 
             border: var(--card-border); 
             position: relative;
@@ -105,10 +101,9 @@
             white-space: nowrap; text-shadow: var(--text-3d-effect); letter-spacing: 0.5px;
         }
         
-        /* 橢圓形、降低高度的凹陷輸入框 */
-        .input-group { display: flex; gap: 8px; margin-bottom: 14px; align-items: center; }
+        .input-group { display: flex; gap: 8px; margin-bottom: 16px; align-items: center; } /* 增加下方間距 */
         .input-group input { 
-            flex: 1; width: 100%; height: 40px; padding: 0 14px; border-radius: 20px; font-size: 15px; font-weight: 700;
+            flex: 1; width: 100%; height: 42px; padding: 0 14px; border-radius: 21px; font-size: 15px; font-weight: 700;
             text-align: center; background: var(--input-bg); color: var(--text-dark); 
             border: 1px solid rgba(0, 0, 0, 0.08); 
             box-shadow: var(--input-shadow); transition: all 0.2s; box-sizing: border-box;
@@ -121,56 +116,44 @@
             box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.05), 0 0 0 3px rgba(var(--theme-rgb), 0.2); 
         }
         
-        /* 橢圓形立體按鈕群組 */
-        .btn-group { display: flex; gap: 8px; margin-bottom: 4px; flex-wrap: nowrap; }
+        /* 空心按鈕群組設計 */
+        .btn-group { display: flex; gap: 10px; margin-bottom: 16px; flex-wrap: wrap; } /* 增加間距與換行 */
         button { 
-            flex: 1; height: 40px; border-radius: 20px; font-size: 14px; font-weight: 800; 
+            flex: 1; height: 42px; border-radius: 21px; font-size: 14px; font-weight: 800; 
             cursor: pointer; transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1); 
             display: flex; justify-content: center; align-items: center; gap: 4px; box-sizing: border-box;
             white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-            position: relative; top: 0;
+            position: relative; top: 0; background: #ffffff; /* 統一改為白底 */
         }
-        .btn-tall { height: 46px; font-size: 15px; border-radius: 23px; }
+        .btn-tall { height: 46px; font-size: 15px; border-radius: 23px; min-width: 140px; }
 
         .header-btn { 
-            flex: none; height: 32px; padding: 0 14px; border-radius: 16px;
-            background: linear-gradient(180deg, #ffffff 0%, #f0f0f0 100%);
-            border: 1px solid #dcdcdc;
-            color: var(--text-dark); font-size: 13px; 
+            flex: none; height: 34px; padding: 0 14px; border-radius: 17px;
+            border: 2px solid #dcdcdc; color: var(--text-dark); font-size: 13px; 
             box-shadow: 0 3px 0 #cccccc, 0 3px 5px rgba(0,0,0,0.05);
         }
         .header-btn:active { top: 3px; box-shadow: 0 0 0 #cccccc, 0 1px 2px rgba(0,0,0,0.1); }
         
         .btn-primary { 
-            background: linear-gradient(180deg, rgba(var(--theme-rgb), 0.9) 0%, rgba(var(--theme-dark), 1) 100%); 
-            color: #ffffff; border: 1px solid rgba(var(--theme-dark), 1); 
-            box-shadow: 0 4px 0 rgba(var(--theme-dark), 0.8), 0 5px 8px rgba(var(--theme-rgb), 0.3);
-            text-shadow: 0 -1px 1px rgba(0,0,0,0.2);
+            color: rgba(var(--theme-dark), 1); 
+            border: 2px solid rgba(var(--theme-dark), 1); 
+            box-shadow: 0 4px 0 rgba(var(--theme-dark), 0.3), 0 5px 8px rgba(0,0,0,0.05);
         }
-        .btn-primary:active { 
-            top: 4px; box-shadow: 0 0 0 rgba(var(--theme-dark), 0.8), 0 2px 3px rgba(var(--theme-rgb), 0.3); 
-        }
+        .btn-primary:active { top: 4px; box-shadow: 0 0 0 rgba(var(--theme-dark), 0.3), 0 2px 3px rgba(0,0,0,0.05); }
 
         .btn-outline { 
-            background: linear-gradient(180deg, #ffffff 0%, #f4f7f6 100%); 
-            border: 1px solid rgba(var(--theme-rgb), 0.4); color: var(--primary-color); 
+            color: var(--primary-color); 
+            border: 2px solid rgba(var(--theme-rgb), 0.5); 
             box-shadow: 0 4px 0 rgba(var(--theme-rgb), 0.2), 0 5px 8px rgba(0,0,0,0.05);
         }
-        .btn-outline:active { 
-            top: 4px; box-shadow: 0 0 0 rgba(var(--theme-rgb), 0.2), 0 2px 3px rgba(0,0,0,0.05); 
-        }
+        .btn-outline:active { top: 4px; box-shadow: 0 0 0 rgba(var(--theme-rgb), 0.2), 0 2px 3px rgba(0,0,0,0.05); }
 
         .btn-danger { 
-            background: linear-gradient(180deg, #f05a4f 0%, #d32f2f 100%); 
-            color: white; border: 1px solid #b71c1c; 
-            box-shadow: 0 4px 0 #9a0007, 0 5px 8px rgba(211, 47, 47, 0.2); 
-            text-shadow: 0 -1px 1px rgba(0,0,0,0.2);
+            color: #d32f2f; border: 2px solid #d32f2f; 
+            box-shadow: 0 4px 0 rgba(211, 47, 47, 0.3), 0 5px 8px rgba(0,0,0,0.05); 
         }
-        .btn-danger:active { 
-            top: 4px; box-shadow: 0 0 0 #9a0007, 0 2px 3px rgba(211, 47, 47, 0.2); 
-        }
+        .btn-danger:active { top: 4px; box-shadow: 0 0 0 rgba(211, 47, 47, 0.3), 0 2px 3px rgba(0,0,0,0.05); }
         
-        /* 小紅點 */
         .btn-badge { overflow: visible !important; }
         .btn-badge.has-notification::after {
             content: ''; position: absolute; top: -4px; right: -2px;
@@ -179,24 +162,24 @@
             box-shadow: 0 2px 4px rgba(0,0,0,0.2);
         }
 
-        .hint-text { color: var(--text-gray); font-size: 12px; margin-bottom: 10px; font-weight: 700; white-space: nowrap; }
+        .hint-text { color: var(--text-gray); font-size: 12px; margin-bottom: 12px; font-weight: 700; white-space: nowrap; }
         
-        /* 專業表格 - 緊湊靠左對齊 */
+        /* 專業表格 - 置中對齊 */
         .table-responsive { 
             width: 100%; overflow-x: auto; border-radius: 12px; 
             background: #ffffff; border: 1px solid rgba(0,0,0,0.05);
             box-shadow: inset 0 0 0 1px rgba(0,0,0,0.05);
         }
-        table { width: 100%; border-collapse: collapse; text-align: left; font-size: 13px; min-width: 580px; }
+        table { width: 100%; border-collapse: collapse; text-align: center; font-size: 13px; min-width: 580px; } /* 改回置中 */
         
-        th, td { padding: 8px 10px; border-bottom: 1px solid #eaeff5; white-space: nowrap; }
+        th, td { padding: 10px 8px; border-bottom: 1px solid #eaeff5; white-space: nowrap; text-align: center; } /* 強制置中 */
         th { background: var(--table-header); font-weight: 800; color: var(--text-dark); border-bottom: 2px solid rgba(var(--theme-rgb), 0.3); }
         
         tbody tr:hover { background-color: rgba(var(--theme-rgb), 0.03); }
         tr:last-child td { border-bottom: none; }
         
         .col-date { width: 80px; font-weight: 700; color: var(--primary-color); } 
-        .col-action { width: 40px; text-align: center; } 
+        .col-action { width: 40px; } 
         .col-data { width: auto; font-family: monospace; font-size: 14px; font-weight: 600; }  
         
         .edit-btn { 
@@ -206,39 +189,39 @@
         }
         .edit-btn:active { top: 2px; box-shadow: 0 0 0 #cccccc; }
         
-        /* Modal 設計 */
         .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15, 23, 42, 0.6); z-index: 1000; justify-content: center; align-items: center; backdrop-filter: blur(4px); }
         .modal-content { 
             background: #ffffff; 
-            color: var(--text-dark); padding: 20px; border-radius: 20px; width: 90%; max-width: 360px; position: relative; 
+            color: var(--text-dark); padding: 20px; border-radius: 20px; width: 90%; max-width: 380px; position: relative; 
             box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25); border: 1px solid rgba(255,255,255,0.2); max-height: 90vh; overflow-y: auto; 
         }
         .modal-close { position: absolute; top: 12px; right: 16px; font-size: 24px; font-weight: bold; color: #94a3b8; cursor: pointer; transition: 0.2s; }
         .modal-close:hover { color: #0f172a; }
         
         .theme-select { 
-            width: 100%; height: 40px; padding: 0 16px; border-radius: 20px; margin-bottom: 12px; 
+            width: 100%; height: 42px; padding: 0 16px; border-radius: 21px; margin-bottom: 12px; 
             background: var(--input-bg); color: var(--text-dark); 
             border: 1px solid rgba(0,0,0,0.1); box-shadow: var(--input-shadow);
             font-size: 14px; font-weight: 700; outline: none; box-sizing: border-box; 
         }
         .version-text { text-align: center; margin-top: 16px; font-size: 12px; color: #94a3b8; font-weight: 700; letter-spacing: 1px; }
         
-        .modal-period-btns { display: flex; gap: 8px; margin-top: 16px; flex-wrap: nowrap; }
-        .modal-period-btns button { flex: 1; height: 44px; font-size: 15px; border-radius: 22px; }
+        .modal-period-btns { display: flex; gap: 10px; margin-top: 16px; flex-wrap: nowrap; }
+        .modal-period-btns button { flex: 1; height: 46px; font-size: 15px; border-radius: 23px; }
+        
+        /* 空心 Modal 按鈕 */
         .modal-btn-morning { 
-            background: linear-gradient(180deg, #ff9800 0%, #e65100 100%); color: white;
-            border: 1px solid #bf360c; box-shadow: 0 4px 0 #bf360c, 0 5px 8px rgba(230, 81, 0, 0.2);
+            color: #e65100; border: 2px solid #e65100; 
+            box-shadow: 0 4px 0 rgba(230, 81, 0, 0.3), 0 5px 8px rgba(0,0,0,0.05);
         }
-        .modal-btn-morning:active { top: 4px; box-shadow: 0 0 0 #bf360c, 0 2px 3px rgba(230, 81, 0, 0.2); }
+        .modal-btn-morning:active { top: 4px; box-shadow: 0 0 0 rgba(230, 81, 0, 0.3), 0 2px 3px rgba(0,0,0,0.05); }
         
         .modal-btn-evening { 
-            background: linear-gradient(180deg, #2196f3 0%, #0d47a1 100%); color: white;
-            border: 1px solid #0a2a66; box-shadow: 0 4px 0 #0a2a66, 0 5px 8px rgba(13, 71, 161, 0.2);
+            color: #0d47a1; border: 2px solid #0d47a1; 
+            box-shadow: 0 4px 0 rgba(13, 71, 161, 0.3), 0 5px 8px rgba(0,0,0,0.05);
         }
-        .modal-btn-evening:active { top: 4px; box-shadow: 0 0 0 #0a2a66, 0 2px 3px rgba(13, 71, 161, 0.2); }
+        .modal-btn-evening:active { top: 4px; box-shadow: 0 0 0 rgba(13, 71, 161, 0.3), 0 2px 3px rgba(0,0,0,0.05); }
         
-        /* Toast 提示 */
         .toast-container { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); z-index: 9999; display: flex; flex-direction: column; align-items: center; gap: 10px; pointer-events: none; }
         .toast { background: #334155; color: white; padding: 10px 20px; border-radius: 30px; font-size: 13px; font-weight: 700; box-shadow: 0 8px 20px rgba(0,0,0,0.2); opacity: 0; transform: translateY(20px); animation: toastIn 0.3s cubic-bezier(0.2, 0.8, 0.2, 1) forwards, toastOut 0.3s 2.5s forwards; white-space: nowrap; }
         .toast.error { background: #dc2626; }
@@ -246,21 +229,20 @@
         @keyframes toastIn { to { opacity: 1; transform: translateY(0); } }
         @keyframes toastOut { to { opacity: 0; transform: translateY(-20px); } }
         
-        /* 列印樣式 */
+        /* 列印樣式 - PDF強制置中 */
         .print-only { display: none; }
         @media print {
             @page { size: A4 portrait; margin: 12mm 16mm; }
             .no-print, .col-action { display: none !important; }
-            .print-only { display: block !important; text-align: left; font-size: 18px; font-weight: bold; margin-bottom: 10px; color: black; }
+            .print-only { display: block !important; text-align: center !important; font-size: 18px; font-weight: bold; margin-bottom: 10px; color: black; }
             body { background: white !important; color: black !important; margin: 0; padding: 0; }
             .card { border: none !important; box-shadow: none !important; padding: 0 !important; margin: 0 !important; background: white !important; }
             .table-responsive { overflow: visible !important; border: none !important; box-shadow: none !important; }
-            table { width: 100% !important; border-collapse: collapse !important; font-size: 12px !important; color: black !important; text-align: left !important; }
-            th, td { border: 1px solid #444 !important; padding: 6px 4px !important; color: black !important; }
+            table { width: 100% !important; border-collapse: collapse !important; font-size: 12px !important; color: black !important; text-align: center !important; }
+            th, td { border: 1px solid #444 !important; padding: 6px 4px !important; color: black !important; text-align: center !important; }
             th { background-color: #f0f0f0 !important; font-weight: bold; }
         }
     
-        /* Gist 狀態 */
         .gist-status { display: flex; align-items: center; gap: 8px; margin-bottom: 12px; padding: 12px 14px; border-radius: 20px; background: #f8fafc; border: 1px solid #e2e8f0; font-size: 13px; font-weight: 700; white-space: nowrap; }
         .gist-status-dot { width: 10px; height: 10px; border-radius: 50%; background: #cbd5e1; box-shadow: inset 0 2px 4px rgba(0,0,0,0.2); }
         .gist-status-dot.connected { background: #22c55e; box-shadow: 0 0 8px rgba(34, 197, 94, 0.4), inset 0 2px 4px rgba(0,0,0,0.1); }
@@ -268,11 +250,10 @@
         .gist-status-dot.syncing { background: #f59e0b; animation: pulse 1s infinite; }
         @keyframes pulse { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: 0.6; transform: scale(1.1); } }
         
-        .token-input { width: 100%; height: 40px; padding: 0 16px; border-radius: 20px; font-size: 13px; font-family: monospace; background: var(--input-bg); color: var(--text-dark); border: 1px solid rgba(0,0,0,0.1); box-shadow: var(--input-shadow); margin-bottom: 12px; box-sizing: border-box; outline: none; }
+        .token-input { width: 100%; height: 42px; padding: 0 16px; border-radius: 21px; font-size: 13px; font-family: monospace; background: var(--input-bg); color: var(--text-dark); border: 1px solid rgba(0,0,0,0.1); box-shadow: var(--input-shadow); margin-bottom: 12px; box-sizing: border-box; outline: none; }
         .token-input:focus { background: #fff; border-color: var(--primary-color); }
         .gist-id-display { font-family: monospace; font-size: 12px; color: var(--text-gray); background: #f1f5f9; padding: 8px 12px; border-radius: 12px; word-break: break-all; margin-bottom: 12px; border: 1px solid #cbd5e1; }
 
-        /* 待辦事項 */
         .todo-item { background: #ffffff; border: 1px solid #e2e8f0; border-radius: 14px; padding: 10px 14px; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 6px rgba(0,0,0,0.03); transition: 0.2s; }
         .todo-item:hover { border-color: var(--primary-color); box-shadow: 0 4px 10px rgba(0,0,0,0.06); }
         .todo-info { flex: 1; overflow: hidden; }
@@ -281,7 +262,7 @@
         .todo-del-btn { background: #fee2e2; color: #dc2626; border: 1px solid #f87171; border-radius: 50%; width: 34px; height: 34px; min-width: 34px; display: flex; align-items: center; justify-content: center; padding: 0; box-shadow: 0 2px 0 #fca5a5; top: 0; }
         .todo-del-btn:active { top: 2px; box-shadow: 0 0 0 #fca5a5; }
         .todo-input-row { display: flex; gap: 8px; margin-bottom: 8px; flex-wrap: nowrap; }
-        .todo-input-row select, .todo-input-row input { flex: 1; height: 40px; border-radius: 20px; border: 1px solid rgba(0,0,0,0.1); padding: 0 14px; font-weight: 700; font-size: 13px; outline: none; background: var(--input-bg); color: var(--text-dark); box-shadow: var(--input-shadow); white-space: nowrap; }
+        .todo-input-row select, .todo-input-row input { flex: 1; height: 42px; border-radius: 21px; border: 1px solid rgba(0,0,0,0.1); padding: 0 14px; font-weight: 700; font-size: 13px; outline: none; background: var(--input-bg); color: var(--text-dark); box-shadow: var(--input-shadow); white-space: nowrap; }
     </style>
 </head>
 <body>
@@ -299,7 +280,7 @@
     <div class="card no-print" id="input-card">
         <div class="card-title">
             <span id="input-card-title">📝 新增 / 修改記錄</span>
-            <button id="todo-btn" class="header-btn btn-badge" onclick="openTodoModal()" style="height: 28px; font-size: 12px;">🔔 待辦</button>
+            <button id="todo-btn" class="header-btn btn-badge" onclick="openTodoModal()" style="height: 30px; font-size: 12px;">🔔 待辦</button>
         </div>
         <div class="input-group">
             <input type="number" id="sys" placeholder="收縮壓" inputmode="numeric">
@@ -317,7 +298,7 @@
         <div class="card-title no-print">📊 記錄查詢與輸出</div>
         <div class="print-only" id="print-title">血壓記錄表</div>
         <div class="hint-text no-print">💡 提示：點擊右側「✏️」可修改或補填早晚記錄。</div>
-        <div class="input-group no-print" style="justify-content: flex-start; max-width: 100%; margin: 0 0 12px 0;">
+        <div class="input-group no-print" style="justify-content: center; max-width: 100%; margin: 0 0 16px 0;">
             <input type="date" id="start-date" style="flex: 1;">
             <span style="color: var(--text-gray); font-weight: bold; flex: none; font-size: 14px;">至</span>
             <input type="date" id="end-date" style="flex: 1;">
@@ -361,7 +342,7 @@
                 </div>
                 <div class="todo-input-row" style="margin-bottom: 0;">
                     <input type="text" id="todo-note" placeholder="備註內容 (選填)">
-                    <button onclick="addTodo()" class="btn-primary" style="flex: none; width: 40px; height: 40px; min-width: 40px; padding: 0; border-radius: 50%; font-size: 18px;">➕</button>
+                    <button onclick="addTodo()" class="btn-primary" style="flex: none; width: 42px; height: 42px; min-width: 42px; padding: 0; border-radius: 50%; font-size: 18px;">➕</button>
                 </div>
             </div>
 
@@ -375,12 +356,12 @@
             <span class="modal-close" onclick="closeTools()">&times;</span>
             <div class="card-title" style="margin-top: 5px;">🎨 佈景主題設定</div>
             <select id="theme-selector" class="theme-select" onchange="changeTheme()">
-                <option value="light">⚪ 經典綠 (立體緊湊)</option>
-                <option value="green">🌿 森林綠 (立體緊湊)</option>
-                <option value="purple">🔮 夢幻紫 (立體緊湊)</option>
-                <option value="blue">🌊 海洋藍 (立體緊湊)</option>
-                <option value="brown">☕ 拿鐵棕 (立體緊湊)</option>
-                <option value="orange">🍊 活力橙 (立體緊湊)</option> 
+                <option value="light">⚪ 經典綠 (空心居中)</option>
+                <option value="green">🌿 森林綠 (空心居中)</option>
+                <option value="purple">🔮 夢幻紫 (空心居中)</option>
+                <option value="blue">🌊 海洋藍 (空心居中)</option>
+                <option value="brown">☕ 拿鐵棕 (空心居中)</option>
+                <option value="orange">🍊 活力橙 (空心居中)</option> 
             </select>
 
             <div class="card-title" style="margin-top: 20px;">☁️ GitHub 雲端同步</div>
@@ -396,20 +377,20 @@
                     3. 複製 Token，貼到下方綁定。
                 </p>
                 <input type="text" id="gist-token-input" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" class="token-input" placeholder="🔑 貼上 GitHub Token">
-                <div class="btn-group" style="flex-direction: column; gap: 8px;">
-                    <button class="btn-primary" onclick="saveGistToken()">🔌 儲存並連線測試</button>
+                <div class="btn-group" style="flex-wrap: wrap;">
+                    <button class="btn-primary" onclick="saveGistToken()" style="min-width: 100%;">🔌 儲存並連線測試</button>
                 </div>
             </div>
             
             <div id="gist-connected-area" style="display: none;">
                 <div class="gist-id-display" id="gist-id-display"></div>
-                <div class="btn-group" style="flex-direction: column; gap: 8px;">
-                    <button class="btn-primary btn-tall" onclick="importFromGist()">📥 從雲端還原資料</button>
+                <div class="btn-group" style="flex-wrap: wrap; gap: 10px;">
+                    <button class="btn-primary btn-tall" onclick="importFromGist()">📥 雲端還原資料</button>
                     <button class="btn-danger btn-tall" onclick="disconnectGist()">🔗 解除綁定連線</button>
                 </div>
             </div>
 
-            <div class="version-text">Version 9.4 ✨ Compact Pill 3D</div>
+            <div class="version-text">Version 9.5 ✨ Ghost Center Edition</div>
         </div>
     </div>
 
@@ -441,7 +422,7 @@
                 </ol>
             </div>
 
-            <div class="version-text">Version 9.4 ✨ Compact Pill 3D</div>
+            <div class="version-text">Version 9.5 ✨ Ghost Center Edition</div>
         </div>
     </div>
 
