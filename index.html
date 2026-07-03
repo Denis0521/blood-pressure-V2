@@ -250,7 +250,7 @@
         .gist-id-display { font-family: monospace; font-size: 12px; color: var(--text-gray); background: #f1f5f9; padding: 10px 14px; border-radius: 12px; word-break: break-all; margin-bottom: 12px; border: 1px solid #cbd5e1; }
 
         /* ==================================
-           📝 美化後的待辦事項 (Todo UI)
+           📝 待辦事項 (單純字體 UI 版)
            ================================== */
         .todo-item { background: #ffffff; border: 1px solid #e2e8f0; border-radius: 14px; padding: 12px 14px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 6px rgba(0,0,0,0.03); transition: 0.2s; }
         .todo-item:hover { border-color: var(--primary-color); box-shadow: 0 4px 10px rgba(0,0,0,0.06); }
@@ -258,31 +258,28 @@
         .todo-title { font-weight: 800; color: var(--text-dark); margin-bottom: 4px; font-size: 15px; white-space: nowrap; }
         .todo-note { font-size: 13px; color: var(--text-gray); font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
         
-        /* 待辦-專屬紅色 "X" 玻璃珠刪除鈕 */
+        /* 待辦-專屬簡單 "x" 刪除鈕 (扁平化) */
         .todo-del-btn { 
-            background: linear-gradient(180deg, #ffffff 0%, #e2e8f0 100%); 
+            background: #fee2e2; 
             color: #dc2626; 
-            border: 1px solid #cbd5e1; 
-            border-radius: 50%; width: 36px; height: 36px; min-width: 36px; 
+            border: none; 
+            border-radius: 50%; width: 32px; height: 32px; min-width: 32px; 
             display: flex; align-items: center; justify-content: center; padding: 0; 
-            box-shadow: inset 0 3px 5px #ffffff, inset 0 -3px 5px rgba(0,0,0,0.08), 0 3px 6px rgba(0,0,0,0.1);
-            font-size: 16px; font-weight: 900; cursor: pointer; transition: 0.2s;
-            text-shadow: 1px 1px 0 rgba(255,255,255,0.8);
+            font-size: 16px; font-family: monospace, sans-serif; cursor: pointer; transition: 0.2s;
         }
-        .todo-del-btn:active { box-shadow: inset 0 3px 6px rgba(0,0,0,0.15); transform: translateY(2px); }
+        .todo-del-btn:active { background: #fca5a5; transform: scale(0.95); }
         
-        /* 待辦-專屬簡單黑色 "+" 玻璃珠新增鈕 */
+        /* 待辦-專屬簡單 "+" 新增鈕 (扁平化) */
         .todo-add-btn {
-            background: linear-gradient(180deg, #ffffff 0%, #e2e8f0 100%);
-            color: #0f172a;
-            border: 1px solid #cbd5e1;
-            border-radius: 50%; width: 44px; height: 44px; min-width: 44px; flex: none;
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 50%; width: 42px; height: 42px; min-width: 42px; flex: none;
             display: flex; align-items: center; justify-content: center; padding: 0;
-            box-shadow: inset 0 3px 5px #ffffff, inset 0 -3px 5px rgba(0,0,0,0.08), 0 3px 6px rgba(0,0,0,0.1);
-            font-size: 26px; font-weight: 900; cursor: pointer; transition: 0.2s;
-            text-shadow: 1px 1px 0 rgba(255,255,255,0.8);
+            font-size: 24px; font-family: monospace, sans-serif; cursor: pointer; transition: 0.2s;
+            line-height: 1;
         }
-        .todo-add-btn:active { box-shadow: inset 0 3px 6px rgba(0,0,0,0.15); transform: translateY(2px); }
+        .todo-add-btn:active { opacity: 0.8; transform: scale(0.95); }
 
         .todo-input-row { display: flex; gap: 8px; margin-bottom: 10px; flex-wrap: nowrap; }
         .todo-input-row select, .todo-input-row input { flex: 1; height: 42px; border-radius: 21px; border: 1px solid rgba(0,0,0,0.1); padding: 0 14px; font-weight: 700; font-size: 14px; outline: none; background: var(--input-bg); color: var(--text-dark); box-shadow: var(--input-shadow); white-space: nowrap; }
@@ -365,7 +362,7 @@
                 </div>
                 <div class="todo-input-row" style="margin-bottom: 0;">
                     <input type="text" id="todo-note" placeholder="備註內容 (選填)">
-                    <button onclick="addTodo()" class="todo-add-btn">&#43;</button>
+                    <button onclick="addTodo()" class="todo-add-btn">+</button>
                 </div>
             </div>
 
@@ -607,7 +604,7 @@
                         <div class="todo-title">${item.type} <span style="font-size: 12px; color: var(--primary-color); margin-left: 6px;">${item.date}</span></div>
                         ${item.note ? `<div class="todo-note">${item.note}</div>` : ''}
                     </div>
-                    <button class="todo-del-btn" onclick="deleteTodo(${item.id})">&#10006;</button>
+                    <button class="todo-del-btn" onclick="deleteTodo(${item.id})">x</button>
                 `;
                 list.appendChild(div);
             });
