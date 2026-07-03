@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>血壓記錄 - 空心居中版</title>
+    <title>血壓記錄 - 護眼舒適版</title>
     <link rel="manifest" href="manifest.json">
     <link rel="icon" type="image/svg+xml" href="icon.svg">
     <link rel="apple-touch-icon" href="icon.svg">
@@ -11,99 +11,112 @@
     <script>
         // 【防閃爍機制】在網頁渲染前立即套用主題
         let savedTheme = localStorage.getItem('bpTheme') || 'light';
-        const allowedThemes = ['light', 'green', 'purple', 'blue', 'brown', 'orange'];
+        const allowedThemes = ['light', 'green', 'purple', 'blue', 'brown', 'orange', 'pink'];
         if (!allowedThemes.includes(savedTheme)) savedTheme = 'light';
         document.documentElement.className = savedTheme;
     </script>
     <style>
-        /* 專業立體設計系統 (Professional 3D UI) */
+        /* 護眼舒適設計系統 (Comfort Vision UI) */
         :root {
+            /* 經典綠 (預設) - 帶點極淡的薄荷青以增加柔和度 */
             --theme-rgb: 26, 140, 125; 
             --theme-dark: 17, 95, 85;
             --primary-color: rgb(var(--theme-rgb));
-            --text-dark: #2c3e50;
-            --text-gray: #5c6c7c;
-            --bg-gradient: linear-gradient(135deg, #e8f0ef 0%, #cfdedc 100%);
+            --text-dark: #2a3b4c;
+            --text-gray: #64748b;
+            --bg-gradient: linear-gradient(135deg, #e8f0ef 0%, #e0ece4 100%);
         }
         
         html.green {
+            /* 森林綠 - 帶點極淡的黃綠色 */
             --theme-rgb: 46, 125, 50; --theme-dark: 27, 94, 32;
-            --primary-color: rgb(var(--theme-rgb)); --text-dark: #1b3320;
-            --bg-gradient: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%);
+            --primary-color: rgb(var(--theme-rgb)); --text-dark: #1f3824;
+            --bg-gradient: linear-gradient(135deg, #e8f5e9 0%, #dcedc8 100%);
         }
         
         html.purple {
+            /* 夢幻紫 - 帶點極淡的藍紫色 */
             --theme-rgb: 142, 36, 170; --theme-dark: 106, 27, 154;
-            --primary-color: rgb(var(--theme-rgb)); --text-dark: #3a1c40;
-            --bg-gradient: linear-gradient(135deg, #f3e5f5 0%, #e1bee7 100%);
+            --primary-color: rgb(var(--theme-rgb)); --text-dark: #3e2244;
+            --bg-gradient: linear-gradient(135deg, #f3e5f5 0%, #ede7f6 100%);
         }
         
         html.blue {
+            /* 海洋藍 - 帶點極淡的青色 */
             --theme-rgb: 2, 119, 189; --theme-dark: 1, 87, 155;
-            --primary-color: rgb(var(--theme-rgb)); --text-dark: #1a364a;
-            --bg-gradient: linear-gradient(135deg, #e1f5fe 0%, #b3e5fc 100%);
+            --primary-color: rgb(var(--theme-rgb)); --text-dark: #1b3a52;
+            --bg-gradient: linear-gradient(135deg, #e1f5fe 0%, #e0f7fa 100%);
         }
         
         html.brown {
+            /* 拿鐵棕 - 帶點極淡的奶油橙 */
             --theme-rgb: 109, 76, 65; --theme-dark: 78, 52, 46;
-            --primary-color: rgb(var(--theme-rgb)); --text-dark: #3e2e2a;
-            --bg-gradient: linear-gradient(135deg, #efebe9 0%, #d7ccc8 100%);
+            --primary-color: rgb(var(--theme-rgb)); --text-dark: #42322e;
+            --bg-gradient: linear-gradient(135deg, #efebe9 0%, #fff3e0 100%);
         }
         
         html.orange {
+            /* 活力橙 - 帶點極淡的粉橘色 */
             --theme-rgb: 240, 113, 20; --theme-dark: 191, 86, 10;
-            --primary-color: rgb(var(--theme-rgb)); --text-dark: #4a2c10;
-            --bg-gradient: linear-gradient(135deg, #fff3e0 0%, #ffe0b2 100%);
+            --primary-color: rgb(var(--theme-rgb)); --text-dark: #4e3015;
+            --bg-gradient: linear-gradient(135deg, #fff3e0 0%, #fbe9e7 100%);
         }
 
-        :root, html.green, html.purple, html.blue, html.brown, html.orange {
+        html.pink {
+            /* 櫻花粉 (全新舒適搭配) */
+            --theme-rgb: 233, 30, 99; --theme-dark: 194, 24, 91;
+            --primary-color: rgb(var(--theme-rgb)); --text-dark: #4a1c28;
+            --bg-gradient: linear-gradient(135deg, #fce4ec 0%, #f8bbd0 100%);
+        }
+
+        :root, html.green, html.purple, html.blue, html.brown, html.orange, html.pink {
             --card-bg: #ffffff;
-            --card-shadow: 0 8px 20px rgba(0, 0, 0, 0.06), 0 3px 6px rgba(0, 0, 0, 0.03);
-            --card-border: 1px solid rgba(255, 255, 255, 0.8);
+            --card-shadow: 0 8px 20px rgba(0, 0, 0, 0.05), 0 3px 6px rgba(0, 0, 0, 0.02);
+            --card-border: 1px solid rgba(255, 255, 255, 0.9);
             
             --input-bg: #f8fafd;
-            --input-shadow: inset 0 3px 5px rgba(0, 0, 0, 0.06), inset 0 1px 2px rgba(0,0,0,0.04), 0 1px 0 rgba(255,255,255,1);
+            --input-shadow: inset 0 3px 5px rgba(0, 0, 0, 0.05), inset 0 1px 2px rgba(0,0,0,0.03), 0 1px 0 rgba(255,255,255,1);
             --table-header: rgba(var(--theme-rgb), 0.1);
             
-            --text-3d-effect: 1px 1px 0px rgba(255,255,255,0.9), 2px 2px 0px rgba(var(--theme-dark), 0.25), 3px 3px 5px rgba(0,0,0,0.15);
+            --text-3d-effect: 1px 1px 0px rgba(255,255,255,0.9), 2px 2px 0px rgba(var(--theme-dark), 0.2), 3px 3px 5px rgba(0,0,0,0.1);
         }
 
         body { 
             font-family: 'Helvetica Neue', Helvetica, Arial, 'PingFang TC', sans-serif; 
             background: var(--bg-gradient); 
             background-attachment: fixed;
-            color: var(--text-dark); margin: 0; padding: 10px; 
+            color: var(--text-dark); margin: 0; padding: 12px; 
             min-height: 100vh; transition: background 0.4s ease; 
         }
         
-        .header-container { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+        .header-container { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
         h2 { 
-            margin: 0; font-size: 22px; font-weight: 900; color: var(--primary-color); 
+            margin: 0; font-size: 24px; font-weight: 900; color: var(--primary-color); 
             white-space: nowrap; text-shadow: var(--text-3d-effect); letter-spacing: 0.5px;
         }
-        .subtitle { color: var(--text-gray); margin-bottom: 12px; font-size: 13px; font-weight: 700; white-space: nowrap; }
+        .subtitle { color: var(--text-gray); margin-bottom: 14px; font-size: 14px; font-weight: 700; white-space: nowrap; }
         
         .card { 
             background: var(--card-bg); 
             border-radius: 16px; 
-            padding: 16px; 
-            margin-bottom: 16px; /* 增加卡片間距 */
+            padding: 18px; 
+            margin-bottom: 16px;
             box-shadow: var(--card-shadow); 
             border: var(--card-border); 
             position: relative;
         }
         
         .card-title { 
-            font-size: 16px; font-weight: 900; margin-bottom: 12px; padding-bottom: 8px; 
+            font-size: 18px; font-weight: 900; margin-bottom: 14px; padding-bottom: 10px; 
             border-bottom: 2px solid rgba(var(--theme-rgb), 0.15); 
             color: var(--text-dark); 
             display: flex; justify-content: space-between; align-items: center;
             white-space: nowrap; text-shadow: var(--text-3d-effect); letter-spacing: 0.5px;
         }
         
-        .input-group { display: flex; gap: 8px; margin-bottom: 16px; align-items: center; } /* 增加下方間距 */
+        .input-group { display: flex; gap: 10px; margin-bottom: 18px; align-items: center; }
         .input-group input { 
-            flex: 1; width: 100%; height: 42px; padding: 0 14px; border-radius: 21px; font-size: 15px; font-weight: 700;
+            flex: 1; width: 100%; height: 46px; padding: 0 16px; border-radius: 23px; font-size: 16px; font-weight: 700;
             text-align: center; background: var(--input-bg); color: var(--text-dark); 
             border: 1px solid rgba(0, 0, 0, 0.08); 
             box-shadow: var(--input-shadow); transition: all 0.2s; box-sizing: border-box;
@@ -116,20 +129,19 @@
             box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.05), 0 0 0 3px rgba(var(--theme-rgb), 0.2); 
         }
         
-        /* 空心按鈕群組設計 */
-        .btn-group { display: flex; gap: 10px; margin-bottom: 16px; flex-wrap: wrap; } /* 增加間距與換行 */
+        .btn-group { display: flex; gap: 12px; margin-bottom: 18px; flex-wrap: wrap; }
         button { 
-            flex: 1; height: 42px; border-radius: 21px; font-size: 14px; font-weight: 800; 
+            flex: 1; height: 46px; border-radius: 23px; font-size: 16px; font-weight: 800; 
             cursor: pointer; transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1); 
-            display: flex; justify-content: center; align-items: center; gap: 4px; box-sizing: border-box;
+            display: flex; justify-content: center; align-items: center; gap: 6px; box-sizing: border-box;
             white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-            position: relative; top: 0; background: #ffffff; /* 統一改為白底 */
+            position: relative; top: 0; background: #ffffff; 
         }
-        .btn-tall { height: 46px; font-size: 15px; border-radius: 23px; min-width: 140px; }
+        .btn-tall { height: 50px; font-size: 16px; border-radius: 25px; min-width: 140px; }
 
         .header-btn { 
-            flex: none; height: 34px; padding: 0 14px; border-radius: 17px;
-            border: 2px solid #dcdcdc; color: var(--text-dark); font-size: 13px; 
+            flex: none; height: 38px; padding: 0 16px; border-radius: 19px;
+            border: 2px solid #dcdcdc; color: var(--text-dark); font-size: 14px; 
             box-shadow: 0 3px 0 #cccccc, 0 3px 5px rgba(0,0,0,0.05);
         }
         .header-btn:active { top: 3px; box-shadow: 0 0 0 #cccccc, 0 1px 2px rgba(0,0,0,0.1); }
@@ -156,35 +168,34 @@
         
         .btn-badge { overflow: visible !important; }
         .btn-badge.has-notification::after {
-            content: ''; position: absolute; top: -4px; right: -2px;
-            width: 10px; height: 10px; background-color: #ff3b30;
+            content: ''; position: absolute; top: -2px; right: 0px;
+            width: 12px; height: 12px; background-color: #ff3b30;
             border-radius: 50%; border: 2px solid white;
             box-shadow: 0 2px 4px rgba(0,0,0,0.2);
         }
 
-        .hint-text { color: var(--text-gray); font-size: 12px; margin-bottom: 12px; font-weight: 700; white-space: nowrap; }
+        .hint-text { color: var(--text-gray); font-size: 14px; margin-bottom: 14px; font-weight: 700; white-space: nowrap; }
         
-        /* 專業表格 - 置中對齊 */
         .table-responsive { 
             width: 100%; overflow-x: auto; border-radius: 12px; 
             background: #ffffff; border: 1px solid rgba(0,0,0,0.05);
             box-shadow: inset 0 0 0 1px rgba(0,0,0,0.05);
         }
-        table { width: 100%; border-collapse: collapse; text-align: center; font-size: 13px; min-width: 580px; } /* 改回置中 */
+        table { width: 100%; border-collapse: collapse; text-align: center; font-size: 14px; min-width: 580px; } 
         
-        th, td { padding: 10px 8px; border-bottom: 1px solid #eaeff5; white-space: nowrap; text-align: center; } /* 強制置中 */
+        th, td { padding: 12px 8px; border-bottom: 1px solid #eaeff5; white-space: nowrap; text-align: center; } 
         th { background: var(--table-header); font-weight: 800; color: var(--text-dark); border-bottom: 2px solid rgba(var(--theme-rgb), 0.3); }
         
-        tbody tr:hover { background-color: rgba(var(--theme-rgb), 0.03); }
+        tbody tr:hover { background-color: rgba(var(--theme-rgb), 0.04); }
         tr:last-child td { border-bottom: none; }
         
         .col-date { width: 80px; font-weight: 700; color: var(--primary-color); } 
-        .col-action { width: 40px; } 
-        .col-data { width: auto; font-family: monospace; font-size: 14px; font-weight: 600; }  
+        .col-action { width: 44px; } 
+        .col-data { width: auto; font-family: monospace; font-size: 16px; font-weight: 600; }  
         
         .edit-btn { 
-            background: #f0f4f8; height: 28px; width: 100%; font-size: 12px; cursor: pointer; padding: 0; 
-            border-radius: 14px; border: 1px solid #dcdcdc; color: var(--text-dark); 
+            background: #f0f4f8; height: 32px; width: 100%; font-size: 14px; cursor: pointer; padding: 0; 
+            border-radius: 16px; border: 1px solid #dcdcdc; color: var(--text-dark); 
             box-shadow: 0 2px 0 #cccccc; top: 0;
         }
         .edit-btn:active { top: 2px; box-shadow: 0 0 0 #cccccc; }
@@ -192,24 +203,23 @@
         .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15, 23, 42, 0.6); z-index: 1000; justify-content: center; align-items: center; backdrop-filter: blur(4px); }
         .modal-content { 
             background: #ffffff; 
-            color: var(--text-dark); padding: 20px; border-radius: 20px; width: 90%; max-width: 380px; position: relative; 
+            color: var(--text-dark); padding: 24px; border-radius: 20px; width: 90%; max-width: 400px; position: relative; 
             box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25); border: 1px solid rgba(255,255,255,0.2); max-height: 90vh; overflow-y: auto; 
         }
-        .modal-close { position: absolute; top: 12px; right: 16px; font-size: 24px; font-weight: bold; color: #94a3b8; cursor: pointer; transition: 0.2s; }
+        .modal-close { position: absolute; top: 12px; right: 16px; font-size: 26px; font-weight: bold; color: #94a3b8; cursor: pointer; transition: 0.2s; }
         .modal-close:hover { color: #0f172a; }
         
         .theme-select { 
-            width: 100%; height: 42px; padding: 0 16px; border-radius: 21px; margin-bottom: 12px; 
+            width: 100%; height: 46px; padding: 0 16px; border-radius: 23px; margin-bottom: 16px; 
             background: var(--input-bg); color: var(--text-dark); 
             border: 1px solid rgba(0,0,0,0.1); box-shadow: var(--input-shadow);
-            font-size: 14px; font-weight: 700; outline: none; box-sizing: border-box; 
+            font-size: 16px; font-weight: 700; outline: none; box-sizing: border-box; 
         }
-        .version-text { text-align: center; margin-top: 16px; font-size: 12px; color: #94a3b8; font-weight: 700; letter-spacing: 1px; }
+        .version-text { text-align: center; margin-top: 18px; font-size: 13px; color: #94a3b8; font-weight: 700; letter-spacing: 1px; }
         
-        .modal-period-btns { display: flex; gap: 10px; margin-top: 16px; flex-wrap: nowrap; }
-        .modal-period-btns button { flex: 1; height: 46px; font-size: 15px; border-radius: 23px; }
+        .modal-period-btns { display: flex; gap: 12px; margin-top: 18px; flex-wrap: nowrap; }
+        .modal-period-btns button { flex: 1; height: 50px; font-size: 16px; border-radius: 25px; }
         
-        /* 空心 Modal 按鈕 */
         .modal-btn-morning { 
             color: #e65100; border: 2px solid #e65100; 
             box-shadow: 0 4px 0 rgba(230, 81, 0, 0.3), 0 5px 8px rgba(0,0,0,0.05);
@@ -223,13 +233,12 @@
         .modal-btn-evening:active { top: 4px; box-shadow: 0 0 0 rgba(13, 71, 161, 0.3), 0 2px 3px rgba(0,0,0,0.05); }
         
         .toast-container { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); z-index: 9999; display: flex; flex-direction: column; align-items: center; gap: 10px; pointer-events: none; }
-        .toast { background: #334155; color: white; padding: 10px 20px; border-radius: 30px; font-size: 13px; font-weight: 700; box-shadow: 0 8px 20px rgba(0,0,0,0.2); opacity: 0; transform: translateY(20px); animation: toastIn 0.3s cubic-bezier(0.2, 0.8, 0.2, 1) forwards, toastOut 0.3s 2.5s forwards; white-space: nowrap; }
+        .toast { background: #334155; color: white; padding: 12px 24px; border-radius: 30px; font-size: 15px; font-weight: 700; box-shadow: 0 8px 20px rgba(0,0,0,0.2); opacity: 0; transform: translateY(20px); animation: toastIn 0.3s cubic-bezier(0.2, 0.8, 0.2, 1) forwards, toastOut 0.3s 2.5s forwards; white-space: nowrap; }
         .toast.error { background: #dc2626; }
         .toast.warning { background: #ea580c; }
         @keyframes toastIn { to { opacity: 1; transform: translateY(0); } }
         @keyframes toastOut { to { opacity: 0; transform: translateY(-20px); } }
         
-        /* 列印樣式 - PDF強制置中 */
         .print-only { display: none; }
         @media print {
             @page { size: A4 portrait; margin: 12mm 16mm; }
@@ -243,26 +252,28 @@
             th { background-color: #f0f0f0 !important; font-weight: bold; }
         }
     
-        .gist-status { display: flex; align-items: center; gap: 8px; margin-bottom: 12px; padding: 12px 14px; border-radius: 20px; background: #f8fafc; border: 1px solid #e2e8f0; font-size: 13px; font-weight: 700; white-space: nowrap; }
-        .gist-status-dot { width: 10px; height: 10px; border-radius: 50%; background: #cbd5e1; box-shadow: inset 0 2px 4px rgba(0,0,0,0.2); }
+        .gist-status { display: flex; align-items: center; gap: 8px; margin-bottom: 14px; padding: 14px 16px; border-radius: 20px; background: #f8fafc; border: 1px solid #e2e8f0; font-size: 14px; font-weight: 700; white-space: nowrap; }
+        .gist-status-dot { width: 12px; height: 12px; border-radius: 50%; background: #cbd5e1; box-shadow: inset 0 2px 4px rgba(0,0,0,0.2); }
         .gist-status-dot.connected { background: #22c55e; box-shadow: 0 0 8px rgba(34, 197, 94, 0.4), inset 0 2px 4px rgba(0,0,0,0.1); }
         .gist-status-dot.error { background: #ef4444; }
         .gist-status-dot.syncing { background: #f59e0b; animation: pulse 1s infinite; }
         @keyframes pulse { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: 0.6; transform: scale(1.1); } }
         
-        .token-input { width: 100%; height: 42px; padding: 0 16px; border-radius: 21px; font-size: 13px; font-family: monospace; background: var(--input-bg); color: var(--text-dark); border: 1px solid rgba(0,0,0,0.1); box-shadow: var(--input-shadow); margin-bottom: 12px; box-sizing: border-box; outline: none; }
+        .token-input { width: 100%; height: 46px; padding: 0 16px; border-radius: 23px; font-size: 14px; font-family: monospace; background: var(--input-bg); color: var(--text-dark); border: 1px solid rgba(0,0,0,0.1); box-shadow: var(--input-shadow); margin-bottom: 14px; box-sizing: border-box; outline: none; }
         .token-input:focus { background: #fff; border-color: var(--primary-color); }
-        .gist-id-display { font-family: monospace; font-size: 12px; color: var(--text-gray); background: #f1f5f9; padding: 8px 12px; border-radius: 12px; word-break: break-all; margin-bottom: 12px; border: 1px solid #cbd5e1; }
+        
+        /* Gist ID 依要求維持原樣 (12px) */
+        .gist-id-display { font-family: monospace; font-size: 12px; color: var(--text-gray); background: #f1f5f9; padding: 10px 14px; border-radius: 12px; word-break: break-all; margin-bottom: 14px; border: 1px solid #cbd5e1; }
 
-        .todo-item { background: #ffffff; border: 1px solid #e2e8f0; border-radius: 14px; padding: 10px 14px; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 6px rgba(0,0,0,0.03); transition: 0.2s; }
+        .todo-item { background: #ffffff; border: 1px solid #e2e8f0; border-radius: 14px; padding: 12px 16px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 6px rgba(0,0,0,0.03); transition: 0.2s; }
         .todo-item:hover { border-color: var(--primary-color); box-shadow: 0 4px 10px rgba(0,0,0,0.06); }
         .todo-info { flex: 1; overflow: hidden; }
-        .todo-title { font-weight: 800; color: var(--text-dark); margin-bottom: 4px; font-size: 14px; white-space: nowrap; }
-        .todo-note { font-size: 12px; color: var(--text-gray); font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        .todo-del-btn { background: #fee2e2; color: #dc2626; border: 1px solid #f87171; border-radius: 50%; width: 34px; height: 34px; min-width: 34px; display: flex; align-items: center; justify-content: center; padding: 0; box-shadow: 0 2px 0 #fca5a5; top: 0; }
+        .todo-title { font-weight: 800; color: var(--text-dark); margin-bottom: 6px; font-size: 16px; white-space: nowrap; }
+        .todo-note { font-size: 14px; color: var(--text-gray); font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .todo-del-btn { background: #fee2e2; color: #dc2626; border: 1px solid #f87171; border-radius: 50%; width: 38px; height: 38px; min-width: 38px; display: flex; align-items: center; justify-content: center; padding: 0; box-shadow: 0 2px 0 #fca5a5; top: 0; }
         .todo-del-btn:active { top: 2px; box-shadow: 0 0 0 #fca5a5; }
-        .todo-input-row { display: flex; gap: 8px; margin-bottom: 8px; flex-wrap: nowrap; }
-        .todo-input-row select, .todo-input-row input { flex: 1; height: 42px; border-radius: 21px; border: 1px solid rgba(0,0,0,0.1); padding: 0 14px; font-weight: 700; font-size: 13px; outline: none; background: var(--input-bg); color: var(--text-dark); box-shadow: var(--input-shadow); white-space: nowrap; }
+        .todo-input-row { display: flex; gap: 8px; margin-bottom: 10px; flex-wrap: nowrap; }
+        .todo-input-row select, .todo-input-row input { flex: 1; height: 46px; border-radius: 23px; border: 1px solid rgba(0,0,0,0.1); padding: 0 16px; font-weight: 700; font-size: 15px; outline: none; background: var(--input-bg); color: var(--text-dark); box-shadow: var(--input-shadow); white-space: nowrap; }
     </style>
 </head>
 <body>
@@ -270,7 +281,7 @@
     
     <div class="header-container no-print">
         <h2>🩺 血壓記錄</h2>
-        <div style="display: flex; gap: 6px;">
+        <div style="display: flex; gap: 8px;">
             <button class="header-btn" onclick="openHelp()">📖 說明</button>
             <button class="header-btn" onclick="openTools()">⚙️ 進階</button>
         </div>
@@ -280,7 +291,7 @@
     <div class="card no-print" id="input-card">
         <div class="card-title">
             <span id="input-card-title">📝 新增 / 修改記錄</span>
-            <button id="todo-btn" class="header-btn btn-badge" onclick="openTodoModal()" style="height: 30px; font-size: 12px;">🔔 待辦</button>
+            <button id="todo-btn" class="header-btn btn-badge" onclick="openTodoModal()" style="height: 34px; font-size: 14px;">🔔 待辦</button>
         </div>
         <div class="input-group">
             <input type="number" id="sys" placeholder="收縮壓" inputmode="numeric">
@@ -300,7 +311,7 @@
         <div class="hint-text no-print">💡 提示：點擊右側「✏️」可修改或補填早晚記錄。</div>
         <div class="input-group no-print" style="justify-content: center; max-width: 100%; margin: 0 0 16px 0;">
             <input type="date" id="start-date" style="flex: 1;">
-            <span style="color: var(--text-gray); font-weight: bold; flex: none; font-size: 14px;">至</span>
+            <span style="color: var(--text-gray); font-weight: bold; flex: none; font-size: 15px;">至</span>
             <input type="date" id="end-date" style="flex: 1;">
         </div>
         <div class="btn-group no-print">
@@ -331,7 +342,7 @@
             <span class="modal-close" onclick="closeTodoModal()">&times;</span>
             <div class="card-title" style="margin-top: 5px;">🔔 待辦提醒</div>
             
-            <div style="background: #f8fafc; padding: 14px; border-radius: 16px; margin-bottom: 12px; border: 1px solid #e2e8f0;">
+            <div style="background: #f8fafc; padding: 16px; border-radius: 16px; margin-bottom: 14px; border: 1px solid #e2e8f0;">
                 <div class="todo-input-row">
                     <select id="todo-type">
                         <option value="💊 領藥">💊 領藥</option>
@@ -342,7 +353,7 @@
                 </div>
                 <div class="todo-input-row" style="margin-bottom: 0;">
                     <input type="text" id="todo-note" placeholder="備註內容 (選填)">
-                    <button onclick="addTodo()" class="btn-primary" style="flex: none; width: 42px; height: 42px; min-width: 42px; padding: 0; border-radius: 50%; font-size: 18px;">➕</button>
+                    <button onclick="addTodo()" class="btn-primary" style="flex: none; width: 46px; height: 46px; min-width: 46px; padding: 0; border-radius: 50%; font-size: 20px;">➕</button>
                 </div>
             </div>
 
@@ -356,22 +367,23 @@
             <span class="modal-close" onclick="closeTools()">&times;</span>
             <div class="card-title" style="margin-top: 5px;">🎨 佈景主題設定</div>
             <select id="theme-selector" class="theme-select" onchange="changeTheme()">
-                <option value="light">⚪ 經典綠 (空心居中)</option>
-                <option value="green">🌿 森林綠 (空心居中)</option>
-                <option value="purple">🔮 夢幻紫 (空心居中)</option>
-                <option value="blue">🌊 海洋藍 (空心居中)</option>
-                <option value="brown">☕ 拿鐵棕 (空心居中)</option>
-                <option value="orange">🍊 活力橙 (空心居中)</option> 
+                <option value="light">⚪ 經典綠</option>
+                <option value="green">🌿 森林綠</option>
+                <option value="purple">🔮 夢幻紫</option>
+                <option value="blue">🌊 海洋藍</option>
+                <option value="brown">☕ 拿鐵棕</option>
+                <option value="orange">🍊 活力橙</option>
+                <option value="pink">🌸 櫻花粉</option>
             </select>
 
-            <div class="card-title" style="margin-top: 20px;">☁️ GitHub 雲端同步</div>
+            <div class="card-title" style="margin-top: 22px;">☁️ GitHub 雲端同步</div>
             <div id="gist-status" class="gist-status">
                 <div class="gist-status-dot" id="gist-dot"></div>
                 <span id="gist-status-text">尚未設定雲端備份</span>
             </div>
             
             <div id="gist-setup-area">
-                <p style="font-size: 12px; color: var(--text-gray); margin-bottom: 12px; font-weight: 600; line-height: 1.5;">
+                <p style="font-size: 13px; color: var(--text-gray); margin-bottom: 14px; font-weight: 600; line-height: 1.6;">
                     1. 前往 GitHub → Settings → Developer settings → Tokens (classic)<br>
                     2. 點 Generate new token (classic) → 勾選「gist」<br>
                     3. 複製 Token，貼到下方綁定。
@@ -384,13 +396,13 @@
             
             <div id="gist-connected-area" style="display: none;">
                 <div class="gist-id-display" id="gist-id-display"></div>
-                <div class="btn-group" style="flex-wrap: wrap; gap: 10px;">
+                <div class="btn-group" style="flex-wrap: wrap; gap: 12px;">
                     <button class="btn-primary btn-tall" onclick="importFromGist()">📥 雲端還原資料</button>
                     <button class="btn-danger btn-tall" onclick="disconnectGist()">🔗 解除綁定連線</button>
                 </div>
             </div>
 
-            <div class="version-text">Version 9.5 ✨ Ghost Center Edition</div>
+            <div class="version-text">Version 9.6 ✨ Comfort Vision</div>
         </div>
     </div>
 
@@ -399,9 +411,9 @@
             <span class="modal-close" onclick="closeHelp()">&times;</span>
             <div class="card-title" style="margin-top: 5px;">📖 使用說明書</div>
 
-            <div style="margin-bottom: 16px;">
-                <div class="card-title" style="font-size: 14px; margin-top: 10px;">🩺 核心功能</div>
-                <ul style="font-size: 13px; color: var(--text-gray); padding-left: 20px; line-height: 1.6; font-weight: 600;">
+            <div style="margin-bottom: 18px;">
+                <div class="card-title" style="font-size: 15px; margin-top: 10px;">🩺 核心功能</div>
+                <ul style="font-size: 14px; color: var(--text-gray); padding-left: 20px; line-height: 1.7; font-weight: 600;">
                     <li>記錄每日 ☀️ 早上與 🌙 晚上的血壓數值</li>
                     <li>點擊列表右側的「✏️」即可隨時補填或修改</li>
                     <li>每次點擊儲存，系統將完全自動進行雲端安全覆蓋</li>
@@ -409,9 +421,9 @@
                 </ul>
             </div>
 
-            <div style="margin-bottom: 16px;">
-                <div class="card-title" style="font-size: 14px; margin-top: 10px;">☁️ 雲端備份教學</div>
-                <ol style="font-size: 13px; color: var(--text-gray); padding-left: 20px; line-height: 1.6; font-weight: 600;">
+            <div style="margin-bottom: 18px;">
+                <div class="card-title" style="font-size: 15px; margin-top: 10px;">☁️ 雲端備份教學</div>
+                <ol style="font-size: 14px; color: var(--text-gray); padding-left: 20px; line-height: 1.7; font-weight: 600;">
                     <li>前往 GitHub 註冊免費帳號並登入</li>
                     <li>點選頭像 → 選擇 <b>Settings</b></li>
                     <li>滑到最下方 → 點選 <b>Developer settings</b></li>
@@ -422,7 +434,7 @@
                 </ol>
             </div>
 
-            <div class="version-text">Version 9.5 ✨ Ghost Center Edition</div>
+            <div class="version-text">Version 9.6 ✨ Comfort Vision</div>
         </div>
     </div>
 
@@ -430,7 +442,7 @@
         <div class="modal-content" style="text-align: center;">
             <span class="modal-close" onclick="closePeriodModal()">&times;</span>
             <div class="card-title" id="period-modal-title" style="justify-content: center;">⏱️ 選擇修改時段</div>
-            <p style="color: var(--text-gray); font-size: 13px; margin-bottom: 12px; font-weight: 700;">請選擇您欲修改的記錄時段：</p>
+            <p style="color: var(--text-gray); font-size: 14px; margin-bottom: 14px; font-weight: 700;">請選擇您欲修改的記錄時段：</p>
             <div class="modal-period-btns">
                 <button class="modal-btn-morning" onclick="confirmEdit('morning')">☀️ 早上</button>
                 <button class="modal-btn-evening" onclick="confirmEdit('evening')">🌙 晚上</button>
@@ -456,7 +468,7 @@
         const themeMetaColors = { 
             'light': '#e8f0ef', 'green': '#e8f5e9',
             'purple': '#f3e5f5', 'blue': '#e1f5fe', 'brown': '#efebe9', 
-            'orange': '#fff3e0' 
+            'orange': '#fff3e0', 'pink': '#fce4ec'
         };
         
         function updateThemeMeta(theme) { 
@@ -569,7 +581,7 @@
             const list = document.getElementById('todo-list');
             list.innerHTML = '';
             if (todos.length === 0) {
-                list.innerHTML = '<div style="text-align: center; color: var(--text-gray); font-size: 13px; font-weight: bold; margin-top: 16px;">目前沒有待辦事項 🎉</div>';
+                list.innerHTML = '<div style="text-align: center; color: var(--text-gray); font-size: 14px; font-weight: bold; margin-top: 18px;">目前沒有待辦事項 🎉</div>';
                 return;
             }
 
@@ -580,7 +592,7 @@
                 div.className = 'todo-item';
                 div.innerHTML = `
                     <div class="todo-info">
-                        <div class="todo-title">${item.type} <span style="font-size: 12px; color: var(--primary-color); margin-left: 6px;">${item.date}</span></div>
+                        <div class="todo-title">${item.type} <span style="font-size: 13px; color: var(--primary-color); margin-left: 6px;">${item.date}</span></div>
                         ${item.note ? `<div class="todo-note">${item.note}</div>` : ''}
                     </div>
                     <button class="todo-del-btn" onclick="deleteTodo(${item.id})">🗑️</button>
@@ -882,7 +894,7 @@
             document.getElementById('current-time-display').innerText = `📅 今日：${info.date} 🕒 時段：${info.periodText}`;
             
             const pastDate = new Date(); 
-            pastDate.setDate(pastDate.getDate() - 2); 
+            pastDate.setDate(pastDate.getDate() - 3); // 減去3天，加上今天總共顯示 4 天
             
             document.getElementById('start-date').value = formatDate(pastDate);
             document.getElementById('end-date').value = info.date;
