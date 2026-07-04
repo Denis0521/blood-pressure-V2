@@ -1,7 +1,7 @@
-// 每次網頁有更新時，請修改此版本號，通知瀏覽器強制拉取最新程式碼
-const CACHE_NAME = 'bp-tracker-v10.2'; 
+// 每次更新網頁有大改動時，更改這個版本號，強制讓瀏覽器更新快取
+const CACHE_NAME = 'bp-tracker-v9.8'; 
 
-// 離線快取檔案清單
+// 需要被快取的檔案清單
 const urlsToCache = [
   './',
   './index.html',
