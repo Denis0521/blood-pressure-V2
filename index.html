@@ -7,7 +7,7 @@
     <link rel="manifest" href="manifest.json">
     <link rel="icon" type="image/svg+xml" href="icon.svg">
     <link rel="apple-touch-icon" href="icon.svg">
-    <meta name="theme-color" content="#d8e8e5">
+    <meta name="theme-color" content="#e0f2f1">
     <script>
         // 【防閃爍機制】在網頁渲染前立即套用主題
         let savedTheme = localStorage.getItem('bpTheme') || 'light';
@@ -16,42 +16,58 @@
         document.documentElement.className = savedTheme;
     </script>
     <style>
-        /* 護眼舒適與玻璃珠設計系統 (Rich Glass Bead UI) */
+        /* ==================================
+           🎨 撞色美學設計系統 (Contrasting Color UI)
+           為每個主題精心配對互補色，創造視覺層次與協調感
+           ================================== */
         :root {
+            /* ⚪ 經典綠 (Teal) + 柔和珊瑚紅 (Soft Coral) */
             --theme-rgb: 26, 140, 125; --theme-dark: 17, 95, 85;
+            --accent-rgb: 242, 139, 130; --accent-dark: 219, 106, 96;
             --primary-color: rgb(var(--theme-rgb)); --text-dark: #2a3b4c; --text-gray: #64748b;
-            /* 3色漸層：豐富層次，提升舒適度 */
-            --bg-gradient: linear-gradient(135deg, #f4f9f9 0%, #e8f0ef 50%, #dce8e6 100%);
+            --bg-gradient: linear-gradient(135deg, #e0f2f1 0%, #fdfbf7 50%, #fce4ec 100%);
         }
         html.green {
+            /* 🌿 森林綠 (Forest Green) + 溫暖赤陶 (Terracotta) */
             --theme-rgb: 46, 125, 50; --theme-dark: 27, 94, 32;
+            --accent-rgb: 229, 115, 115; --accent-dark: 211, 47, 47;
             --primary-color: rgb(var(--theme-rgb)); --text-dark: #1f3824;
-            --bg-gradient: linear-gradient(135deg, #f1f8e9 0%, #e8f5e9 50%, #c8e6c9 100%);
+            --bg-gradient: linear-gradient(135deg, #e8f5e9 0%, #fdfbf7 50%, #ffcdd2 100%);
         }
         html.purple {
+            /* 🔮 夢幻紫 (Purple) + 質感明黃 (Golden Yellow) */
             --theme-rgb: 142, 36, 170; --theme-dark: 106, 27, 154;
+            --accent-rgb: 255, 202, 40; --accent-dark: 255, 160, 0;
             --primary-color: rgb(var(--theme-rgb)); --text-dark: #3e2244;
-            --bg-gradient: linear-gradient(135deg, #faf5ff 0%, #f3e5f5 50%, #e1bee7 100%);
+            --bg-gradient: linear-gradient(135deg, #f3e5f5 0%, #fdfbf7 50%, #fff9c4 100%);
         }
         html.blue {
+            /* 🌊 海洋藍 (Blue) + 活力亮橘 (Vibrant Orange) */
             --theme-rgb: 2, 119, 189; --theme-dark: 1, 87, 155;
+            --accent-rgb: 255, 167, 38; --accent-dark: 245, 124, 0;
             --primary-color: rgb(var(--theme-rgb)); --text-dark: #1b3a52;
-            --bg-gradient: linear-gradient(135deg, #f0f9ff 0%, #e1f5fe 50%, #b3e5fc 100%);
+            --bg-gradient: linear-gradient(135deg, #e1f5fe 0%, #fdfbf7 50%, #ffe0b2 100%);
         }
         html.brown {
+            /* ☕ 拿鐵棕 (Brown) + 清新孔雀藍 (Cyan/Teal) */
             --theme-rgb: 109, 76, 65; --theme-dark: 78, 52, 46;
+            --accent-rgb: 77, 208, 225; --accent-dark: 0, 151, 167;
             --primary-color: rgb(var(--theme-rgb)); --text-dark: #42322e;
-            --bg-gradient: linear-gradient(135deg, #fdfbf7 0%, #efebe9 50%, #d7ccc8 100%);
+            --bg-gradient: linear-gradient(135deg, #efebe9 0%, #fdfbf7 50%, #e0f7fa 100%);
         }
         html.orange {
+            /* 🍊 活力橙 (Orange) + 沉穩靛藍 (Indigo) */
             --theme-rgb: 240, 113, 20; --theme-dark: 191, 86, 10;
+            --accent-rgb: 92, 107, 192; --accent-dark: 63, 81, 181;
             --primary-color: rgb(var(--theme-rgb)); --text-dark: #4e3015;
-            --bg-gradient: linear-gradient(135deg, #fff8f0 0%, #fff3e0 50%, #ffe0b2 100%);
+            --bg-gradient: linear-gradient(135deg, #fff3e0 0%, #fdfbf7 50%, #e8eaf6 100%);
         }
         html.pink {
+            /* 🌸 櫻花粉 (Pink) + 涼爽薄荷綠 (Mint Green) */
             --theme-rgb: 233, 30, 99; --theme-dark: 194, 24, 91;
+            --accent-rgb: 77, 182, 172; --accent-dark: 0, 150, 136;
             --primary-color: rgb(var(--theme-rgb)); --text-dark: #4a1c28;
-            --bg-gradient: linear-gradient(135deg, #fff0f5 0%, #fce4ec 50%, #f8bbd0 100%);
+            --bg-gradient: linear-gradient(135deg, #fce4ec 0%, #fdfbf7 50%, #e0f2f1 100%);
         }
 
         :root, html.green, html.purple, html.blue, html.brown, html.orange, html.pink {
@@ -80,11 +96,18 @@
             box-shadow: var(--card-shadow); border: var(--card-border); position: relative;
         }
         
+        /* 標題下方加入了主色至撞色的漸層分隔線 */
         .card-title { 
             font-size: 18px; font-weight: 900; margin-bottom: 14px; padding-bottom: 8px; 
-            border-bottom: 2px solid rgba(var(--theme-rgb), 0.15); color: var(--text-dark); 
+            color: var(--text-dark); 
             display: flex; justify-content: space-between; align-items: center;
             white-space: nowrap; text-shadow: var(--text-3d-effect); letter-spacing: 0.5px;
+            position: relative;
+        }
+        .card-title::after {
+            content: ''; position: absolute; bottom: 0; left: 0; width: 100%; height: 2px;
+            background: linear-gradient(90deg, rgba(var(--theme-rgb), 0.5), rgba(var(--accent-rgb), 0.5));
+            border-radius: 2px;
         }
         
         .input-group { display: flex; gap: 10px; margin-bottom: 16px; align-items: center; }
@@ -112,14 +135,15 @@
         }
         .btn-tall { height: 48px; font-size: 15px; }
 
+        /* 主要按鈕套用專屬撞色 (Accent Color) 提升視覺焦點 */
         .btn-primary { 
-            background: linear-gradient(180deg, rgba(var(--theme-rgb), 0.75) 0%, rgba(var(--theme-dark), 0.95) 100%);
-            color: #ffffff; border: 1px solid rgba(var(--theme-dark), 0.6);
-            box-shadow: inset 0 3px 5px rgba(255, 255, 255, 0.5), inset 0 -3px 5px rgba(0, 0, 0, 0.25), 0 4px 8px rgba(var(--theme-dark), 0.3);
-            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.4);
+            background: linear-gradient(180deg, rgba(var(--accent-rgb), 0.85) 0%, rgba(var(--accent-dark), 0.95) 100%);
+            color: #ffffff; border: 1px solid rgba(var(--accent-dark), 0.6);
+            box-shadow: inset 0 3px 5px rgba(255, 255, 255, 0.4), inset 0 -3px 5px rgba(0, 0, 0, 0.2), 0 4px 8px rgba(var(--accent-dark), 0.3);
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
         }
         .btn-primary:active { 
-            box-shadow: inset 0 4px 6px rgba(0, 0, 0, 0.2), inset 0 -2px 3px rgba(255, 255, 255, 0.2), 0 2px 3px rgba(var(--theme-dark), 0.2);
+            box-shadow: inset 0 4px 6px rgba(0, 0, 0, 0.2), inset 0 -2px 3px rgba(255, 255, 255, 0.2), 0 2px 3px rgba(var(--accent-dark), 0.2);
             transform: translateY(2px);
         }
 
@@ -157,7 +181,8 @@
         .btn-badge { overflow: visible !important; }
         .btn-badge.has-notification::after {
             content: ''; position: absolute; top: -2px; right: 0px;
-            width: 10px; height: 10px; background-color: #ff3b30; border-radius: 50%; border: 2px solid white; box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+            width: 10px; height: 10px; background-color: rgb(var(--accent-rgb)); /* 提示紅點也改用撞色 */
+            border-radius: 50%; border: 2px solid white; box-shadow: 0 2px 4px rgba(0,0,0,0.2);
         }
 
         .hint-text { color: var(--text-gray); font-size: 13px; margin-bottom: 10px; font-weight: 700; white-space: nowrap; }
@@ -481,14 +506,15 @@
             setTimeout(() => { if (container.contains(toast)) container.removeChild(toast); }, 3000);
         }
 
+        // 更新 Meta 背景色以匹配最新的主題漸層起點色
         const themeMetaColors = { 
-            'light': '#f4f9f9', 'green': '#f1f8e9',
-            'purple': '#faf5ff', 'blue': '#f0f9ff', 'brown': '#fdfbf7', 
-            'orange': '#fff8f0', 'pink': '#fff0f5'
+            'light': '#e0f2f1', 'green': '#e8f5e9',
+            'purple': '#f3e5f5', 'blue': '#e1f5fe', 'brown': '#efebe9', 
+            'orange': '#fff3e0', 'pink': '#fce4ec'
         };
         
         function updateThemeMeta(theme) { 
-            document.querySelector('meta[name="theme-color"]').setAttribute('content', themeMetaColors[theme] || '#f4f9f9'); 
+            document.querySelector('meta[name="theme-color"]').setAttribute('content', themeMetaColors[theme] || '#e0f2f1'); 
         }
         
         function loadTheme() {
