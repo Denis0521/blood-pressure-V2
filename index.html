@@ -144,10 +144,13 @@
             transform: translateY(2px); 
         }
 
+        /* ---------------------------------
+           🌟 加大：進階和說明按鈕 
+           --------------------------------- */
         .header-btn { 
-            flex: none; height: 34px; padding: 0 16px; border-radius: 20px;
+            flex: none; height: 38px; padding: 0 18px; border-radius: 20px;
             background: linear-gradient(180deg, rgba(255,255,255,0.9) 0%, rgba(230,235,240,0.8) 100%);
-            color: var(--text-dark); font-size: 13px; border: 1px solid rgba(0,0,0,0.1);
+            color: var(--text-dark); font-size: 16px; border: 1px solid rgba(0,0,0,0.1); /* 字體加大為 16px */
             box-shadow: inset 0 2px 3px #ffffff, inset 0 -2px 4px rgba(0,0,0,0.05), 0 3px 5px rgba(0,0,0,0.05);
         }
         .header-btn:active { 
@@ -196,10 +199,13 @@
         .modal-close { position: absolute; top: 12px; right: 16px; font-size: 26px; font-weight: bold; color: #94a3b8; cursor: pointer; transition: 0.2s; }
         .modal-close:hover { color: #0f172a; }
         
+        /* ---------------------------------
+           🌟 加大：主題選單字體 
+           --------------------------------- */
         .theme-select { 
-            width: 100%; height: 44px; padding: 0 16px; border-radius: 22px; margin-bottom: 16px; 
+            width: 100%; height: 50px; padding: 0 16px; border-radius: 25px; margin-bottom: 16px; 
             background: var(--input-bg); color: var(--text-dark); border: 1px solid rgba(0,0,0,0.1); box-shadow: var(--input-shadow);
-            font-size: 15px; font-weight: 700; outline: none; box-sizing: border-box; 
+            font-size: 18px; font-weight: 700; outline: none; box-sizing: border-box; /* 字體加大為 18px，高度加到 50px */
         }
         .version-text { text-align: center; margin-top: 18px; font-size: 12px; color: #94a3b8; font-weight: 700; letter-spacing: 1px; }
         
@@ -237,7 +243,10 @@
             th { background-color: #f0f0f0 !important; font-weight: bold; }
         }
     
-        .gist-status { display: flex; align-items: center; gap: 8px; margin-bottom: 12px; padding: 12px 14px; border-radius: 20px; background: #f8fafc; border: 1px solid #e2e8f0; font-size: 13px; font-weight: 700; white-space: nowrap; }
+        /* ---------------------------------
+           🌟 加大：雲端自動覆蓋狀態字體 
+           --------------------------------- */
+        .gist-status { display: flex; align-items: center; gap: 8px; margin-bottom: 12px; padding: 12px 14px; border-radius: 20px; background: #f8fafc; border: 1px solid #e2e8f0; font-size: 16px; font-weight: 700; white-space: nowrap; } /* 字體加大為 16px */
         .gist-status-dot { width: 10px; height: 10px; border-radius: 50%; background: #cbd5e1; box-shadow: inset 0 2px 4px rgba(0,0,0,0.2); }
         .gist-status-dot.connected { background: #22c55e; box-shadow: 0 0 8px rgba(34, 197, 94, 0.4), inset 0 2px 4px rgba(0,0,0,0.1); }
         .gist-status-dot.error { background: #ef4444; }
