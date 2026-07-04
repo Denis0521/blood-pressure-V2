@@ -12,9 +12,8 @@
     <!-- 引入 Firebase SDK (v10) -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getAuth, signInWithPopup, GoogleAuthProvider, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+        import { getAuth, GoogleAuthProvider, signOut, onAuthStateChanged, signInWithCredential } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 
-        // 裕淳，這裡已經幫你修正為 100% 完整且合法的 Firebase 正確金鑰
         const firebaseConfig = {
             apiKey: "AIzaSyDmPsZlnS8DK2v52Tlub-1IGyjsYyJcMDA",
             authDomain: "my-bp-tracker-15cff.firebaseapp.com",
@@ -25,15 +24,28 @@
             measurementId: "G-JGQJYS4VRF"
         };
 
-        // 初始化 Firebase
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
         const provider = new GoogleAuthProvider();
-
-        // 你的 Cloudflare Worker 網址
         const WORKER_URL = "https://bp-backup-worker.denis0521.workers.dev/";
 
-        window.authUtils = { auth, provider, signInWithPopup, GoogleAuthProvider, signOut, onAuthStateChanged, WORKER_URL };
+        window.authUtils = { auth, provider, signOut, onAuthStateChanged, WORKER_URL };
+
+        // 💡 核心修正：檢查是否是從 Google 登入跳轉回來的網頁
+        function checkRedirectResult() {
+            const hash = window.location.hash;
+            if (hash && hash.includes("access_token")) {
+                const params = new URLSearchParams(hash.replace("#", "?"));
+                const credential = GoogleAuthProvider.credential(params.get("id_token"), params.get("access_token"));
+                signInWithCredential(auth, credential)
+                    .then(() => {
+                        window.location.hash = ""; // 登入成功後清除網址後面的雜訊
+                        localStorage.setItem('bp_logged_in', 'true');
+                    })
+                    .catch(err => console.error("跳轉認證失敗:", err));
+            }
+        }
+        checkRedirectResult();
     </script>
 
     <script>
@@ -226,13 +238,13 @@
         
         .modal-btn-morning { 
             background: linear-gradient(180deg, #ffb74d 0%, #f57c00 100%); color: white; border: 1px solid #e65100;
-            box-shadow: inset 0 3px 5px rgba(255,255,255,0.5), inset 0 -3px 5px rgba(0,0,0,0.25), 0 4px 8px rgba(230,81,0,0.3); text-shadow: 0 1px 2px rgba(0,0,0,0.4);
+            box-shadow: inset 0 3px 5px rgba(255, 255, 255, 0.5), inset 0 -3px 5px rgba(0, 0, 0, 0.25), 0 4px 8px rgba(230,81,0,0.3); text-shadow: 0 1px 2px rgba(0,0,0,0.4);
         }
         .modal-btn-morning:active { box-shadow: inset 0 4px 6px rgba(0,0,0,0.2), inset 0 -2px 3px rgba(255,255,255,0.2), 0 2px 3px rgba(230,81,0,0.2); transform: translateY(2px); }
         
         .modal-btn-evening { 
             background: linear-gradient(180deg, #64b5f6 0%, #1976d2 100%); color: white; border: 1px solid #0d47a1;
-            box-shadow: inset 0 3px 5px rgba(255,255,255,0.5), inset 0 -3px 5px rgba(0,0,0,0.25), 0 4px 8px rgba(13,71,161,0.3); text-shadow: 0 1px 2px rgba(0,0,0,0.4);
+            box-shadow: inset 0 3px 5px rgba(255, 255, 255, 0.5), inset 0 -3px 5px rgba(0, 0, 0, 0.25), 0 4px 8px rgba(13,71,161,0.3); text-shadow: 0 1px 2px rgba(0,0,0,0.4);
         }
         .modal-btn-evening:active { box-shadow: inset 0 4px 6px rgba(0,0,0,0.2), inset 0 -2px 3px rgba(255,255,255,0.2), 0 2px 3px rgba(13,71,161,0.2); transform: translateY(2px); }
         
@@ -278,7 +290,6 @@
         .todo-input-row { display: flex; gap: 8px; margin-bottom: 10px; flex-wrap: nowrap; }
         .todo-input-row select, .todo-input-row input { flex: 1; height: 42px; border-radius: 21px; border: 1px solid rgba(0,0,0,0.1); padding: 0 14px; font-weight: 700; font-size: 15px; outline: none; background: var(--input-bg); color: var(--text-dark); box-shadow: var(--input-shadow); white-space: nowrap; }
         
-        /* 專屬 Google 登入按鈕樣式 */
         .btn-google {
             background: #ffffff; color: #757575; border: 1px solid #ddd;
             font-family: Roboto, arial, sans-serif; font-weight: 700;
@@ -410,7 +421,7 @@
                 </div>
             </div>
 
-            <div class="version-text">Version 10.0 ✨ Cloudflare KV Edition</div>
+            <div class="version-text">Version 10.2 ✨ Cloudflare KV Edition</div>
         </div>
     </div>
 
@@ -426,7 +437,7 @@
                     <li>一鍵產出乾淨的 PDF，方便回診給醫師看。</li>
                 </ul>
             </div>
-            <div class="version-text">Version 10.0 ✨ Cloudflare KV Edition</div>
+            <div class="version-text">Version 10.2 ✨ Cloudflare KV Edition</div>
         </div>
     </div>
 
@@ -516,7 +527,7 @@
             }
         }
 
-        // Cloudflare KV 同步機制 (改為相容性更高的處理邏輯)
+        // Cloudflare KV 同步機制
         async function syncToCloud(isImport = false) {
             if (!currentUser) return;
             const dot = document.getElementById('cloud-dot');
@@ -559,22 +570,22 @@
             }
         }
 
-        // 升級為相容性最高、直接跳轉網頁的 Auth 處理函數
+        // 💡 物理跳轉登入解法：100% 繞過 GitHub Pages 網域通訊阻擋
         function loginWithGoogle() {
-            window.authUtils.signInWithPopup(window.authUtils.auth, window.authUtils.provider)
-                .then(() => showToast('🔑 登入成功！'))
-                .catch((err) => {
-                    console.error(err);
-                    showToast('❌ 登入失敗，正在嘗試相容模式...');
-                    // 如果彈出視窗被阻擋，自動降級改用跳轉網頁 (Redirect) 模式登入
-                    window.location.href = `https://my-bp-tracker-15cff.firebaseapp.com/__/auth/handler?apiKey=${window.authUtils.auth.config.apiKey}&appName=${window.authUtils.auth.name}&authType=signInWithPopup&providerId=google.com&scopes=profile,email`;
-                });
+            showToast('🚀 正在前往 Google 安全驗證頁面...', 'warning');
+            const apiKey = window.authUtils.auth.config.apiKey;
+            const appName = window.authUtils.auth.name;
+            
+            // 將當前的 GitHub 回跳網址進行編碼，讓 Firebase 認證完後回傳 Token
+            const currentUrl = encodeURIComponent(window.location.href.split('#')[0]);
+            window.location.href = `https://my-bp-tracker-15cff.firebaseapp.com/__/auth/handler?apiKey=${apiKey}&appName=${appName}&authType=signInWithPopup&providerId=google.com&scopes=profile,email&redirectUrl=${currentUrl}`;
         }
         
         function logoutGoogle() {
             if (confirm('確定要登出 Google 帳號嗎？')) {
                 window.authUtils.signOut(window.authUtils.auth).then(() => {
                     currentUser = null;
+                    localStorage.removeItem('bp_logged_in');
                     document.getElementById('login-area').style.display = 'block';
                     document.getElementById('logout-area').style.display = 'none';
                     document.getElementById('cloud-dot').className = 'gist-status-dot';

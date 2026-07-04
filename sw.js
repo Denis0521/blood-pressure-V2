@@ -1,5 +1,5 @@
 // 每次網頁有更新時，請修改此版本號，通知瀏覽器強制拉取最新程式碼
-const CACHE_NAME = 'bp-tracker-v10.1'; 
+const CACHE_NAME = 'bp-tracker-v10.2'; 
 
 // 離線快取檔案清單
 const urlsToCache = [
