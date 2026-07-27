@@ -1,12 +1,13 @@
 // 每次更新網頁有大改動時，更改這個版本號，強制讓瀏覽器更新快取
-const CACHE_NAME = 'bp-tracker-v9.8'; 
+const CACHE_NAME = 'bp-tracker-v9.9'; 
 
 // 需要被快取的檔案清單
 const urlsToCache = [
   './',
   './index.html',
   './manifest.json',
-  './icon.svg'
+  './icon-192.png',
+  './icon-512.png'
 ];
 
 self.addEventListener('install', event => {
