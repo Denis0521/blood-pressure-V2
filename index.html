@@ -1,935 +1,1133 @@
 <!DOCTYPE html>
 <html lang="zh-TW">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>血壓記錄版</title>
-    <link rel="manifest" href="manifest.json">
-    <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
-    <link rel="apple-touch-icon" sizes="512x512" href="icon-512.png">
-    <meta name="theme-color" content="#d8e8e5">
-    <script>
-        // 【防閃爍機制】在網頁渲染前立即套用主題
-        let savedTheme = localStorage.getItem('bpTheme') || 'light';
-        const allowedThemes = ['light', 'green', 'purple', 'blue', 'brown', 'orange', 'pink'];
-        if (!allowedThemes.includes(savedTheme)) savedTheme = 'light';
-        document.documentElement.className = savedTheme;
-    </script>
-    <style>
-        /* 護眼舒適與玻璃珠設計系統 (Rich Glass Bead UI) */
-        :root {
-            --theme-rgb: 26, 140, 125; --theme-dark: 17, 95, 85;
-            --primary-color: rgb(var(--theme-rgb)); --text-dark: #2a3b4c; --text-gray: #64748b;
-            /* 3色漸層：豐富層次，提升舒適度 */
-            --bg-gradient: linear-gradient(135deg, #f4f9f9 0%, #e8f0ef 50%, #dce8e6 100%);
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, interactive-widget=resizes-content">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+<meta http-equiv="Pragma" content="no-cache" />
+<meta http-equiv="Expires" content="0" />
+
+<title>幼兒學習區紀錄</title>
+<link rel="manifest" href="manifest.json">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="學習區紀錄">
+<link rel="apple-touch-icon" href="icon-192.png">
+<script src="https://accounts.google.com/gsi/client" async defer></script>
+
+<style>
+    :root {
+        --primary-blue: #1a73e8;
+        --bg-gray: #e8eaed;
+        --border-color: #000;
+    }
+
+    * { box-sizing: border-box; }
+
+    body { 
+        background-color: var(--bg-gray); 
+        font-family: "標楷體", BiauKai, "Microsoft JhengHei", sans-serif; 
+        margin: 0; 
+        padding: 0; 
+        padding-top: 140px; 
+        display: flex; 
+        justify-content: center; 
+    }
+
+    .top-bar { 
+        position: fixed; 
+        top: 0; 
+        left: 0; 
+        right: 0; 
+        background: #353745; 
+        color: white; 
+        padding: 10px; 
+        display: flex; 
+        justify-content: center; 
+        z-index: 1000; 
+        border-bottom: 1px solid #222; 
+    }
+
+    .top-bar-row { 
+        display: grid; 
+        grid-template-columns: repeat(6, 1fr); 
+        gap: 8px; 
+        width: 100%; 
+        max-width: 700px; 
+        margin: 0 auto; 
+    }
+
+    .btn-half { grid-column: span 3; }
+    .btn-third { grid-column: span 2; }
+
+    .seat-control { 
+        display: inline-flex; 
+        align-items: center; 
+        justify-content: center; 
+        width: 100%; 
+        height: 34px; 
+        background: linear-gradient(to bottom, #595a68, #424350); 
+        border: 1px solid rgba(255, 255, 255, 0.15); 
+        box-shadow: 0 2px 4px rgba(0,0,0,0.2), inset 0 1px 2px rgba(255,255,255,0.1); 
+        border-radius: 20px; 
+        color: #fff; 
+        text-shadow: 1px 1px 3px rgba(0,0,0,0.5); 
+        font-weight: bold; 
+        font-family: "Microsoft JhengHei", sans-serif; 
+        font-size: 14px; 
+    }
+
+    .seat-input { 
+        padding: 2px 4px; 
+        font-size: 14px; 
+        border-radius: 12px; 
+        border: none; 
+        width: 55px; 
+        text-align: center; 
+        font-weight: bold; 
+        background: rgba(255,255,255,0.9); 
+        color: #333; 
+        margin-left: 6px; 
+        outline: none; 
+    }
+
+    .btn { 
+        width: 100%; 
+        height: 34px; 
+        padding: 0 4px; 
+        border-radius: 20px; 
+        background: rgba(255, 255, 255, 0.15); 
+        border: 1px solid rgba(255, 255, 255, 0.15); 
+        box-shadow: 0 2px 4px rgba(0,0,0,0.2), inset 0 1px 2px rgba(255,255,255,0.1); 
+        color: #fff; 
+        text-shadow: 1px 1px 3px rgba(0,0,0,0.5); 
+        font-size: 14px; 
+        font-weight: bold; 
+        font-family: "Microsoft JhengHei", sans-serif; 
+        cursor: pointer; 
+        display: inline-flex; 
+        justify-content: center; 
+        align-items: center; 
+        transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1); 
+    }
+
+    .btn:hover { filter: brightness(1.1); transform: translateY(-2px); }
+    .btn:active { transform: scale(0.96) translateY(0); box-shadow: 0 1px 2px rgba(0,0,0,0.1); }
+
+    @media screen and (max-width: 400px) {
+        .btn { font-size: 13px; letter-spacing: -0.5px; }
+        .seat-control { font-size: 13px; letter-spacing: -0.5px; }
+        .seat-input { width: 45px; }
+    }
+
+    .btn-auth { background: linear-gradient(to bottom, #4285f4, #2b5cbf); }
+    .btn-clear { background: linear-gradient(to bottom, #775c88, #594165); }
+    .btn-save { background: linear-gradient(to bottom, #53886f, #3b624f); }
+    .btn-load { background: linear-gradient(to bottom, #9d7b43, #72582f); }
+    .btn-print { background: linear-gradient(to bottom, #8e6268, #664349); }
+    .btn-dict { background: linear-gradient(to bottom, #a7883a, #786326); } 
+    .btn-info { background: linear-gradient(to bottom, #49859a, #305869); } 
+
+    .a4-page { 
+        width: 210mm; 
+        min-height: 297mm; 
+        background: white; 
+        box-shadow: 0 5px 15px rgba(0,0,0,0.3); 
+        padding: 10mm 15mm 10mm 15mm; 
+        position: relative; 
+        margin-bottom: 30px; 
+        overflow: hidden; 
+    }
+
+    h1 { 
+        text-align: center; 
+        font-size: 19px; 
+        margin: 0 0 8px 0; 
+        font-weight: bold; 
+        letter-spacing: 0.5px; 
+    }
+
+    .title-input { 
+        font-size: 19px; 
+        font-family: inherit; 
+        border: none; 
+        text-align: center; 
+        outline: none; 
+        font-weight: bold; 
+        background: rgba(0,0,0,0.04); 
+        border-radius: 4px; 
+    }
+
+    .title-input.year { width: 50px; } 
+    .title-input.term { width: 30px; }
+
+    .header-info { 
+        display: flex; 
+        justify-content: space-between; 
+        align-items: center; 
+        font-size: 16px; 
+        margin-bottom: 10px; 
+        width: 100%; 
+    }
+
+    .header-col { 
+        display: flex; 
+        align-items: center; 
+        white-space: nowrap; 
+    }
+
+    .header-col input, .header-col select { 
+        font-size: 16px; 
+        font-family: inherit; 
+        border: none; 
+        outline: none; 
+        background: rgba(0,0,0,0.05); 
+        border-radius: 4px; 
+        padding: 4px 6px; 
+        margin-left: 6px; 
+        text-align: center; 
+        color: #000; 
+    }
+
+    .class-col select { width: 75px; } 
+    .name-col input { width: 100px; } 
+    .seat-col input { width: 45px; } 
+    .date-col input { width: 150px; text-align: left; padding-left: 8px; } 
+
+    .table-wrapper { width: 100%; }
+
+    table.main-table { 
+        width: 100%; 
+        border-collapse: collapse; 
+        border: 1px solid var(--border-color); 
+        table-layout: fixed; 
+    }
+
+    table.main-table td { 
+        border: 1px solid var(--border-color); 
+        padding: 0; 
+        vertical-align: top; 
+    } 
+
+    .checkbox-cell { 
+        padding: 4px 10px !important; 
+        text-align: left; 
+        font-size: 16px; 
+        vertical-align: middle !important; 
+        height: 38px; 
+    }
+
+    .checkbox-cell input[type="checkbox"] { 
+        transform: scale(1.2); 
+        margin-right: 4px; 
+        vertical-align: middle; 
+        cursor: pointer; 
+    }
+
+    .checkbox-icon { 
+        font-size: 16px; 
+        margin-right: 3px; 
+        vertical-align: middle; 
+    }
+
+    .photo-cell { 
+        display: flex; 
+        flex-direction: column; 
+        height: 410px; 
+        position: relative; 
+    }
+
+    .photo-area { 
+        height: 250px; 
+        display: flex; 
+        align-items: center; 
+        justify-content: center; 
+        border-bottom: 1px solid var(--border-color); 
+        cursor: pointer; 
+        overflow: hidden; 
+        position: relative; 
+        background-color: #f9f9f9; 
+        -webkit-tap-highlight-color: transparent; 
+    }
+
+    .photo-area:active { background-color: #e0e0e0; }
+
+    .photo-area img { 
+        width: 100%; 
+        height: 100%; 
+        object-fit: contain; 
+        display: none; 
+    }
+
+    .photo-placeholder { 
+        color: #888; 
+        font-size: 12px; 
+        text-align: center; 
+        padding: 2px; 
+        position: absolute; 
+        top: 50%; 
+        left: 50%; 
+        transform: translate(-50%, -50%); 
+        width: 100%; 
+        pointer-events: none; 
+    }
+
+    .delete-btn { 
+        position: absolute; 
+        top: 4px; 
+        right: 4px; 
+        background-color: rgba(244, 67, 54, 0.85); 
+        color: white; 
+        border: none; 
+        border-radius: 50%; 
+        width: 22px; 
+        height: 22px; 
+        font-size: 12px; 
+        line-height: 22px; 
+        text-align: center; 
+        cursor: pointer; 
+        z-index: 10; 
+        display: none; 
+    }
+
+    .text-area { 
+        padding: 6px 8px; 
+        font-size: 15px; 
+        display: flex; 
+        flex-direction: column; 
+        justify-content: space-between; 
+        height: 160px; 
+    }
+
+    .tf-row { 
+        display: flex; 
+        align-items: center; 
+        width: 100%; 
+    }
+
+    .tf-row input { 
+        flex-grow: 1; 
+        font-size: 15px; 
+        font-family: inherit; 
+        border: none; 
+        outline: none; 
+        background: rgba(0,0,0,0.04); 
+        border-radius: 4px; 
+        padding: 2px 6px; 
+        min-height: 24px; 
+    }
+
+    .top-line { 
+        border-top: 1px solid var(--border-color); 
+        padding-top: 6px; 
+        margin-top: 4px; 
+    }
+
+    .text-label { 
+        font-weight: normal; 
+        flex-shrink: 0; 
+        font-size: 15px; 
+    }
+
+    .footer-container { 
+        display: flex; 
+        justify-content: space-between; 
+        align-items: center; 
+        font-size: 15px; 
+        padding: 8px 4px 0 4px; 
+    }
+
+    .footer-container input { 
+        font-size: 15px; 
+        font-family: inherit; 
+        border: none; 
+        outline: none; 
+        width: 100px; 
+        text-align: center; 
+        background: rgba(0,0,0,0.04); 
+        border-radius: 4px; 
+        padding: 2px 4px;
+    }
+
+    .footer-note { font-weight: bold; font-size: 14px; }
+
+    .loader-overlay { 
+        position: fixed; 
+        top: 0; 
+        left: 0; 
+        width: 100%; 
+        height: 100%; 
+        background: rgba(0,0,0,0.85); 
+        display: none; 
+        z-index: 3000; 
+        justify-content: center; 
+        align-items: center; 
+        flex-direction: column; 
+        color: white; 
+        font-family: "Microsoft JhengHei", sans-serif; 
+        font-size: 16px; 
+        text-align: center;
+    }
+
+    .spinner { 
+        border: 5px solid #f3f3f3; 
+        border-top: 5px solid #34a853; 
+        border-radius: 50%; 
+        width: 40px; 
+        height: 40px; 
+        animation: spin 1s linear infinite; 
+        margin-bottom: 15px; 
+    }
+
+    @keyframes spin { 
+        0% { transform: rotate(0deg); } 
+        100% { transform: rotate(360deg); } 
+    }
+
+    @media screen {
+        table.main-table { border: none !important; }
+        table.main-table td { border: none !important; }
+        table.main-table td.photo-wrapper-td { 
+            border: 1px solid var(--border-color) !important; 
         }
-        html.green {
-            --theme-rgb: 46, 125, 50; --theme-dark: 27, 94, 32;
-            --primary-color: rgb(var(--theme-rgb)); --text-dark: #1f3824;
-            --bg-gradient: linear-gradient(135deg, #f1f8e9 0%, #e8f5e9 50%, #c8e6c9 100%);
-        }
-        html.purple {
-            --theme-rgb: 142, 36, 170; --theme-dark: 106, 27, 154;
-            --primary-color: rgb(var(--theme-rgb)); --text-dark: #3e2244;
-            --bg-gradient: linear-gradient(135deg, #faf5ff 0%, #f3e5f5 50%, #e1bee7 100%);
-        }
-        html.blue {
-            --theme-rgb: 2, 119, 189; --theme-dark: 1, 87, 155;
-            --primary-color: rgb(var(--theme-rgb)); --text-dark: #1b3a52;
-            --bg-gradient: linear-gradient(135deg, #f0f9ff 0%, #e1f5fe 50%, #b3e5fc 100%);
-        }
-        html.brown {
-            --theme-rgb: 109, 76, 65; --theme-dark: 78, 52, 46;
-            --primary-color: rgb(var(--theme-rgb)); --text-dark: #42322e;
-            --bg-gradient: linear-gradient(135deg, #fdfbf7 0%, #efebe9 50%, #d7ccc8 100%);
-        }
-        html.orange {
-            --theme-rgb: 240, 113, 20; --theme-dark: 191, 86, 10;
-            --primary-color: rgb(var(--theme-rgb)); --text-dark: #4e3015;
-            --bg-gradient: linear-gradient(135deg, #fff8f0 0%, #fff3e0 50%, #ffe0b2 100%);
-        }
-        html.pink {
-            --theme-rgb: 233, 30, 99; --theme-dark: 194, 24, 91;
-            --primary-color: rgb(var(--theme-rgb)); --text-dark: #4a1c28;
-            --bg-gradient: linear-gradient(135deg, #fff0f5 0%, #fce4ec 50%, #f8bbd0 100%);
+    }
+
+    @media screen and (max-width: 800px) {
+        body { 
+            padding-top: 130px; 
+            background-color: #fff; 
         }
 
-        :root, html.green, html.purple, html.blue, html.brown, html.orange, html.pink {
-            --card-bg: #ffffff;
-            --card-shadow: 0 8px 20px rgba(0, 0, 0, 0.05), 0 3px 6px rgba(0, 0, 0, 0.02);
-            --card-border: 1px solid rgba(255, 255, 255, 0.9);
-            --input-bg: #f8fafd;
-            --input-shadow: inset 0 3px 5px rgba(0, 0, 0, 0.05), inset 0 1px 2px rgba(0,0,0,0.03), 0 1px 0 rgba(255,255,255,1);
-            --table-header: rgba(var(--theme-rgb), 0.1);
-            --text-3d-effect: 1px 1px 0px rgba(255,255,255,0.9), 2px 2px 0px rgba(var(--theme-dark), 0.2), 3px 3px 5px rgba(0,0,0,0.1);
+        .a4-page { 
+            width: 100%; 
+            height: auto; 
+            box-shadow: none; 
+            padding: 15px; 
+            margin-top: 0; 
+            margin-bottom: 0; 
+            border-radius: 0; 
+        }
+
+        h1 { 
+            font-size: 20px; 
+            line-height: 1.5; 
+            margin-bottom: 15px; 
+        }
+
+        .title-input { 
+            background: #fff; 
+            border: 1px solid #ccc !important; 
+        }
+
+        .header-info { 
+            display: flex; 
+            flex-wrap: wrap; 
+            gap: 12px; 
+            margin-bottom: 15px; 
+        }
+
+        .header-col { 
+            display: flex; 
+            flex-direction: row; 
+            align-items: center; 
+        }
+
+        .class-col { width: calc(40% - 6px); } 
+        .name-col { width: calc(60% - 6px); } 
+        .seat-col { width: calc(32% - 6px); } 
+        .date-col { width: calc(68% - 6px); }
+
+        .header-col input, .header-col select { 
+            flex-grow: 1; 
+            width: 100%; 
+            height: 42px; 
+            border: 1px solid #ccc !important; 
+            background: #fff; 
+            text-align: left; 
+            padding: 0 10px; 
+            font-size: 16px;
+        }
+
+        table.main-table { 
+            display: flex; 
+            flex-wrap: wrap; 
+            width: 100%; 
+            border: none !important; 
+        }
+
+        table.main-table tbody, table.main-table tr { display: contents; }
+
+        .checkbox-cell { 
+            flex: 0 0 50%; 
+            max-width: 50%; 
+            height: 50px; 
+            display: flex; 
+            align-items: center; 
+            justify-content: flex-start; 
+            padding-left: 15px !important; 
+            border: none !important; 
+            background: #fff; 
+        }
+
+        .checkbox-cell input[type="checkbox"] { 
+            transform: scale(1.5); 
+            margin-right: 10px; 
+        }
+
+        td.photo-wrapper-td { 
+            flex: 0 0 100%; 
+            max-width: 100%; 
+            display: block; 
+            margin-top: 20px; 
+            border: 2px solid #000 !important; 
+            border-radius: 12px; 
+            overflow: hidden; 
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08); 
+            background: #fff; 
+        }
+
+        .photo-cell { height: auto; }
+
+        .photo-area { 
+            height: 280px; 
+            background-color: #f8f9fa; 
+            border-bottom: 2px solid #000; 
+        }
+
+        .text-area { 
+            height: auto; 
+            padding: 15px; 
+            gap: 12px; 
+        }
+
+        .tf-row { 
+            flex-direction: column; 
+            align-items: flex-start; 
+            width: 100%; 
+        }
+
+        .tf-row.inline-mobile { 
+            flex-direction: row; 
+            align-items: center; 
+        } 
+
+        .tf-row.inline-mobile input[type="text"] { 
+            width: auto; 
+            flex-grow: 1; 
+            margin-left: 10px; 
+            margin-top: 0; 
+        }
+
+        .text-label { 
+            font-size: 15px; 
+            color: var(--primary-blue); 
+            font-weight: bold; 
+            margin-bottom: 4px; 
+        }
+
+        .tf-row input[type="text"] { 
+            border: 1px solid #ccc !important; 
+            height: 45px; 
+            font-size: 16px !important; 
+            border-radius: 6px; 
+            padding: 0 12px !important; 
+            background: #fff; 
+            width: 100%; 
+            margin-top: 4px; 
+        }
+
+        .top-line { 
+            border: none; 
+            padding: 0; 
+            margin-top: 10px; 
+        }
+
+        .footer-container { 
+            display: flex; 
+            flex-direction: row; 
+            flex-wrap: wrap; 
+            justify-content: space-between; 
+            align-items: center; 
+            padding-top: 25px; 
+            gap: 15px; 
+        }
+
+        .footer-container div { 
+            width: 100%; 
+            display: flex; 
+            flex-direction: row; 
+            align-items: center; 
+        }
+
+        .footer-container input { 
+            flex-grow: 1; 
+            height: 45px; 
+            font-size: 16px; 
+            border: 1px solid #ccc !important; 
+            border-radius: 6px; 
+            text-align: left; 
+            padding: 0 12px; 
+            margin-left: 10px; 
+            background: #fff;
+        }
+    }
+
+    @media print {
+        @page { 
+            margin: 0; 
+            size: A4 portrait; 
         }
 
         body { 
-            font-family: 'Helvetica Neue', Helvetica, Arial, 'PingFang TC', sans-serif; 
-            background: var(--bg-gradient); background-attachment: fixed;
-            color: var(--text-dark); margin: 0; padding: 12px; 
-            min-height: 100vh; transition: background 0.4s ease; 
-        }
-        
-        .header-container { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
-        h2 { margin: 0; font-size: 24px; font-weight: 900; color: var(--primary-color); white-space: nowrap; text-shadow: var(--text-3d-effect); letter-spacing: 0.5px; }
-        .subtitle { color: var(--text-gray); margin-bottom: 14px; font-size: 14px; font-weight: 700; white-space: nowrap; }
-        
-        .card { 
-            background: var(--card-bg); border-radius: 16px; padding: 16px; margin-bottom: 16px;
-            box-shadow: var(--card-shadow); border: var(--card-border); position: relative;
-        }
-        
-        .card-title { 
-            font-size: 18px; font-weight: 900; margin-bottom: 14px; padding-bottom: 8px; 
-            border-bottom: 2px solid rgba(var(--theme-rgb), 0.15); color: var(--text-dark); 
-            display: flex; justify-content: space-between; align-items: center;
-            white-space: nowrap; text-shadow: var(--text-3d-effect); letter-spacing: 0.5px;
-        }
-        
-        .input-group { display: flex; gap: 10px; margin-bottom: 16px; align-items: center; }
-        .input-group input { 
-            flex: 1; width: 100%; height: 46px; padding: 0 16px; border-radius: 23px; font-size: 16px; font-weight: 700;
-            text-align: center; background: var(--input-bg); color: var(--text-dark); 
-            border: 1px solid rgba(0, 0, 0, 0.08); box-shadow: var(--input-shadow); transition: all 0.2s; box-sizing: border-box; white-space: nowrap;
-        }
-        .input-group input:focus { 
-            outline: none; background: #ffffff; border-color: var(--primary-color); 
-            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.05), 0 0 0 3px rgba(var(--theme-rgb), 0.2); 
+            background-color: white; 
+            padding: 0; 
+            margin: 0; 
+            display: block; 
         }
 
-        input[type="date"] { height: 38px !important; font-size: 14px !important; padding: 0 10px !important; border-radius: 19px !important; }
-        
-        /* 💎 橢圓形玻璃珠按鈕系統 (Glass Bead) */
-        .btn-group { display: flex; gap: 12px; margin-bottom: 16px; flex-wrap: wrap; }
-        button { 
-            flex: 1; height: 44px; border-radius: 30px; font-size: 15px; font-weight: 800; 
-            cursor: pointer; transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1); 
-            display: flex; justify-content: center; align-items: center; gap: 6px; box-sizing: border-box;
-            white-space: nowrap; position: relative;
-        }
-        .btn-tall { height: 48px; font-size: 15px; }
+        .top-bar, .delete-btn { display: none !important; }
 
-        .btn-primary { 
-            background: linear-gradient(180deg, rgba(var(--theme-rgb), 0.75) 0%, rgba(var(--theme-dark), 0.95) 100%);
-            color: #ffffff; border: 1px solid rgba(var(--theme-dark), 0.6);
-            box-shadow: inset 0 3px 5px rgba(255, 255, 255, 0.5), inset 0 -3px 5px rgba(0, 0, 0, 0.25), 0 4px 8px rgba(var(--theme-dark), 0.3);
-            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.4);
-        }
-        .btn-primary:active { 
-            box-shadow: inset 0 4px 6px rgba(0, 0, 0, 0.2), inset 0 -2px 3px rgba(255, 255, 255, 0.2), 0 2px 3px rgba(var(--theme-dark), 0.2);
-            transform: translateY(2px);
+        .table-wrapper { overflow-x: visible; }
+
+        .a4-page { 
+            box-shadow: none !important; 
+            margin: 0 auto !important; 
+            padding: calc(15mm + 10px) 15mm 15mm 15mm !important; 
+            width: 210mm !important; 
+            height: 297mm !important;
+            box-sizing: border-box !important;
+            overflow: hidden !important; 
+            page-break-after: always !important; 
+            display: block !important; 
+            border-radius: 0 !important; 
+            position: relative !important;
+            top: auto !important;
+            left: auto !important;
+            transform: none !important;
         }
 
-        .btn-outline { 
-            background: linear-gradient(180deg, rgba(255,255,255,0.95) 0%, rgba(240,245,250,0.85) 100%);
-            color: rgba(var(--theme-dark), 1); border: 1px solid rgba(var(--theme-rgb), 0.4);
-            box-shadow: inset 0 3px 5px #ffffff, inset 0 -3px 5px rgba(var(--theme-rgb), 0.15), 0 4px 8px rgba(0, 0, 0, 0.08);
-        }
-        .btn-outline:active { 
-            box-shadow: inset 0 3px 6px rgba(0, 0, 0, 0.1), inset 0 -2px 3px #ffffff, 0 2px 3px rgba(0, 0, 0, 0.05); 
-            transform: translateY(2px); 
-        }
-
-        .btn-danger { 
-            background: linear-gradient(180deg, rgba(239, 83, 80, 0.9) 0%, rgba(211, 47, 47, 0.95) 100%);
-            color: white; border: 1px solid #c62828; 
-            box-shadow: inset 0 3px 5px rgba(255, 255, 255, 0.5), inset 0 -3px 5px rgba(0, 0, 0, 0.25), 0 4px 8px rgba(211, 47, 47, 0.3);
-            text-shadow: 0 1px 2px rgba(0,0,0,0.4);
-        }
-        .btn-danger:active { 
-            box-shadow: inset 0 4px 6px rgba(0,0,0,0.2), inset 0 -2px 3px rgba(255,255,255,0.2), 0 2px 3px rgba(211,47,47,0.2); 
-            transform: translateY(2px); 
+        .header-info { 
+            display: flex !important; 
+            flex-direction: row !important; 
+            flex-wrap: nowrap !important; 
+            justify-content: space-between !important; 
+            width: 100% !important; 
+            margin-bottom: 6px !important;
         }
 
-        .header-btn { 
-            flex: none; height: 38px; padding: 0 18px; border-radius: 20px;
-            background: linear-gradient(180deg, rgba(255,255,255,0.9) 0%, rgba(230,235,240,0.8) 100%);
-            color: var(--text-dark); font-size: 15px; border: 1px solid rgba(0,0,0,0.1);
-            box-shadow: inset 0 2px 3px #ffffff, inset 0 -2px 4px rgba(0,0,0,0.05), 0 3px 5px rgba(0,0,0,0.05);
-        }
-        .header-btn:active { 
-            box-shadow: inset 0 3px 5px rgba(0,0,0,0.1), 0 1px 2px rgba(0,0,0,0.05); transform: translateY(2px); 
+        .header-col { 
+            width: auto !important; 
+            display: flex !important; 
+            flex-direction: row !important; 
+            align-items: center !important; 
         }
 
-        .btn-badge { overflow: visible !important; }
-        .btn-badge.has-notification::after {
-            content: ''; position: absolute; top: -2px; right: 0px;
-            width: 10px; height: 10px; background-color: #ff3b30; border-radius: 50%; border: 2px solid white; box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        .header-col input, .header-col select { 
+            margin-left: 4px !important; 
+            margin-top: 0 !important; 
+            font-size: 16px !important; 
+            height: auto !important; 
+            border: none !important; 
+            border-radius: 0 !important; 
+            padding: 0 !important; 
+            text-align: center !important; 
+            background: transparent !important; 
         }
 
-        .hint-text { color: var(--text-gray); font-size: 13px; margin-bottom: 10px; font-weight: 700; white-space: nowrap; }
-        
-        /* 📊 表格樣式 */
-        .table-responsive { 
-            width: 100%; overflow-x: auto; border-radius: 12px; 
-            background: #ffffff; border: 1px solid rgba(0,0,0,0.05); box-shadow: inset 0 0 0 1px rgba(0,0,0,0.05);
-        }
-        table { width: 100%; border-collapse: collapse; text-align: center; font-size: 14px; min-width: 560px; } 
-        
-        th, td { padding: 6px 4px; border-bottom: 1px solid #eaeff5; white-space: nowrap; text-align: center; } 
-        th { background: var(--table-header); font-weight: 800; color: var(--text-dark); border-bottom: 2px solid rgba(var(--theme-rgb), 0.3); }
-        
-        tbody tr:hover { background-color: rgba(var(--theme-rgb), 0.04); }
-        tr:last-child td { border-bottom: none; }
-        
-        .col-date { width: 75px; font-size: 13px; font-weight: 700; color: var(--primary-color); } 
-        .col-action { width: 44px; } 
-        .col-data { width: auto; font-family: monospace; font-size: 15px; font-weight: 600; }  
-        
-        .edit-btn { 
-            background: linear-gradient(180deg, #f8fafd 0%, #e8eff5 100%); height: 30px; width: 100%; font-size: 13px; cursor: pointer; padding: 0; 
-            border-radius: 20px; border: 1px solid #dcdcdc; color: var(--text-dark); 
-            box-shadow: inset 0 2px 3px #ffffff, inset 0 -2px 3px rgba(0,0,0,0.05), 0 2px 4px rgba(0,0,0,0.05);
-        }
-        .edit-btn:active { box-shadow: inset 0 2px 4px rgba(0,0,0,0.1); transform: translateY(1px); }
-        
-        .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15, 23, 42, 0.6); z-index: 1000; justify-content: center; align-items: center; backdrop-filter: blur(4px); }
-        .modal-content { 
-            background: #ffffff; color: var(--text-dark); padding: 20px; border-radius: 20px; width: 90%; max-width: 380px; position: relative; 
-            box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25); border: 1px solid rgba(255,255,255,0.2); max-height: 90vh; overflow-y: auto; 
-        }
-        .modal-close { position: absolute; top: 12px; right: 16px; font-size: 26px; font-weight: bold; color: #94a3b8; cursor: pointer; transition: 0.2s; }
-        .modal-close:hover { color: #0f172a; }
-        
-        .theme-select { 
-            width: 100%; height: 50px; padding: 0 16px; border-radius: 25px; margin-bottom: 16px; 
-            background: var(--input-bg); color: var(--text-dark); border: 1px solid rgba(0,0,0,0.1); box-shadow: var(--input-shadow);
-            font-size: 18px; font-weight: 700; outline: none; box-sizing: border-box;
-        }
-        .version-text { text-align: center; margin-top: 18px; font-size: 12px; color: #94a3b8; font-weight: 700; letter-spacing: 1px; }
-        
-        .modal-period-btns { display: flex; gap: 12px; margin-top: 18px; flex-wrap: nowrap; }
-        
-        .modal-btn-morning { 
-            background: linear-gradient(180deg, #ffb74d 0%, #f57c00 100%); color: white; border: 1px solid #e65100;
-            box-shadow: inset 0 3px 5px rgba(255,255,255,0.5), inset 0 -3px 5px rgba(0,0,0,0.25), 0 4px 8px rgba(230,81,0,0.3); text-shadow: 0 1px 2px rgba(0,0,0,0.4);
-        }
-        .modal-btn-morning:active { box-shadow: inset 0 4px 6px rgba(0,0,0,0.2), inset 0 -2px 3px rgba(255,255,255,0.2), 0 2px 3px rgba(230,81,0,0.2); transform: translateY(2px); }
-        
-        .modal-btn-evening { 
-            background: linear-gradient(180deg, #64b5f6 0%, #1976d2 100%); color: white; border: 1px solid #0d47a1;
-            box-shadow: inset 0 3px 5px rgba(255,255,255,0.5), inset 0 -3px 5px rgba(0,0,0,0.25), 0 4px 8px rgba(13,71,161,0.3); text-shadow: 0 1px 2px rgba(0,0,0,0.4);
-        }
-        .modal-btn-evening:active { box-shadow: inset 0 4px 6px rgba(0,0,0,0.2), inset 0 -2px 3px rgba(255,255,255,0.2), 0 2px 3px rgba(13,71,161,0.2); transform: translateY(2px); }
-        
-        .toast-container { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); z-index: 9999; display: flex; flex-direction: column; align-items: center; gap: 10px; pointer-events: none; }
-        .toast { background: #334155; color: white; padding: 12px 24px; border-radius: 30px; font-size: 15px; font-weight: 700; box-shadow: 0 8px 20px rgba(0,0,0,0.2); opacity: 0; transform: translateY(20px); animation: toastIn 0.3s cubic-bezier(0.2, 0.8, 0.2, 1) forwards, toastOut 0.3s 2.5s forwards; white-space: nowrap; }
-        .toast.error { background: #dc2626; }
-        .toast.warning { background: #ea580c; }
-        @keyframes toastIn { to { opacity: 1; transform: translateY(0); } }
-        @keyframes toastOut { to { opacity: 0; transform: translateY(-20px); } }
-        
-        .print-only { display: none; }
-        @media print {
-            @page { size: A4 portrait; margin: 12mm 16mm; }
-            .no-print, .col-action { display: none !important; }
-            .print-only { display: block !important; text-align: center !important; font-size: 18px; font-weight: bold; margin-bottom: 10px; color: black; }
-            body { background: white !important; color: black !important; margin: 0; padding: 0; }
-            .card { border: none !important; box-shadow: none !important; padding: 0 !important; margin: 0 !important; background: white !important; }
-            .table-responsive { overflow: visible !important; border: none !important; box-shadow: none !important; }
-            table { width: 100% !important; border-collapse: collapse !important; font-size: 12px !important; color: black !important; text-align: center !important; }
-            th, td { border: 1px solid #444 !important; padding: 4px 2px !important; color: black !important; text-align: center !important; }
-            th { background-color: #f0f0f0 !important; font-weight: bold; }
-        }
-    
-        .gist-status { display: flex; align-items: center; gap: 8px; margin-bottom: 12px; padding: 12px 14px; border-radius: 20px; background: #f8fafc; border: 1px solid #e2e8f0; font-size: 16px; font-weight: 700; white-space: nowrap; }
-        .gist-status-dot { width: 10px; height: 10px; border-radius: 50%; background: #cbd5e1; box-shadow: inset 0 2px 4px rgba(0,0,0,0.2); }
-        .gist-status-dot.connected { background: #22c55e; box-shadow: 0 0 8px rgba(34, 197, 94, 0.4), inset 0 2px 4px rgba(0,0,0,0.1); }
-        .gist-status-dot.error { background: #ef4444; }
-        .gist-status-dot.syncing { background: #f59e0b; animation: pulse 1s infinite; }
-        @keyframes pulse { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: 0.6; transform: scale(1.1); } }
-        
-        .token-input { width: 100%; height: 42px; padding: 0 16px; border-radius: 21px; font-size: 13px; font-family: monospace; background: var(--input-bg); color: var(--text-dark); border: 1px solid rgba(0,0,0,0.1); box-shadow: var(--input-shadow); margin-bottom: 12px; box-sizing: border-box; outline: none; }
-        .token-input:focus { background: #fff; border-color: var(--primary-color); }
-        
-        .gist-id-display { font-family: monospace; font-size: 15px; color: var(--text-gray); background: #f1f5f9; padding: 10px 14px; border-radius: 12px; word-break: break-all; margin-bottom: 12px; border: 1px solid #cbd5e1; }
+        .class-col select { width: 75px !important; } 
+        .name-col input { width: 100px !important; } 
+        .seat-col input { width: 45px !important; } 
+        .date-col input { width: 150px !important; text-align: left !important; }
 
-        .todo-item { background: #ffffff; border: 1px solid #e2e8f0; border-radius: 14px; padding: 12px 14px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 6px rgba(0,0,0,0.03); transition: 0.2s; }
-        .todo-item:hover { border-color: var(--primary-color); box-shadow: 0 4px 10px rgba(0,0,0,0.06); }
-        .todo-info { flex: 1; overflow: hidden; }
-        .todo-title { font-weight: 800; color: var(--text-dark); margin-bottom: 4px; font-size: 15px; white-space: nowrap; }
-        .todo-note { font-size: 13px; color: var(--text-gray); font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        
-        .todo-del-btn { 
-            background: transparent; border: none; border-radius: 50%;
-            width: 36px; height: 36px; min-width: 36px; 
-            display: flex; align-items: center; justify-content: center; padding: 0; 
-            font-size: 18px; cursor: pointer; transition: 0.2s; box-shadow: none; outline: none;
+        .title-input { 
+            background: transparent !important; 
+            border: none !important; 
         }
-        .todo-del-btn:active { transform: scale(0.8); background: rgba(0, 0, 0, 0.05); }
-        
-        .todo-add-btn {
-            background: transparent; border: none; border-radius: 50%;
-            width: 44px; height: 44px; min-width: 44px; flex: none;
-            display: flex; align-items: center; justify-content: center; padding: 0;
-            font-size: 22px; cursor: pointer; transition: 0.2s; box-shadow: none; outline: none;
-        }
-        .todo-add-btn:active { transform: scale(0.8); background: rgba(0, 0, 0, 0.05); }
 
-        .todo-input-row { display: flex; gap: 8px; margin-bottom: 10px; flex-wrap: nowrap; }
-        .todo-input-row select, .todo-input-row input { flex: 1; height: 42px; border-radius: 21px; border: 1px solid rgba(0,0,0,0.1); padding: 0 14px; font-weight: 700; font-size: 15px; outline: none; background: var(--input-bg); color: var(--text-dark); box-shadow: var(--input-shadow); white-space: nowrap; }
-    </style>
+        table.main-table { 
+            display: table !important; 
+            width: 100% !important; 
+            border-collapse: collapse !important; 
+            border: 1px solid var(--border-color) !important; 
+        }
+
+        table.main-table tbody { display: table-row-group !important; }
+        table.main-table tr { display: table-row !important; flex-wrap: nowrap !important; width: auto !important; }
+
+        table.main-table td { 
+            display: table-cell !important; 
+            border: 1px solid var(--border-color) !important; 
+        }
+
+        .checkbox-cell { 
+            width: auto !important; 
+            height: 38px !important; 
+            display: table-cell !important; 
+            padding: 4px 10px !important; 
+        }
+
+        .checkbox-cell input[type="checkbox"] { transform: scale(1.2) !important; }
+
+        td.photo-wrapper-td { 
+            display: table-cell !important; 
+            width: 50% !important; 
+            margin-top: 0 !important; 
+            border: 1px solid var(--border-color) !important; 
+            border-radius: 0 !important; 
+            box-shadow: none !important; 
+            padding: 0 !important; 
+        }
+
+        .photo-cell { height: 410px !important; }
+
+        .photo-area { 
+            height: 250px !important; 
+            background-color: transparent !important; 
+            border-bottom: 1px solid var(--border-color) !important; 
+        }
+
+        .text-area { 
+            height: 160px !important; 
+            padding: 6px 8px !important; 
+            background-color: transparent !important; 
+            gap: 0 !important; 
+        }
+
+        .tf-row { 
+            flex-direction: row !important; 
+            align-items: center !important; 
+        }
+
+        .text-label { 
+            font-size: 15px !important; 
+            color: #000 !important; 
+            font-weight: normal !important; 
+            margin-bottom: 0 !important; 
+        }
+
+        .tf-row input[type="text"] { 
+            border: none !important; 
+            height: auto !important; 
+            font-size: 15px !important; 
+            border-radius: 0 !important; 
+            margin-top: 0 !important; 
+            padding: 0 6px !important; 
+            background: transparent !important; 
+        }
+
+        .top-line { 
+            border-top: 1px solid var(--border-color) !important; 
+            padding-top: 6px !important; 
+            margin-top: 4px !important; 
+        }
+
+        .footer-container { 
+            display: flex !important; 
+            flex-direction: row !important; 
+            align-items: center !important; 
+            padding-top: 8px !important; 
+            gap: 0 !important;
+        }
+
+        .footer-container div { 
+            width: auto !important; 
+            display: block !important; 
+        }
+
+        .footer-container input { 
+            width: 100px !important; 
+            height: auto !important; 
+            font-size: 15px !important; 
+            border: none !important; 
+            text-align: center !important; 
+            padding: 0 !important; 
+            margin-top: 0 !important; 
+            margin-left:0 !important; 
+            background: transparent !important; 
+        }
+
+        .header-info select { appearance: none; -webkit-appearance: none; }
+        .photo-placeholder { display: none !important; }
+    }
+
+    .modal-overlay { 
+        position: fixed; 
+        top: 0; 
+        left: 0; 
+        right: 0; 
+        bottom: 0; 
+        background: rgba(0,0,0,0.6); 
+        z-index: 4000; 
+        display: none; 
+        justify-content: center; 
+        align-items: center; 
+        padding: 20px; 
+    }
+
+    .modal-content { 
+        background: #fff; 
+        width: 100%; 
+        max-width: 600px; 
+        border-radius: 8px; 
+        padding: 25px; 
+        max-height: 85vh; 
+        overflow-y: auto; 
+        position: relative; 
+        box-shadow: 0 4px 15px rgba(0,0,0,0.2); 
+        font-family: "Microsoft JhengHei", sans-serif; 
+    }
+
+    .modal-close { 
+        position: absolute; 
+        top: 15px; 
+        right: 15px; 
+        cursor: pointer; 
+        font-size: 24px; 
+        border: none; 
+        background: transparent; 
+        color: #888; 
+    }
+
+    .modal-title { 
+        font-size: 21px; 
+        font-weight: bold; 
+        margin-top: 0; 
+        margin-bottom: 15px; 
+        color: var(--primary-blue); 
+        border-bottom: 2px solid #eee; 
+        padding-bottom: 10px; 
+        text-align: left; 
+    }
+
+    .modal-section { 
+        margin-bottom: 20px; 
+        font-size: 15px; 
+        line-height: 1.6; 
+        text-align: left; 
+    }
+
+    .modal-section h3 { 
+        font-size: 17px; 
+        margin: 0 0 8px 0; 
+        color: #333; 
+        display: flex; 
+        align-items: center; 
+        font-weight: bold; 
+    }
+
+    .modal-section ul { margin: 0; padding-left: 22px; color: #555; }
+    .modal-section li { margin-bottom: 6px; }
+
+    .version-tag { 
+        display: inline-block; 
+        background: #e8eaed; 
+        padding: 3px 10px; 
+        border-radius: 12px; 
+        font-size: 13px; 
+        color: #555; 
+        margin-left: 10px; 
+        vertical-align: middle; 
+        font-weight: normal; 
+    }
+
+    .dict-grid { 
+        display: grid; 
+        grid-template-columns: repeat(2, 1fr); 
+        gap: 15px; 
+        margin-top: 20px; 
+    }
+
+    @media screen and (max-width: 500px) { 
+        .dict-grid { grid-template-columns: 1fr; } 
+    }
+
+    .dict-grid button { 
+        padding: 15px; 
+        font-size: 18px; 
+        border: 2px solid var(--primary-blue); 
+        border-radius: 8px; 
+        background: #fff; 
+        color: var(--primary-blue); 
+        cursor: pointer; 
+        font-weight: bold; 
+        transition: 0.2s; 
+    }
+
+    .dict-grid button:hover { 
+        background: var(--primary-blue); 
+        color: #fff; 
+    }
+
+    .phrase-list { 
+        display: flex; 
+        flex-direction: column; 
+        gap: 8px; 
+        text-align: left; 
+        padding-right: 5px; 
+    }
+
+    .phrase-item { 
+        background: #f8f9fa; 
+        border: 1px solid #ddd; 
+        padding: 12px 15px; 
+        border-radius: 6px; 
+        cursor: pointer; 
+        font-size: 16px; 
+        transition: all 0.2s; 
+        position: relative; 
+    }
+
+    .phrase-item:hover { 
+        background: #e8f0fe; 
+        border-color: var(--primary-blue); 
+        color: var(--primary-blue); 
+        padding-left: 20px; 
+    }
+
+    .toast { 
+        position: fixed; 
+        bottom: 30px; 
+        left: 50%; 
+        transform: translateX(-50%); 
+        background: rgba(0,0,0,0.8); 
+        color: white; 
+        padding: 12px 24px; 
+        border-radius: 30px; 
+        z-index: 5000; 
+        font-size: 16px; 
+        display: none; 
+        box-shadow: 0 4px 12px rgba(0,0,0,0.2); 
+        pointer-events: none; 
+    }
+</style>
 </head>
 <body>
-    <div class="toast-container" id="toast-container"></div>
-    
-    <div class="header-container no-print">
-        <h2>🩺 血壓記錄</h2>
-        <div style="display: flex; gap: 8px;">
-            <button class="header-btn" onclick="openHelp()">📖 說明</button>
-            <button class="header-btn" onclick="openTools()">⚙️ 進階</button>
-        </div>
-    </div>
-    <div class="subtitle no-print" id="current-time-display">📅 今日：載入中... 🕒 時段：載入中...</div>
-    
-    <div class="card no-print" id="input-card">
-        <div class="card-title">
-            <span id="input-card-title">📝 新增 / 修改記錄</span>
-            <button id="todo-btn" class="header-btn btn-badge" onclick="openTodoModal()" style="height: 30px; font-size: 15px;">🔔 待辦</button>
-        </div>
-        <div class="input-group">
-            <input type="number" id="sys" placeholder="收縮壓" inputmode="numeric">
-            <input type="number" id="dia" placeholder="舒張壓" inputmode="numeric">
-            <input type="number" id="hr" placeholder="心率" inputmode="numeric">
-        </div>
-        <div class="btn-group">
-            <button class="btn-primary" onclick="saveRecord()">💾 儲存本時段</button>
-            <button class="btn-outline" onclick="clearInputs()">❌ 取消</button>
-            <button class="btn-danger" id="btn-delete" onclick="deleteCurrentRecord()" style="display: none;">🗑️ 刪除</button>
-        </div>
-    </div>
 
-    <div class="card" id="print-area">
-        <div class="card-title no-print">📊 記錄查詢與輸出</div>
-        <div class="print-only" id="print-title">血壓記錄表</div>
-        <div class="hint-text no-print">💡 提示：點擊右側「✏️」可修改或補填早晚記錄。</div>
-        <div class="input-group no-print" style="justify-content: center; max-width: 100%; margin: 0 0 16px 0;">
-            <input type="date" id="start-date" style="flex: 1;">
-            <span style="color: var(--text-gray); font-weight: bold; flex: none; font-size: 14px;">至</span>
-            <input type="date" id="end-date" style="flex: 1;">
-        </div>
-        <div class="btn-group no-print">
-            <button class="btn-outline" onclick="renderTable()">🔍 查詢</button>
-            <button class="btn-primary" onclick="printNative()">🖨️ PDF</button>
-        </div>
-        <div class="table-responsive">
-            <table id="bp-table">
-                <thead>
-                    <tr>
-                        <th rowspan="2" class="col-date">🗓️ 日期</th>
-                        <th colspan="3">☀️ 早上記錄</th>
-                        <th colspan="3">🌙 晚上記錄</th>
-                        <th rowspan="2" class="col-action no-print">動作</th>
-                    </tr>
-                    <tr>
-                        <th>收縮</th><th>舒張</th><th>心率</th>
-                        <th>收縮</th><th>舒張</th><th>心率</th>
-                    </tr>
-                </thead>
-                <tbody id="record-table-body"></tbody>
-            </table>
-        </div>
-    </div>
+<div class="toast" id="copyToast">✅ 已成功複製重點能力！</div>
 
-    <div id="todoModal" class="modal-overlay no-print">
-        <div class="modal-content" style="max-height: 85vh; display: flex; flex-direction: column;">
-            <span class="modal-close" onclick="closeTodoModal()">&times;</span>
-            <div class="card-title" style="margin-top: 5px;">🔔 待辦提醒</div>
-            
-            <div style="background: #f8fafc; padding: 14px; border-radius: 16px; margin-bottom: 12px; border: 1px solid #e2e8f0;">
-                <div class="todo-input-row">
-                    <select id="todo-type">
-                        <option value="💊 領藥">💊 領藥</option>
-                        <option value="🏥 門診">🏥 門診</option>
-                        <option value="📌 其他">📌 其他</option>
-                    </select>
-                    <input type="date" id="todo-date">
-                </div>
-                <div class="todo-input-row" style="margin-bottom: 0;">
-                    <input type="text" id="todo-note" placeholder="備註內容 (選填)">
-                    <button onclick="addTodo()" class="todo-add-btn">➕</button>
-                </div>
-            </div>
+<div class="loader-overlay" id="loader">
+    <div class="spinner"></div>
+    <div id="loaderText">處理中...</div>
+</div>
 
-            <div id="todo-list" style="overflow-y: auto; flex: 1; padding-right: 4px;">
-            </div>
-        </div>
-    </div>
-
-    <div id="toolsModal" class="modal-overlay no-print">
-        <div class="modal-content">
-            <span class="modal-close" onclick="closeTools()">&times;</span>
-            <div class="card-title" style="margin-top: 5px;">🎨 佈景主題設定</div>
-            <select id="theme-selector" class="theme-select" onchange="changeTheme()">
-                <option value="light">⚪ 經典綠</option>
-                <option value="green">🌿 森林綠</option>
-                <option value="purple">🔮 夢幻紫</option>
-                <option value="blue">🌊 海洋藍</option>
-                <option value="brown">☕ 拿鐵棕</option>
-                <option value="orange">🍊 活力橙</option>
-                <option value="pink">🌸 櫻花粉</option>
+<div class="top-bar no-print">
+    <div class="top-bar-row">
+        <button id="loginBtn" class="btn btn-auth btn-half" onclick="handleAuthClick()">🔵 Google 登入</button>
+        <div class="seat-control btn-half">
+            <span style="margin-right: 4px;">目前座號:</span>
+            <select id="ctrlSeat" class="seat-input">
+                <option value="1">1</option>
+                <option value="2">2</option>
+                <option value="3">3</option>
+                <option value="4">4</option>
+                <option value="5">5</option>
+                <option value="6">6</option>
+                <option value="7">7</option>
+                <option value="8">8</option>
+                <option value="9">9</option>
+                <option value="10">10</option>
+                <option value="11">11</option>
+                <option value="12">12</option>
+                <option value="13">13</option>
+                <option value="14">14</option>
+                <option value="15">15</option>
+                <option value="16">16</option>
+                <option value="17">17</option>
+                <option value="18">18</option>
+                <option value="19">19</option>
+                <option value="20">20</option>
             </select>
-
-            <div class="card-title" style="margin-top: 18px;">☁️ GitHub 雲端同步</div>
-            <div id="gist-status" class="gist-status">
-                <div class="gist-status-dot" id="gist-dot"></div>
-                <span id="gist-status-text">尚未設定雲端備份</span>
-            </div>
-            
-            <div id="gist-setup-area">
-                <p style="font-size: 12px; color: var(--text-gray); margin-bottom: 12px; font-weight: 600; line-height: 1.5;">
-                    1. 前往 GitHub → Settings → Developer settings → Tokens (classic)<br>
-                    2. 點 Generate new token (classic) → 勾選「gist」<br>
-                    3. 複製 Token，貼到下方綁定。
-                </p>
-                <input type="text" id="gist-token-input" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" class="token-input" placeholder="🔑 貼上 GitHub Token">
-                <div class="btn-group" style="flex-wrap: wrap;">
-                    <button class="btn-primary" onclick="saveGistToken()" style="min-width: 100%;">🔌 儲存並連線測試</button>
-                </div>
-            </div>
-            
-            <div id="gist-connected-area" style="display: none;">
-                <div class="gist-id-display" id="gist-id-display"></div>
-                <div class="btn-group" style="flex-wrap: wrap; gap: 10px;">
-                    <button class="btn-outline btn-tall" onclick="importFromGist()">📥 雲端還原資料</button>
-                    <button class="btn-danger btn-tall" onclick="disconnectGist()">🔗 解除綁定連線</button>
-                </div>
-            </div>
-
-            <div class="version-text">Version 9.9 ✨ 180天自動清理版</div>
         </div>
+
+        <button class="btn btn-clear btn-third" onclick="clearForm()">🧹 清除畫面</button>
+        <button class="btn btn-save btn-third" onclick="cloudSave()">☁️ 存檔至雲</button>
+        <button class="btn btn-load btn-third" onclick="cloudLoad()">📥 載入資料</button>
+
+        <button class="btn btn-print btn-third" onclick="printToPDF()">🖨️ 轉存 PDF</button>
+        <button class="btn btn-dict btn-third" onclick="openDictModal()">💡 重點能力</button>
+        <button class="btn btn-info btn-third" onclick="showInfo()">📖 操作說明</button>
+    </div>
+</div>
+
+<div class="a4-page" id="recordForm">
+    <h1>遠東幼兒園 <input type="text" class="title-input year" id="year" placeholder=" "> 學年度 第 <input type="text" class="title-input term" id="term" placeholder=" "> 學期 幼兒學習區紀錄</h1>
+
+    <div class="header-info">
+        <div class="header-col class-col">班級: <select id="className"><option value="大班">大班</option><option value="中班">中班</option><option value="小班" selected>小班</option></select></div>
+        <div class="header-col name-col">幼生姓名: <input type="text" class="name" id="studentName"></div>
+        <div class="header-col seat-col">座號: <input type="text" class="seat" id="seatNumber" readonly></div>
+        <div class="header-col date-col">紀錄日期: <input type="text" class="date" id="recordDate" placeholder=" "></div>
     </div>
 
-    <div id="helpModal" class="modal-overlay no-print">
-        <div class="modal-content" style="max-width: 90%; max-height: 85vh; overflow-y: auto;">
-            <span class="modal-close" onclick="closeHelp()">&times;</span>
-            <div class="card-title" style="margin-top: 5px;">📖 使用說明書</div>
+    <div class="table-wrapper">
+        <table class="main-table">
+            <tr>
+                <td colspan="2" class="checkbox-cell"><span class="checkbox-icon">✂️</span><input type="checkbox" id="cb1"> 美勞區</td>
+                <td colspan="2" class="checkbox-cell"><span class="checkbox-icon">📚</span><input type="checkbox" id="cb2"> 語文區</td>
+                <td colspan="2" class="checkbox-cell"><span class="checkbox-icon">🧱</span><input type="checkbox" id="cb3"> 積木區</td>
+            </tr>
+            <tr>
+                <td colspan="2" class="checkbox-cell"><span class="checkbox-icon">🧩</span><input type="checkbox" id="cb4"> 益智區</td>
+                <td colspan="2" class="checkbox-cell"><span class="checkbox-icon">👟</span><input type="checkbox" id="cb5"> 生活自理區</td>
+                <td colspan="2" class="checkbox-cell"><span class="checkbox-icon">🏗️</span><input type="checkbox" id="cb6"> 組合建構區</td>
+            </tr>
 
-            <div style="margin-bottom: 16px;">
-                <div class="card-title" style="font-size: 15px; margin-top: 10px;">🩺 核心功能</div>
-                <ul style="font-size: 15px; color: var(--text-gray); padding-left: 20px; line-height: 1.6; font-weight: 600;">
-                    <li>記錄每日 ☀️ 早上與 🌙 晚上的血壓數值</li>
-                    <li>系統會<b>自動保留近 180 天</b>記錄，過期會自動清除</li>
-                    <li>點擊列表右側的「✏️」即可隨時補填或修改</li>
-                    <li>每次點擊儲存，系統將完全自動進行雲端安全覆蓋</li>
-                    <li>一鍵產出乾淨的 PDF，方便回診給醫師看</li>
-                </ul>
-            </div>
-
-            <div style="margin-bottom: 16px;">
-                <div class="card-title" style="font-size: 15px; margin-top: 10px;">☁️ 雲端備份教學</div>
-                <ol style="font-size: 13px; color: var(--text-gray); padding-left: 20px; line-height: 1.6; font-weight: 600;">
-                    <li>前往 GitHub 註冊免費帳號並登入</li>
-                    <li>點選頭像 → 選擇 <b>Settings</b></li>
-                    <li>滑到最下方 → 點選 <b>Developer settings</b></li>
-                    <li>展開 Personal access tokens → 點選 <b>Tokens (classic)</b></li>
-                    <li>點擊 Generate new token → ⚠️ 選擇 <b>Generate new token (classic)</b></li>
-                    <li>期限 (Expiration) 選 <b>No expiration</b>，並勾選 <b>gist</b></li>
-                    <li>滑至最底部點擊 Generate token，產生後<b>立刻複製</b>貼回 App！</li>
-                </ol>
-            </div>
-
-            <div class="version-text">Version 9.9 ✨ 180天自動清理版</div>
-        </div>
-    </div>
-
-    <div id="periodModal" class="modal-overlay no-print">
-        <div class="modal-content" style="text-align: center;">
-            <span class="modal-close" onclick="closePeriodModal()">&times;</span>
-            <div class="card-title" id="period-modal-title" style="justify-content: center;">⏱️ 選擇修改時段</div>
-            <p style="color: var(--text-gray); font-size: 13px; margin-bottom: 14px; font-weight: 700;">請選擇您欲修改的記錄時段：</p>
-            <div class="modal-period-btns">
-                <button class="modal-btn-morning" onclick="confirmEdit('morning')">☀️ 早上</button>
-                <button class="modal-btn-evening" onclick="confirmEdit('evening')">🌙 晚上</button>
-            </div>
-        </div>
-    </div>
-
-    <script>
-        let appData = JSON.parse(localStorage.getItem('bpRecords')) || {};
-        let editDate = null, editPeriod = null;
-        let pendingEditDate = null;
-        let todos = JSON.parse(localStorage.getItem('bpTodos')) || [];
-
-        // 🌟 自動清理 180 天前的舊血壓紀錄
-        function cleanExpiredRecords() {
-            const today = new Date();
-            today.setHours(0, 0, 0, 0);
-
-            // 計算 180 天前的日期
-            const cutoffDate = new Date(today);
-            cutoffDate.setDate(cutoffDate.getDate() - 180);
-
-            let hasDeleted = false;
-            for (const dateStr in appData) {
-                const recordDate = new Date(dateStr + 'T00:00:00');
-                if (!isNaN(recordDate.getTime()) && recordDate < cutoffDate) {
-                    delete appData[dateStr];
-                    hasDeleted = true;
-                }
-            }
-
-            if (hasDeleted) {
-                localStorage.setItem('bpRecords', JSON.stringify(appData));
-            }
-        }
-
-        function showToast(message, type = 'success') {
-            const container = document.getElementById('toast-container');
-            const toast = document.createElement('div');
-            toast.className = `toast ${type}`;
-            toast.textContent = message;
-            container.appendChild(toast);
-            setTimeout(() => { if (container.contains(toast)) container.removeChild(toast); }, 3000);
-        }
-
-        const themeMetaColors = { 
-            'light': '#f4f9f9', 'green': '#f1f8e9',
-            'purple': '#faf5ff', 'blue': '#f0f9ff', 'brown': '#fdfbf7', 
-            'orange': '#fff8f0', 'pink': '#fff0f5'
-        };
-        
-        function updateThemeMeta(theme) { 
-            document.querySelector('meta[name="theme-color"]').setAttribute('content', themeMetaColors[theme] || '#f4f9f9'); 
-        }
-        
-        function loadTheme() {
-            let savedTheme = localStorage.getItem('bpTheme') || 'light';
-            const allowedThemes = Object.keys(themeMetaColors);
-            if (!allowedThemes.includes(savedTheme)) savedTheme = 'light';
-            document.documentElement.className = savedTheme;
-            document.getElementById('theme-selector').value = savedTheme;
-            updateThemeMeta(savedTheme);
-        }
-        
-        function changeTheme() {
-            const theme = document.getElementById('theme-selector').value;
-            document.documentElement.className = theme;
-            localStorage.setItem('bpTheme', theme);
-            updateThemeMeta(theme);
-        }
-
-        function formatDate(date) { const y = date.getFullYear(); const m = String(date.getMonth() + 1).padStart(2, '0'); const d = String(date.getDate()).padStart(2, '0'); return `${y}-${m}-${d}`; }
-        function getCurrentInfo() { const now = new Date(); const date = formatDate(now); const period = now.getHours() < 12 ? 'morning' : 'evening'; return { date, period, periodText: period === 'morning' ? '☀️ 早上' : '🌙 晚上' }; }
-
-        function clearInputs() {
-            document.getElementById('sys').value = '';
-            document.getElementById('dia').value = '';
-            document.getElementById('hr').value = '';
-            editDate = null; editPeriod = null;
-            document.getElementById('input-card-title').innerText = '📝 新增 / 修改記錄';
-            document.getElementById('btn-delete').style.display = 'none';
-        }
-
-        function saveRecord() {
-            const sys = parseInt(document.getElementById('sys').value, 10);
-            const dia = parseInt(document.getElementById('dia').value, 10);
-            const hr = parseInt(document.getElementById('hr').value, 10);
-
-            if (isNaN(sys) && isNaN(dia) && isNaN(hr)) { showToast('⚠️ 請至少輸入一項數值！', 'error'); return; }
-            if (!isNaN(sys) && !isNaN(dia) && sys <= dia) { showToast('❌ 錯誤：收縮壓必須大於舒張壓！', 'error'); return; }
-            if ((sys && (sys < 60 || sys > 250)) || (dia && (dia < 40 || dia > 150)) || (hr && (hr < 30 || hr > 220))) { showToast('⚠️ 警告：數值超出正常範圍，但已儲存。', 'warning'); }
-
-            const info = getCurrentInfo();
-            const targetDate = editDate || info.date;
-            const targetPeriod = editPeriod || info.period;
-
-            if (!appData[targetDate]) appData[targetDate] = { morning: {}, evening: {} };
-            appData[targetDate][targetPeriod] = { sys: isNaN(sys) ? '' : String(sys), dia: isNaN(dia) ? '' : String(dia), hr: isNaN(hr) ? '' : String(hr) };
-            
-            cleanExpiredRecords(); // 存檔前再次確認未過期
-            localStorage.setItem('bpRecords', JSON.stringify(appData));
-            showToast(`✅ ${targetDate} ${targetPeriod === 'morning' ? '早上' : '晚上'} 本地已存檔！`);
-            
-            clearInputs();
-            renderTable();
-
-            if (gistConfig.gistId && gistConfig.gistId !== 'pending') {
-                setTimeout(() => syncToGist(), 300);
-            } else if (gistConfig.token) {
-                setTimeout(() => syncToGist(), 300);
-            }
-        }
-
-        function deleteCurrentRecord() {
-            if (!editDate || !editPeriod) return;
-            if (confirm(`確定要刪除 ${editDate} 的 ${editPeriod === 'morning' ? '早上' : '晚上'} 記錄嗎？`)) {
-                appData[editDate][editPeriod] = { sys: '', dia: '', hr: '' };
-                localStorage.setItem('bpRecords', JSON.stringify(appData));
-                showToast('🗑️ 記錄已刪除');
-                clearInputs();
-                renderTable();
-                if (gistConfig.gistId) {
-                    setTimeout(() => syncToGist(), 300);
-                }
-            }
-        }
-
-        function openTools() { document.getElementById('toolsModal').style.display = 'flex'; }
-        function closeTools() { document.getElementById('toolsModal').style.display = 'none'; }
-        function openHelp() { document.getElementById('helpModal').style.display = 'flex'; }
-        function closeHelp() { document.getElementById('helpModal').style.display = 'none'; }
-
-        function checkTodayTodos() {
-            const today = formatDate(new Date());
-            const todayTodos = todos.filter(t => t.date === today);
-            const btn = document.getElementById('todo-btn');
-            
-            if (todayTodos.length > 0) {
-                btn.classList.add('has-notification');
-                const sessionKey = 'todoNotified_' + today;
-                if (!sessionStorage.getItem(sessionKey)) {
-                    setTimeout(() => {
-                        showToast(`💡 溫馨提醒：今天有 ${todayTodos.length} 個排定事項喔！`, 'warning');
-                    }, 800);
-                    sessionStorage.setItem(sessionKey, 'true');
-                }
-            } else {
-                btn.classList.remove('has-notification');
-            }
-        }
-
-        function openTodoModal() {
-            document.getElementById('todoModal').style.display = 'flex';
-            document.getElementById('todo-date').value = formatDate(new Date());
-            renderTodos();
-        }
-        function closeTodoModal() {
-            document.getElementById('todoModal').style.display = 'none';
-        }
-        function renderTodos() {
-            const list = document.getElementById('todo-list');
-            list.innerHTML = '';
-            if (todos.length === 0) {
-                list.innerHTML = '<div style="text-align: center; color: var(--text-gray); font-size: 13px; font-weight: bold; margin-top: 16px;">目前沒有待辦事項 🎉</div>';
-                return;
-            }
-
-            const sortedTodos = [...todos].sort((a, b) => new Date(a.date) - new Date(b.date));
-
-            sortedTodos.forEach(item => {
-                const div = document.createElement('div');
-                div.className = 'todo-item';
-                div.innerHTML = `
-                    <div class="todo-info">
-                        <div class="todo-title">${item.type} <span style="font-size: 12px; color: var(--primary-color); margin-left: 6px;">${item.date}</span></div>
-                        ${item.note ? `<div class="todo-note">${item.note}</div>` : ''}
+            <tr>
+                <td colspan="3" class="photo-wrapper-td" style="padding: 0;">
+                    <div class="photo-cell">
+                        <div class="photo-area" onclick="openPhotoSourceModal(1)"><img id="img1"><div class="photo-placeholder" id="ph1">輕觸上傳相片 (區1)</div></div>
+                        <button class="delete-btn no-print" id="del1" onclick="removeImage(1, event)" title="刪除">✖</button>
+                        <input type="file" id="file1" style="display:none;" accept="image/*" onchange="processImage(event, 1)">
+                        <div class="text-area">
+                            <div class="tf-row inline-mobile"><span class="text-label">▶紀錄日期：</span><input type="text" id="pd1"></div>
+                            <div class="tf-row"><span class="text-label">▶照片說明：</span></div>
+                            <div class="tf-row"><input type="text" id="pdesc1"></div>
+                            <div class="tf-row top-line"><span class="text-label">★重點能力：</span></div>
+                            <div class="tf-row"><input type="text" id="pab1"></div>
+                        </div>
                     </div>
-                    <button class="todo-del-btn" onclick="deleteTodo(${item.id})">✖️</button>
-                `;
-                list.appendChild(div);
-            });
-        }
-        function addTodo() {
-            const type = document.getElementById('todo-type').value;
-            const date = document.getElementById('todo-date').value;
-            const note = document.getElementById('todo-note').value.trim();
+                </td>
+                <td colspan="3" class="photo-wrapper-td" style="padding: 0;">
+                    <div class="photo-cell">
+                        <div class="photo-area" onclick="openPhotoSourceModal(2)"><img id="img2"><div class="photo-placeholder" id="ph2">輕觸上傳相片 (區2)</div></div>
+                        <button class="delete-btn no-print" id="del2" onclick="removeImage(2, event)" title="刪除">✖</button>
+                        <input type="file" id="file2" style="display:none;" accept="image/*" onchange="processImage(event, 2)">
+                        <div class="text-area">
+                            <div class="tf-row inline-mobile"><span class="text-label">▶紀錄日期：</span><input type="text" id="pd2"></div>
+                            <div class="tf-row"><span class="text-label">▶照片說明：</span></div>
+                            <div class="tf-row"><input type="text" id="pdesc2"></div>
+                            <div class="tf-row top-line"><span class="text-label">★重點能力：</span></div>
+                            <div class="tf-row"><input type="text" id="pab2"></div>
+                        </div>
+                    </div>
+                </td>
+            </tr>
 
-            if (!date) {
-                showToast('⚠️ 請選擇待辦日期！', 'error');
-                return;
-            }
+            <tr>
+                <td colspan="3" class="photo-wrapper-td" style="padding: 0;">
+                    <div class="photo-cell">
+                        <div class="photo-area" onclick="openPhotoSourceModal(3)"><img id="img3"><div class="photo-placeholder" id="ph3">輕觸上傳相片 (區3)</div></div>
+                        <button class="delete-btn no-print" id="del3" onclick="removeImage(3, event)" title="刪除">✖</button>
+                        <input type="file" id="file3" style="display:none;" accept="image/*" onchange="processImage(event, 3)">
+                        <div class="text-area">
+                            <div class="tf-row inline-mobile"><span class="text-label">▶紀錄日期：</span><input type="text" id="pd3"></div>
+                            <div class="tf-row"><span class="text-label">▶照片說明：</span></div>
+                            <div class="tf-row"><input type="text" id="pdesc3"></div>
+                            <div class="tf-row top-line"><span class="text-label">★重點能力：</span></div>
+                            <div class="tf-row"><input type="text" id="pab3"></div>
+                        </div>
+                    </div>
+                </td>
+                <td colspan="3" class="photo-wrapper-td" style="padding: 0;">
+                    <div class="photo-cell">
+                        <div class="photo-area" onclick="openPhotoSourceModal(4)"><img id="img4"><div class="photo-placeholder" id="ph4">輕觸上傳相片 (區4)</div></div>
+                        <button class="delete-btn no-print" id="del4" onclick="removeImage(4, event)" title="刪除">✖</button>
+                        <input type="file" id="file4" style="display:none;" accept="image/*" onchange="processImage(event, 4)">
+                        <div class="text-area">
+                            <div class="tf-row inline-mobile"><span class="text-label">▶紀錄日期：</span><input type="text" id="pd4"></div>
+                            <div class="tf-row"><span class="text-label">▶照片說明：</span></div>
+                            <div class="tf-row"><input type="text" id="pdesc4"></div>
+                            <div class="tf-row top-line"><span class="text-label">★重點能力：</span></div>
+                            <div class="tf-row"><input type="text" id="pab4"></div>
+                        </div>
+                    </div>
+                </td>
+            </tr>
+        </table>
 
-            const newTodo = { id: Date.now(), type, date, note };
-            todos.push(newTodo);
-            localStorage.setItem('bpTodos', JSON.stringify(todos));
-            
-            document.getElementById('todo-note').value = '';
-            renderTodos();
-            checkTodayTodos(); 
-            showToast('✅ 待辦事項已新增！');
-        }
-        function deleteTodo(id) {
-            if (confirm('確定要刪除此待辦事項嗎？')) {
-                todos = todos.filter(t => t.id !== id);
-                localStorage.setItem('bpTodos', JSON.stringify(todos));
-                renderTodos();
-                checkTodayTodos(); 
-                showToast('🗑️ 待辦已刪除');
-            }
-        }
+        <div class="footer-container">
+            <div>班級導師: <input type="text" id="teacherName"></div>
+            <div class="footer-note">《請於隔週一交回存檔，期末發回，謝謝！》</div>
+        </div>
+    </div>
+</div>
 
-        function openPeriodModal(date) {
-            pendingEditDate = date;
-            document.getElementById('period-modal-title').innerText = `⏱️ 修改: ${date}`;
-            document.getElementById('periodModal').style.display = 'flex';
-        }
-        function closePeriodModal() { document.getElementById('periodModal').style.display = 'none'; }
-        function confirmEdit(period) {
-            closePeriodModal();
-            editRecord(pendingEditDate, period);
-        }
+<div class="modal-overlay" id="infoModal" onclick="closeInfo()">
+    <div class="modal-content" onclick="event.stopPropagation()">
+        <button class="modal-close" onclick="closeInfo()">✖</button>
+        <h2 class="modal-title">遠東幼兒園學習區紀錄系統 <span class="version-tag">版本：發行版</span></h2>
 
-        function editRecord(date, period) {
-            editDate = date; editPeriod = period;
-            const record = appData[date]?.[period] || {};
-            document.getElementById('sys').value = record.sys || '';
-            document.getElementById('dia').value = record.dia || '';
-            document.getElementById('hr').value = record.hr || '';
-            document.getElementById('input-card-title').innerText = `✏️ 修改：${date} (${period === 'morning' ? '早' : '晚'})`;
-            document.getElementById('btn-delete').style.display = 'flex';
-            showToast(`已鎖定：${date} (${period === 'morning' ? '早' : '晚'})`, 'warning');
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-        }
+        <div class="modal-section">
+            <h3>⚠️ Google 第一次登入常見問題處理</h3>
+            <ul>
+                <li><strong>彈出視窗遭到封鎖：</strong>第一次點擊登入時，瀏覽器可能會阻擋 Google 登入驗證視窗。請注意網址列右側，設定「永遠允許」本網站顯示彈出式視窗。</li>
+                <li><strong>出現「Google 尚未驗證這個應用程式」：</strong>因本系統為內部專屬私有工具，尚未提交 Google 官方公開發布審核。若出現此安全警告，請點擊左下角微小的<strong>「進階」</strong>連結 ➜ 再點擊<strong>「前往該網站 (不安全)」</strong>即可繼續授權。</li>
+                <li><strong>權限未完整勾選：</strong>驗證授權時，請務必勾選「Google 雲端硬碟 (Drive)」及「Google 試算表 (Sheets)」的存取與權限，否則系統將無法為您順利建立資料庫、存檔或讀取相片。</li>
+            </ul>
+        </div>
+        <div class="modal-section">
+            <h3>📱 如何安裝至手機桌面 (免下載APP)</h3>
+            <ul>
+                <li><strong>蘋果 iOS (Safari)：</strong>點擊瀏覽器下方導覽列的「分享」圖示，選擇「加入主畫面」。</li>
+                <li><strong>安卓 Android (Chrome)：</strong>點擊右上角「三個點」選單，選擇「安裝應用程式」。</li>
+            </ul>
+        </div>
+        <div class="modal-section">
+            <h3>📝 基本操作與重點能力</h3>
+            <ul>
+                <li><strong>載入與儲存：</strong>輸入座號後點擊「📥 載入」可讀取舊資料，完成編輯後點擊「☁️ 存檔」即可同步至雲端。</li>
+                <li><strong>重點能力詞庫：</strong>點擊「💡 重點能力」按鈕，可快速瀏覽各區專屬評語，點擊句子即可自動複製。</li>
+            </ul>
+        </div>
+        <div class="modal-section">
+            <h3>🗂️ 轉存的 PDF 檔案存在手機哪裡？</h3>
+            <ul>
+                <li><strong>蘋果 iOS (iPhone/iPad)：</strong>點擊「🖨️ 轉存 PDF」後，畫面會跳出列印預覽。請點擊預覽畫面下方的「分享」圖示 (或長按預覽圖) ➜ 選擇<strong>「儲存到檔案」</strong>。之後請到手機主畫面尋找內建的<strong>「檔案」APP</strong> (藍色資料夾圖示)，通常會在「我的 iPhone」或「下載項目」中找到。</li>
+                <li><strong>安卓 Android：</strong>點擊「🖨️ 轉存 PDF」後，請在最上方的印表機選單改選為<strong>「儲存為 PDF」</strong>，接著點擊黃色或藍色的 PDF 下載圓形按鈕。之後請到手機主畫面尋找<strong>「檔案管理」或「我的檔案」APP</strong>，檔案通常會躺在「下載 (Downloads)」或「文件」資料夾裡面。</li>
+            </ul>
+        </div>
+        <div class="modal-section">
+            <h3>☁️ 關於 Google 雲端空間與容量說明</h3>
+            <ul>
+                <li>首次授權連線後，系統會自動在您的 Google 雲端硬碟建立兩個專屬檔案（不會弄亂您原有的資料）：
+                    <br>1. <strong>「幼兒學習區紀錄資料庫」</strong>（試算表：儲存所有文字紀錄）
+                    <br>2. <strong>「幼兒相片雲端備份庫」</strong>（資料夾：儲存上傳的照片）
+                </li>
+                <li><strong>不會佔用太多容量：</strong>文字紀錄佔用的空間微乎其微；而您上傳的照片，系統會在背景<strong>自動進行壓縮縮小處理</strong>。即使存了整班的照片，也非常輕量，<strong>完全不用擔心會佔用您 Google 雲端硬碟的寶貴容量喔！</strong></li>
+            </ul>
+        </div>
+    </div>
+</div>
 
-        function renderTable() {
-            const tbody = document.getElementById('record-table-body');
-            const startDateStr = document.getElementById('start-date').value;
-            const endDateStr = document.getElementById('end-date').value;
-            if (!startDateStr || !endDateStr) return;
+<div class="modal-overlay" id="dictModal" onclick="closeDictModal()">
+    <div class="modal-content" onclick="event.stopPropagation()">
+        <div id="dictView1">
+            <button class="modal-close" onclick="closeDictModal()">✖</button>
+            <h2 class="modal-title">💡 挑選重點能力區塊</h2>
+            <p style="color: #666; font-size: 15px; margin-bottom: 0;">請點擊下方區塊，查看專屬的評語詞庫：</p>
+            <div class="dict-grid">
+                <button onclick="showCategoryDict('美勞區')">✂️ 美勞區</button>
+                <button onclick="showCategoryDict('語文區')">📚 語文區</button>
+                <button onclick="showCategoryDict('積木區')">🧱 積木區</button>
+                <button onclick="showCategoryDict('益智區')">🧩 益智區</button>
+                <button onclick="showCategoryDict('生活自理區')">👟 生活自理區</button>
+                <button onclick="showCategoryDict('組合建構區')">🏗️ 組合建構區</button>
+            </div>
+        </div>
+        <div id="dictView2" style="display: none;">
+            <button class="modal-close" onclick="closeDictModal()">✖</button>
+            <h2 class="modal-title" style="display: flex; align-items: center;">
+                <button onclick="backToDictHome()" style="margin-right: 15px; font-size: 15px; cursor: pointer; border: 1px solid #ccc; padding: 4px 10px; border-radius: 4px; background: #f0f0f0;">⬅ 返回</button>
+                <span id="dictCategoryTitle">美勞區</span>
+            </h2>
+            <p style="color: #ea4335; font-size: 14px; margin-bottom: 15px; font-weight: bold;">※ 點擊下方句子即可自動複製，並可直接貼上至表格中！</p>
+            <div class="phrase-list" id="phraseListContainer"></div>
+        </div>
+    </div>
+</div>
 
-            const fragment = document.createDocumentFragment();
-            let currentDate = new Date(startDateStr);
-            const endDate = new Date(endDateStr);
+<div class="modal-overlay" id="photoSourceModal" onclick="closePhotoSourceModal()">
+    <div class="modal-content" onclick="event.stopPropagation()" style="text-align: center; max-width: 350px;">
+        <button class="modal-close" onclick="closePhotoSourceModal()">✖</button>
+        <h2 class="modal-title" style="text-align: center;">📸 選擇相片來源</h2>
+        <p style="color: #555; margin-bottom: 20px;">請選擇您要上傳相片的方式：</p>
+        <div style="display: flex; gap: 15px; justify-content: center;">
+            <button class="btn btn-auth" style="height: 45px; font-size: 16px; border-radius: 8px;" onclick="selectPhotoSource('gallery')">🖼️ 一般上傳</button>
+            <button class="btn btn-save" style="height: 45px; font-size: 16px; border-radius: 8px;" onclick="selectPhotoSource('camera')">📷 開啟相機</button>
+        </div>
+    </div>
+</div>
 
-            while (currentDate <= endDate) {
-                const date = formatDate(currentDate);
-                const data = appData[date] || { morning: {}, evening: {} };
-                const m = data.morning || {}; const e = data.evening || {};
-                const tr = document.createElement('tr');
-                tr.innerHTML = `
-                    <td class="col-date">${date.slice(5)}</td>
-                    <td class="col-data">${m.sys || '-'}</td><td class="col-data">${m.dia || '-'}</td><td class="col-data">${m.hr || '-'}</td>
-                    <td class="col-data">${e.sys || '-'}</td><td class="col-data">${e.dia || '-'}</td><td class="col-data">${e.hr || '-'}</td>
-                    <td class="col-action no-print"><button class="edit-btn" onclick="openPeriodModal('${date}')">✏️</button></td>
-                `;
-                fragment.appendChild(tr);
-                currentDate.setDate(currentDate.getDate() + 1);
-            }
-            tbody.innerHTML = '';
-            tbody.appendChild(fragment);
-        }
-
-        function printNative() {
-            const startDateStr = document.getElementById('start-date').value;
-            const endDateStr = document.getElementById('end-date').value;
-            if (!startDateStr || !endDateStr) { showToast('⚠️ 請先選擇匯出範圍', 'error'); return; }
-            document.getElementById('print-title').innerText = `🩺 血壓記錄表\n(${startDateStr} 至 ${endDateStr})`;
-            window.print();
-        }
-
-        if ('serviceWorker' in navigator) {
-            window.addEventListener('load', () => {
-                navigator.serviceWorker.register('./sw.js').then(reg => { console.log('SW 註冊成功'); }).catch(err => { console.log('SW 註冊失敗:', err); });
-            });
-        }
-    
-        const GIST_STORAGE_KEY = 'bpGistConfig';
-        let gistConfig = JSON.parse(localStorage.getItem(GIST_STORAGE_KEY)) || { token: '', gistId: '' };
-        let isSyncing = false;
-
-        function updateGistUI() {
-            const dot = document.getElementById('gist-dot');
-            const statusText = document.getElementById('gist-status-text');
-            const setupArea = document.getElementById('gist-setup-area');
-            const connectedArea = document.getElementById('gist-connected-area');
-            const idDisplay = document.getElementById('gist-id-display');
-
-            if (!gistConfig.token) {
-                dot.className = 'gist-status-dot';
-                statusText.textContent = '尚未設定雲端備份';
-                setupArea.style.display = 'block';
-                connectedArea.style.display = 'none';
-                return;
-            }
-
-            if (gistConfig.gistId && gistConfig.gistId !== 'pending') {
-                dot.className = 'gist-status-dot connected';
-                statusText.textContent = '✅ 已啟用自動雲端覆蓋';
-                setupArea.style.display = 'none';
-                connectedArea.style.display = 'block';
-                idDisplay.innerHTML = `<strong>Gist ID:</strong> ${gistConfig.gistId}<br><small>儲存時系統將會全自動背景更新</small>`;
-            } else {
-                dot.className = 'gist-status-dot';
-                statusText.textContent = 'Token 已驗證，等待上傳初次建立';
-                setupArea.style.display = 'none';
-                connectedArea.style.display = 'block';
-                idDisplay.innerHTML = '<small>請點擊儲存一筆新紀錄，或直接執行還原。</small>';
-            }
-        }
-
-        async function saveGistToken() {
-            const tokenInput = document.getElementById('gist-token-input');
-            const token = tokenInput.value.trim();
-            if (!token) { showToast('⚠️ 請輸入 GitHub Token', 'error'); return; }
-
-            gistConfig.token = token;
-            localStorage.setItem(GIST_STORAGE_KEY, JSON.stringify(gistConfig));
-            tokenInput.value = '';
-
-            const dot = document.getElementById('gist-dot');
-            const statusText = document.getElementById('gist-status-text');
-            dot.className = 'gist-status-dot syncing';
-            statusText.textContent = '正在連線並尋找備份... 🔌';
-
-            try {
-                const response = await fetch('https://api.github.com/user', {
-                    headers: { 'Authorization': `token ${token}`, 'Accept': 'application/vnd.github.v3+json' }
-                });
-                
-                if (response.ok) {
-                    const user = await response.json();
-                    
-                    try {
-                        const gistsResponse = await fetch('https://api.github.com/gists', {
-                            headers: { 'Authorization': `token ${token}`, 'Accept': 'application/vnd.github.v3+json' }
-                        });
-                        
-                        if (gistsResponse.ok) {
-                            const gists = await gistsResponse.json();
-                            const existingBackup = gists.find(gist => gist.files && gist.files['bp-records.json']);
-                            
-                            if (existingBackup) {
-                                gistConfig.gistId = existingBackup.id;
-                                localStorage.setItem(GIST_STORAGE_KEY, JSON.stringify(gistConfig));
-                                showToast(`🎉 成功連結！已找回雲端資料夾`);
-                            } else {
-                                gistConfig.gistId = 'pending';
-                                localStorage.setItem(GIST_STORAGE_KEY, JSON.stringify(gistConfig));
-                                showToast(`🎉 帳號驗證成功！將於下次存檔建立備份`);
-                            }
-                        }
-                    } catch (gistErr) {
-                        showToast(`🎉 連結成功！歡迎，${user.login}`);
-                    }
-                    updateGistUI();
-                } else {
-                    showToast('❌ Token 驗證失敗，請檢查權限', 'error');
-                    disconnectGist();
-                }
-            } catch (e) {
-                showToast('❌ 網路連線錯誤', 'error');
-                disconnectGist();
-            }
-        }
-
-        async function syncToGist() {
-            if (isSyncing || !gistConfig.token) return;
-            if (Object.keys(appData).length === 0) return;
-            
-            isSyncing = true;
-            const dot = document.getElementById('gist-dot');
-            const statusText = document.getElementById('gist-status-text');
-            dot.className = 'gist-status-dot syncing';
-            statusText.textContent = '☁️ 正在同步至雲端...';
-
-            try {
-                const payload = {
-                    description: `血壓記錄備份 - 自動更新`,
-                    public: false,
-                    files: { 'bp-records.json': { content: JSON.stringify(appData, null, 2) } }
-                };
-
-                let url = 'https://api.github.com/gists';
-                let method = 'POST';
-                if (gistConfig.gistId && gistConfig.gistId !== 'pending') {
-                    url = `https://api.github.com/gists/${gistConfig.gistId}`;
-                    method = 'PATCH';
-                }
-
-                const response = await fetch(url, {
-                    method: method,
-                    headers: { 'Authorization': `token ${gistConfig.token}`, 'Accept': 'application/vnd.github.v3+json', 'Content-Type': 'application/json' },
-                    body: JSON.stringify(payload)
-                });
-
-                if (response.ok) {
-                    const result = await response.json();
-                    if (!gistConfig.gistId || gistConfig.gistId === 'pending') {
-                        gistConfig.gistId = result.id;
-                        localStorage.setItem(GIST_STORAGE_KEY, JSON.stringify(gistConfig));
-                    }
-                    showToast('☁️ 雲端數據已安全更新！');
-                }
-            } catch (e) {
-                console.log('背景同步失敗，將於下次操作時重試');
-            } finally {
-                isSyncing = false;
-                updateGistUI();
-            }
-        }
-
-        async function importFromGist() {
-            if (!gistConfig.token || !gistConfig.gistId || gistConfig.gistId === 'pending') { 
-                showToast('⚠️ 雲端尚未綁定或無備份', 'error'); return; 
-            }
-
-            const dot = document.getElementById('gist-dot');
-            const statusText = document.getElementById('gist-status-text');
-            dot.className = 'gist-status-dot syncing';
-            statusText.textContent = '📥 正在下載歷史備份...';
-
-            try {
-                const response = await fetch(`https://api.github.com/gists/${gistConfig.gistId}`, {
-                    headers: { 'Authorization': `token ${gistConfig.token}`, 'Accept': 'application/vnd.github.v3+json' }
-                });
-
-                if (response.ok) {
-                    const result = await response.json();
-                    const file = result.files['bp-records.json'];
-                    if (file && file.content) {
-                        const importedData = JSON.parse(file.content);
-                        
-                        for (const date in importedData) {
-                            if (!appData[date]) {
-                                appData[date] = importedData[date];
-                            } else {
-                                ['morning', 'evening'].forEach(period => {
-                                    if (importedData[date][period] && importedData[date][period].sys) {
-                                        if (!appData[date][period] || !appData[date][period].sys) {
-                                            appData[date][period] = importedData[date][period];
-                                        }
-                                    }
-                                });
-                            }
-                        }
-                        
-                        // 還原後過濾 180 天舊資料
-                        cleanExpiredRecords();
-                        localStorage.setItem('bpRecords', JSON.stringify(appData));
-                        showToast('🎉 雲端備份已還原並過濾過期資料！');
-                        renderTable();
-                    } else {
-                        showToast('⚠️ 檔案庫中無有效的記錄資料', 'error');
-                    }
-                } else {
-                    showToast('❌ 下載失敗，請檢查 Token', 'error');
-                }
-            } catch (e) {
-                showToast('❌ 讀取失敗，請檢查網路連線', 'error');
-            } finally {
-                updateGistUI();
-            }
-        }
-
-        function disconnectGist() {
-            if (confirm('確定要解除綁定嗎？')) {
-                gistConfig = { token: '', gistId: '' };
-                localStorage.setItem(GIST_STORAGE_KEY, JSON.stringify(gistConfig));
-                updateGistUI();
-                showToast('🔗 已解除 GitHub 連結');
-            }
-        }
-
-        function init() {
-            loadTheme();
-            cleanExpiredRecords(); // 啟動時自動刪除超過 180 天的舊紀錄
-            
-            const info = getCurrentInfo();
-            document.getElementById('current-time-display').innerText = `📅 今日：${info.date} 🕒 時段：${info.periodText}`;
-            
-            const pastDate = new Date(); 
-            pastDate.setDate(pastDate.getDate() - 3); 
-            
-            document.getElementById('start-date').value = formatDate(pastDate);
-            document.getElementById('end-date').value = info.date;
-            renderTable();
-            updateGistUI();
-            checkTodayTodos();
-        }
-
-        init();
-    </script>
+<script src="app.js?v=23" defer></script>
 </body>
 </html>
