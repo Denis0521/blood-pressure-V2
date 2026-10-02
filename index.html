@@ -7,13 +7,20 @@
     <link rel="manifest" href="manifest.json">
     <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
     <link rel="apple-touch-icon" sizes="512x512" href="icon-512.png">
-    <meta name="theme-color" content="#ffffff">
+    <meta name="theme-color" content="#f4f9f9">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <script>
         // 【防閃爍機制】在網頁渲染前立即套用主題
         let savedTheme = localStorage.getItem('bpTheme') || 'light';
         const allowedThemes = ['light', 'green', 'purple', 'blue', 'brown', 'orange', 'pink', 'red', 'gold', 'indigo', 'slate'];
         if (!allowedThemes.includes(savedTheme)) savedTheme = 'light';
         document.documentElement.className = savedTheme;
+        (function(){
+            const c = { light:'#f4f9f9', green:'#f1f8e9', purple:'#faf5ff', blue:'#f0f9ff', brown:'#fdfbf7', orange:'#fff8f0', pink:'#fff0f5', red:'#fff5f5', gold:'#fffdf0', indigo:'#f5f5ff', slate:'#f8fafc' };
+            document.querySelector('meta[name="theme-color"]').setAttribute('content', c[savedTheme] || '#f4f9f9');
+        })();
     </script>
     <style>
         /* 🫧 立體圓潤果凍玻璃設計系統 v10 (Jelly Glass UI) */
