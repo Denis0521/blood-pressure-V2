@@ -1,7 +1,6 @@
 {
-    "id": "blood-pressure-app-v2",
-    "name": "血壓記錄 (第二版)",
-    "short_name": "血壓記錄2",
+    "name": "血壓記錄",
+    "short_name": "血壓記錄",
     "description": "具有雲端備份功能的血壓記錄 PWA",
     "start_url": "./index.html",
     "display": "standalone",
