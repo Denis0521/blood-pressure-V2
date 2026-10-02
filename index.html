@@ -12,8 +12,10 @@
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <script>
+        // 依網址自動決定儲存前綴：V2 用 bp2，其他（正式版）維持 bp，兩個倉庫可共用同一份 index.html
+        const BP_PREFIX = location.pathname.toLowerCase().includes('blood-pressure-v2') ? 'bp2' : 'bp';
         // 【防閃爍機制】在網頁渲染前立即套用主題
-        let savedTheme = localStorage.getItem('bpTheme') || 'light';
+        let savedTheme = localStorage.getItem((BP_PREFIX + 'Theme')) || 'light';
         const allowedThemes = ['light', 'green', 'purple', 'blue', 'brown', 'orange', 'pink', 'red', 'gold', 'indigo', 'slate'];
         if (!allowedThemes.includes(savedTheme)) savedTheme = 'light';
         document.documentElement.className = savedTheme;
@@ -458,10 +460,10 @@
     </div>
 
     <script>
-        let appData = JSON.parse(localStorage.getItem('bpRecords')) || {};
+        let appData = JSON.parse(localStorage.getItem((BP_PREFIX + 'Records'))) || {};
         let editDate = null, editPeriod = null;
         let pendingEditDate = null;
-        let todos = JSON.parse(localStorage.getItem('bpTodos')) || [];
+        let todos = JSON.parse(localStorage.getItem((BP_PREFIX + 'Todos'))) || [];
 
         // 🌟 自動清理 180 天前的舊血壓紀錄
         function cleanExpiredRecords() {
@@ -482,7 +484,7 @@
             }
 
             if (hasDeleted) {
-                localStorage.setItem('bpRecords', JSON.stringify(appData));
+                localStorage.setItem((BP_PREFIX + 'Records'), JSON.stringify(appData));
             }
         }
 
@@ -507,7 +509,7 @@
         }
         
         function loadTheme() {
-            let savedTheme = localStorage.getItem('bpTheme') || 'light';
+            let savedTheme = localStorage.getItem((BP_PREFIX + 'Theme')) || 'light';
             const allowedThemes = Object.keys(themeMetaColors);
             if (!allowedThemes.includes(savedTheme)) savedTheme = 'light';
             document.documentElement.className = savedTheme;
@@ -518,7 +520,7 @@
         function changeTheme() {
             const theme = document.getElementById('theme-selector').value;
             document.documentElement.className = theme;
-            localStorage.setItem('bpTheme', theme);
+            localStorage.setItem((BP_PREFIX + 'Theme'), theme);
             updateThemeMeta(theme);
         }
 
@@ -551,7 +553,7 @@
             appData[targetDate][targetPeriod] = { sys: isNaN(sys) ? '' : String(sys), dia: isNaN(dia) ? '' : String(dia), hr: isNaN(hr) ? '' : String(hr) };
             
             cleanExpiredRecords(); // 存檔前再次確認未過期
-            localStorage.setItem('bpRecords', JSON.stringify(appData));
+            localStorage.setItem((BP_PREFIX + 'Records'), JSON.stringify(appData));
             showToast(`✅ ${targetDate} ${targetPeriod === 'morning' ? '早上' : '晚上'} 本地已存檔！`);
             
             clearInputs();
@@ -568,7 +570,7 @@
             if (!editDate || !editPeriod) return;
             if (confirm(`確定要刪除 ${editDate} 的 ${editPeriod === 'morning' ? '早上' : '晚上'} 記錄嗎？`)) {
                 appData[editDate][editPeriod] = { sys: '', dia: '', hr: '' };
-                localStorage.setItem('bpRecords', JSON.stringify(appData));
+                localStorage.setItem((BP_PREFIX + 'Records'), JSON.stringify(appData));
                 showToast('🗑️ 記錄已刪除');
                 clearInputs();
                 renderTable();
@@ -645,7 +647,7 @@
 
             const newTodo = { id: Date.now(), type, date, note };
             todos.push(newTodo);
-            localStorage.setItem('bpTodos', JSON.stringify(todos));
+            localStorage.setItem((BP_PREFIX + 'Todos'), JSON.stringify(todos));
             
             document.getElementById('todo-note').value = '';
             renderTodos();
@@ -655,7 +657,7 @@
         function deleteTodo(id) {
             if (confirm('確定要刪除此待辦事項嗎？')) {
                 todos = todos.filter(t => t.id !== id);
-                localStorage.setItem('bpTodos', JSON.stringify(todos));
+                localStorage.setItem((BP_PREFIX + 'Todos'), JSON.stringify(todos));
                 renderTodos();
                 checkTodayTodos(); 
                 showToast('🗑️ 待辦已刪除');
@@ -727,7 +729,7 @@
             });
         }
     
-        const GIST_STORAGE_KEY = 'bpGistConfig';
+        const GIST_STORAGE_KEY = (BP_PREFIX + 'GistConfig');
         let gistConfig = JSON.parse(localStorage.getItem(GIST_STORAGE_KEY)) || { token: '', gistId: '' };
         let isSyncing = false;
 
@@ -899,7 +901,7 @@
                         
                         // 還原後過濾 180 天舊資料
                         cleanExpiredRecords();
-                        localStorage.setItem('bpRecords', JSON.stringify(appData));
+                        localStorage.setItem((BP_PREFIX + 'Records'), JSON.stringify(appData));
                         showToast('🎉 雲端備份已還原並過濾過期資料！');
                         renderTable();
                     } else {
