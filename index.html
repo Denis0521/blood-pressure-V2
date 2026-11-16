@@ -288,23 +288,23 @@
         .todo-input-row { display: flex; gap: 8px; margin-bottom: 10px; flex-wrap: nowrap; }
         .todo-input-row select, .todo-input-row input { flex: 1; min-width: 0; box-sizing: border-box; height: 42px; border-radius: 21px; border: 1px solid rgba(15,40,70,0.10); padding: 0 14px; font-weight: 700; font-size: 15px; outline: none; background: var(--input-bg); color: var(--text-dark); box-shadow: var(--input-shadow); white-space: nowrap; }
     
-        /* 📐 緊湊版面：縮小上下間距，讓主畫面盡量一屏看完 */
-        body { padding-top: calc(8px + env(safe-area-inset-top, 0px)); padding-bottom: calc(8px + env(safe-area-inset-bottom, 0px)); }
-        .header-container { margin-bottom: 4px; }
-        .subtitle { margin-bottom: 8px; font-size: 13px; }
-        .card { margin-bottom: 10px; }
-        #input-card { padding: 10px 12px 12px; }
-        #input-card .card-title { margin-bottom: 8px; padding-bottom: 6px; font-size: 16px; }
-        #input-card .input-group { margin-bottom: 8px; }
-        #input-card .input-group input { height: 40px; }
-        #input-card .btn-group { margin-bottom: 0; gap: 8px; }
-        #input-card button { height: 40px; font-size: 14px; padding: 0 4px; }
-        #input-card #todo-btn { height: 28px; font-size: 14px; padding: 0 10px; flex: none; }
-        #print-area { padding: 12px; }
-        #print-area .card-title { margin-bottom: 8px; padding-bottom: 6px; }
-        #print-area .hint-text { margin-bottom: 6px; }
-        #print-area .input-group { margin-bottom: 8px !important; }
-        #print-area .btn-group { margin-bottom: 8px; }
+        /* 📐 適度緊湊版面：讓主畫面 + 6 天記錄盡量一屏看完 */
+        body { padding-top: calc(10px + env(safe-area-inset-top, 0px)); padding-bottom: calc(10px + env(safe-area-inset-bottom, 0px)); }
+        .header-container { margin-bottom: 6px; }
+        .subtitle { margin-bottom: 10px; font-size: 13px; }
+        .card { margin-bottom: 12px; }
+        #input-card { padding: 14px; }
+        #input-card .card-title { margin-bottom: 10px; padding-bottom: 8px; }
+        #input-card .input-group { margin-bottom: 10px; }
+        #input-card .btn-group { margin-bottom: 10px; gap: 10px; }
+        #input-card .btn-group:last-child { margin-bottom: 0; }
+        #input-card button { height: 44px; }
+        #input-card #todo-btn { height: 30px; flex: none; padding: 0 12px; }
+        #print-area { padding: 14px; }
+        #print-area .card-title { margin-bottom: 10px; padding-bottom: 8px; }
+        #print-area .hint-text { margin-bottom: 8px; }
+        #print-area .input-group { margin-bottom: 10px !important; }
+        #print-area .btn-group { margin-bottom: 10px; }
     </style>
 </head>
 <body>
@@ -322,16 +322,18 @@
     <div class="card no-print" id="input-card">
         <div class="card-title">
             <span id="input-card-title">📝 新增 / 修改記錄</span>
-            <button id="todo-btn" class="header-btn btn-badge" onclick="openTodoModal()" style="height: 30px; font-size: 15px;">🔔 待辦</button>
+            <button id="todo-btn" class="header-btn btn-badge" onclick="openTodoModal()" style="height: 30px; font-size: 15px;">🔔 待辦提醒</button>
         </div>
         <div class="input-group">
             <input type="number" id="sys" placeholder="收縮壓" inputmode="numeric">
             <input type="number" id="dia" placeholder="舒張壓" inputmode="numeric">
             <input type="number" id="hr" placeholder="心率" inputmode="numeric">
         </div>
+        <div class="btn-group scan-row">
+            <button class="btn-outline" onclick="openScan()" style="flex: 1 1 100%;">📷 拍照辨識血壓／心率</button>
+        </div>
         <div class="btn-group">
-            <button class="btn-outline" onclick="openScan()" style="flex: 1 1 0;">📷 拍照</button>
-            <button class="btn-primary" onclick="saveRecord()" style="flex: 1.7 1 0;">💾 儲存本時段</button>
+            <button class="btn-primary" onclick="saveRecord()" style="flex: 1 1 0;">💾 儲存本時段</button>
             <button class="btn-outline" onclick="clearInputs()" style="flex: 1 1 0;">❌ 取消</button>
             <button class="btn-danger" id="btn-delete" onclick="deleteCurrentRecord()" style="display: none;">🗑️ 刪除</button>
         </div>
@@ -438,7 +440,7 @@
                 </div>
             </div>
 
-            <div class="version-text">Version 10.7 ✨ 立體圓潤版</div>
+            <div class="version-text">Version 10.8 ✨ 立體圓潤版</div>
         </div>
     </div>
 
@@ -472,7 +474,7 @@
                 </ol>
             </div>
 
-            <div class="version-text">Version 10.7 ✨ 立體圓潤版</div>
+            <div class="version-text">Version 10.8 ✨ 立體圓潤版</div>
         </div>
     </div>
 
@@ -980,7 +982,7 @@
             document.getElementById('current-time-display').innerText = `📅 今日：${info.date} 🕒 時段：${info.periodText}`;
             
             const pastDate = new Date(); 
-            pastDate.setDate(pastDate.getDate() - 3); 
+            pastDate.setDate(pastDate.getDate() - 5); 
             
             document.getElementById('start-date').value = formatDate(pastDate);
             document.getElementById('end-date').value = info.date;
