@@ -439,15 +439,14 @@
                 <div class="gist-id-display" id="cloud-code-display"></div>
                 <div class="btn-group" style="flex-wrap: wrap; gap: 10px;">
                     <button class="btn-outline btn-tall" onclick="copyCloudCode()">📋 複製同步碼</button>
-                    <button class="btn-outline btn-tall" onclick="syncToCloud(true)">☁️ 立即備份</button>
                     <button class="btn-outline btn-tall" onclick="restoreFromCloud()">📥 雲端還原</button>
                     <button class="btn-outline btn-tall" onclick="restoreOldVersion()">🕘 還原舊版本</button>
-                    <button class="btn-danger btn-tall" onclick="disconnectCloud()" style="min-width: 100%;">🔗 解除綁定</button>
+                    <button class="btn-danger btn-tall" onclick="disconnectCloud()">🔗 解除綁定</button>
                     <button class="btn-danger btn-tall" onclick="deleteCloudData()" style="min-width: 100%;">🗑️ 刪除雲端資料並解除綁定</button>
                 </div>
             </div>
 
-            <div class="version-text">Version 10.13 ✨ 立體圓潤版</div>
+            <div class="version-text">Version 10.15 ✨ 立體圓潤版</div>
         </div>
     </div>
 
@@ -473,14 +472,15 @@
                 <ol style="font-size: 13px; color: var(--text-gray); padding-left: 20px; line-height: 1.6; font-weight: 600;">
                     <li>點右上角設定 → <b>開啟雲端備份</b></li>
                     <li>系統會產生一組<b>同步碼</b>，請<b>抄下或截圖保存</b>（它就是你的帳號密碼，遺失就無法還原）</li>
-                    <li>之後每次儲存都會自動備份到雲端</li>
+                    <li>之後每次儲存都會自動備份到雲端（含待辦提醒；沒網路時會在連線後自動補傳）</li>
                     <li>換手機：設定 → 貼上同步碼 → <b>用同步碼還原</b></li>
+                    <li>🔔 待辦提醒過期 1 天後會自動刪除</li>
                     <li>🕘 不小心刪掉記錄？按<b>還原舊版本</b>可救回（雲端每天保留前一天的資料，最多 7 份）</li>
                     <li>⏳ 雲端資料若<b>超過 300 天沒有更新</b>，會自動全部刪除</li>
                 </ol>
             </div>
 
-            <div class="version-text">Version 10.13 ✨ 立體圓潤版</div>
+            <div class="version-text">Version 10.15 ✨ 立體圓潤版</div>
         </div>
     </div>
 
@@ -540,6 +540,32 @@
             if (hasDeleted) {
                 localStorage.setItem((BP_PREFIX + 'Records'), JSON.stringify(appData));
             }
+        }
+
+        // 待辦提醒：日期已過 1 天（昨天以前）的提醒自動刪除
+        function cleanExpiredTodos() {
+            const today = formatDate(new Date());
+            const kept = todos.filter(t => t && typeof t.date === 'string' && t.date >= today);
+            if (kept.length === todos.length) return false;
+            todos = kept;
+            localStorage.setItem((BP_PREFIX + 'Todos'), JSON.stringify(todos));
+            return true;
+        }
+        function saveTodos() {
+            localStorage.setItem((BP_PREFIX + 'Todos'), JSON.stringify(todos));
+            if (cloudConfig.code) setTimeout(() => syncToCloud(), 300);
+        }
+        function escHtml(str) {
+            return String(str == null ? '' : str).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+        }
+        function mergeTodos(imported) {
+            if (!Array.isArray(imported)) return;
+            const ids = new Set(todos.map(t => t.id));
+            imported.forEach(t => { if (t && !ids.has(t.id)) todos.push(t); });
+            cleanExpiredTodos();
+            localStorage.setItem((BP_PREFIX + 'Todos'), JSON.stringify(todos));
+            renderTodos();
+            checkTodayTodos();
         }
 
         function showToast(message, type = 'success') {
@@ -653,6 +679,7 @@
         }
 
         function openTodoModal() {
+            cleanExpiredTodos();
             document.getElementById('todoModal').style.display = 'flex';
             document.getElementById('todo-date').value = formatDate(new Date());
             renderTodos();
@@ -675,8 +702,8 @@
                 div.className = 'todo-item';
                 div.innerHTML = `
                     <div class="todo-info">
-                        <div class="todo-title">${item.type} <span style="font-size: 12px; color: var(--primary-color); margin-left: 6px;">${item.date}</span></div>
-                        ${item.note ? `<div class="todo-note">${item.note}</div>` : ''}
+                        <div class="todo-title">${escHtml(item.type)} <span style="font-size: 12px; color: var(--primary-color); margin-left: 6px;">${escHtml(item.date)}</span></div>
+                        ${item.note ? `<div class="todo-note">${escHtml(item.note)}</div>` : ''}
                     </div>
                     <button class="todo-del-btn" onclick="deleteTodo(${item.id})">✖️</button>
                 `;
@@ -695,7 +722,7 @@
 
             const newTodo = { id: Date.now(), type, date, note };
             todos.push(newTodo);
-            localStorage.setItem((BP_PREFIX + 'Todos'), JSON.stringify(todos));
+            saveTodos();
             
             document.getElementById('todo-note').value = '';
             renderTodos();
@@ -705,7 +732,7 @@
         function deleteTodo(id) {
             if (confirm('確定要刪除此待辦事項嗎？')) {
                 todos = todos.filter(t => t.id !== id);
-                localStorage.setItem((BP_PREFIX + 'Todos'), JSON.stringify(todos));
+                saveTodos();
                 renderTodos();
                 checkTodayTodos(); 
                 showToast('🗑️ 待辦已刪除');
@@ -833,7 +860,7 @@
                 return;
             }
             dot.className = 'gist-status-dot connected';
-            text.textContent = '✅ 已啟用自動雲端備份';
+            text.textContent = cloudConfig.dirty ? '⚠️ 有資料尚未備份，連線後會自動重試' : '✅ 已啟用自動雲端備份';
             setup.style.display = 'none'; conn.style.display = 'block';
             const last = cloudConfig.last ? new Date(cloudConfig.last).toLocaleString() : '尚未上傳';
             document.getElementById('cloud-code-display').innerHTML =
@@ -867,6 +894,7 @@
                 } else if (res.ok) {
                     const r = await res.json();
                     mergeImported(r.data || {});
+                    mergeTodos(r.todos);
                     cloudConfig = { code, last: r.updatedAt || '' };
                     saveCloudConfig();
                     document.getElementById('cloud-code-input').value = '';
@@ -883,27 +911,33 @@
             updateCloudUI();
         }
 
+        let syncQueued = false;
         async function syncToCloud(manual) {
-            if (isSyncing || !cloudConfig.code || !cloudReady()) return;
-            if (Object.keys(appData).length === 0) { if (manual) showToast('⚠️ 目前沒有可備份的記錄', 'warning'); return; }
+            if (!cloudConfig.code || !cloudReady()) return;
+            if (isSyncing) { syncQueued = true; return; } // 同步中又有新變更 → 結束後再補傳一次
+            cleanExpiredTodos();
+            if (Object.keys(appData).length === 0 && todos.length === 0) { if (manual) showToast('⚠️ 目前沒有可備份的資料', 'warning'); return; }
             isSyncing = true;
+            cloudConfig.dirty = true; saveCloudConfig(); // 先標記未完成，成功後才清除；失敗或中斷時會自動重試
             document.getElementById('cloud-dot').className = 'gist-status-dot syncing';
             document.getElementById('cloud-status-text').textContent = '☁️ 正在同步至雲端...';
             try {
-                const res = await cloudFetch('PUT', { data: appData });
+                const res = await cloudFetch('PUT', { data: appData, todos: todos });
                 if (res.ok) {
                     const r = await res.json();
                     cloudConfig.last = r.updatedAt || new Date().toISOString();
+                    cloudConfig.dirty = false;
                     saveCloudConfig();
                     showToast('☁️ 雲端數據已安全更新！');
                 } else if (manual) {
-                    showToast('❌ 備份失敗，請稍後再試', 'error');
+                    showToast('❌ 備份失敗，稍後會自動重試', 'error');
                 }
             } catch (e) {
-                if (manual) showToast('❌ 網路連線錯誤，將於下次儲存時重試', 'error');
+                if (manual) showToast('❌ 網路連線錯誤，連線後會自動重試', 'error');
             } finally {
                 isSyncing = false;
                 updateCloudUI();
+                if (syncQueued) { syncQueued = false; syncToCloud(false); }
             }
         }
 
@@ -916,6 +950,7 @@
                 if (res.ok) {
                     const r = await res.json();
                     mergeImported(r.data || {});
+                    mergeTodos(r.todos);
                     showToast('🎉 雲端備份已還原並過濾過期資料！');
                 } else if (res.status === 404) {
                     showToast('⚠️ 雲端沒有備份（可能超過 300 天未更新已被刪除）', 'error');
@@ -998,8 +1033,12 @@
             document.getElementById('start-date').value = formatDate(pastDate);
             document.getElementById('end-date').value = info.date;
             renderTable();
+            const todosCleaned = cleanExpiredTodos(); // 啟動時自動刪除已過期 1 天的待辦
             updateCloudUI();
             checkTodayTodos();
+            // 有尚未成功備份的資料，或剛清掉過期待辦 → 自動備份一次
+            if (cloudConfig.code && (cloudConfig.dirty || todosCleaned)) setTimeout(() => syncToCloud(), 800);
+            window.addEventListener('online', () => { if (cloudConfig.code && cloudConfig.dirty) syncToCloud(); });
         }
 
 
