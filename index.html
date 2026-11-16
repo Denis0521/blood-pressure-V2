@@ -193,6 +193,15 @@
         .modal-close:hover { color: #0f172a; }
         .modal-close:active { transform: scale(0.9); }
 
+
+        /* 📷 拍照辨識 */
+        button:disabled { opacity: 0.45; pointer-events: none; }
+        .scan-stage { position: relative; width: 100%; aspect-ratio: 4 / 3; background: #000; border-radius: 20px; overflow: hidden; margin: 8px 0 10px; }
+        .scan-stage video { display: block; width: 100%; height: 100%; object-fit: cover; }
+        .scan-guide { position: absolute; inset: 7%; border: 2px dashed rgba(255,255,255,0.85); border-radius: 12px; pointer-events: none;
+            background: linear-gradient(rgba(255,255,255,0.28), rgba(255,255,255,0.28)) 0 33.3% / 100% 1px no-repeat, linear-gradient(rgba(255,255,255,0.28), rgba(255,255,255,0.28)) 0 66.6% / 100% 1px no-repeat; }
+        .scan-live { text-align: center; font-size: 30px; font-weight: 800; letter-spacing: 1px; color: var(--text-dark); margin: 4px 0 6px; font-variant-numeric: tabular-nums; }
+
         .theme-select {
             width: 100%; height: 50px; padding: 0 16px; border-radius: 25px; margin-bottom: 16px;
             background: var(--input-bg); color: var(--text-dark); border: 1px solid rgba(var(--theme-rgb), 0.3); box-shadow: var(--input-shadow);
@@ -302,6 +311,9 @@
             <input type="number" id="dia" placeholder="舒張壓" inputmode="numeric">
             <input type="number" id="hr" placeholder="心率" inputmode="numeric">
         </div>
+        <div class="btn-group" style="margin-bottom: 12px;">
+            <button class="btn-outline btn-tall" onclick="openScan()" style="flex: 1 1 100%;">📷 拍照辨識血壓／心率</button>
+        </div>
         <div class="btn-group">
             <button class="btn-primary" onclick="saveRecord()">💾 儲存本時段</button>
             <button class="btn-outline" onclick="clearInputs()">❌ 取消</button>
@@ -410,7 +422,7 @@
                 </div>
             </div>
 
-            <div class="version-text">Version 10.5 ✨ 立體圓潤版</div>
+            <div class="version-text">Version 10.6 ✨ 立體圓潤版</div>
         </div>
     </div>
 
@@ -423,6 +435,7 @@
                 <div class="card-title" style="font-size: 15px; margin-top: 10px;">🩺 核心功能</div>
                 <ul style="font-size: 15px; color: var(--text-gray); padding-left: 20px; line-height: 1.6; font-weight: 600;">
                     <li>記錄每日 ☀️ 早上與 🌙 晚上的血壓數值</li>
+                    <li>📷 <b>拍照辨識</b>：對準血壓計螢幕自動讀取血壓與心率（全程在手機本機處理，不上傳）。有反光時慢慢轉動手機，系統會自動挑出讀得到的畫面；讀完請務必對照血壓計核對再儲存</li>
                     <li>系統會<b>自動保留近 180 天</b>記錄，過期會自動清除</li>
                     <li>點擊列表右側的「✏️」即可隨時補填或修改</li>
                     <li>每次點擊儲存，系統將完全自動進行雲端安全覆蓋</li>
@@ -443,7 +456,24 @@
                 </ol>
             </div>
 
-            <div class="version-text">Version 10.5 ✨ 立體圓潤版</div>
+            <div class="version-text">Version 10.6 ✨ 立體圓潤版</div>
+        </div>
+    </div>
+
+    <div id="scanModal" class="modal-overlay no-print">
+        <div class="modal-content">
+            <span class="modal-close" onclick="closeScan()">&times;</span>
+            <div class="card-title" style="margin-top: 5px;">📷 拍照辨識</div>
+            <div class="scan-stage" id="scan-stage"><video id="scan-video" playsinline muted autoplay></video><div class="scan-guide"></div></div>
+            <div class="scan-live" id="scan-live">-- / -- / --</div>
+            <div class="hint-text" id="scan-status"></div>
+            <div class="btn-group" style="margin-bottom: 10px;">
+                <button class="btn-outline" onclick="document.getElementById('scan-file-cam').click()">📸 系統相機</button>
+                <button class="btn-outline" onclick="document.getElementById('scan-file-pick').click()">🖼️ 相簿選圖</button>
+            </div>
+            <button class="btn-primary btn-tall" id="scan-use-btn" onclick="useScanBest()" style="width: 100%;" disabled>✅ 採用目前讀數</button>
+            <input type="file" id="scan-file-cam" accept="image/*" capture="environment" hidden onchange="scanFromFile(this)">
+            <input type="file" id="scan-file-pick" accept="image/*" hidden onchange="scanFromFile(this)">
         </div>
     </div>
 
@@ -941,6 +971,528 @@
             renderTable();
             updateGistUI();
             checkTodayTodos();
+        }
+
+
+        // ================= 📷 拍照辨識血壓（本機辨識，不上傳）=================
+// ==== BPOCR-CORE-START ====
+const BPOCR = (function () {
+    'use strict';
+    const SEGS = 'abcdefg';
+    const ON = 0.72;
+    // 七段顯示器候選圖樣（含常見變體：6 無頂線、7 帶左上線、9 無底線）
+    const CAND = [
+        ['0', 'abcdef'], ['2', 'abdeg'], ['3', 'abcdg'], ['4', 'bcfg'], ['5', 'acdfg'],
+        ['6', 'acdefg'], ['6', 'cdefg'], ['7', 'abc'], ['7', 'abcf'], ['8', 'abcdefg'],
+        ['9', 'abcdfg'], ['9', 'abcfg']
+    ].map(([ch, s]) => ({ ch, t: SEGS.split('').map(k => (s.indexOf(k) >= 0 ? ON : 0)) }));
+    // 各線段在「已校正傾斜的字元外框」中的取樣區 [u0,u1,v0,v1]
+    const ZMAP = { a: [.2, .8, 0, .17], b: [.7, 1, .13, .47], c: [.7, 1, .53, .87], d: [.2, .8, .83, 1], e: [0, .3, .53, .87], f: [0, .3, .13, .47], g: [.2, .8, .415, .585] };
+    const ZONES = SEGS.split('').map(k => ZMAP[k]);
+
+    function meanMap(gray, w, h, win) {
+        const r = win >> 1, W1 = w + 1;
+        const I = new Float64Array(W1 * (h + 1));
+        for (let y = 0; y < h; y++) {
+            let row = 0;
+            for (let x = 0; x < w; x++) { row += gray[y * w + x]; I[(y + 1) * W1 + x + 1] = I[y * W1 + x + 1] + row; }
+        }
+        const m = new Float32Array(w * h);
+        for (let y = 0; y < h; y++) {
+            const y0 = Math.max(0, y - r), y1 = Math.min(h, y + r + 1);
+            for (let x = 0; x < w; x++) {
+                const x0 = Math.max(0, x - r), x1 = Math.min(w, x + r + 1);
+                const s = I[y1 * W1 + x1] - I[y0 * W1 + x1] - I[y1 * W1 + x0] + I[y0 * W1 + x0];
+                m[y * w + x] = s / ((x1 - x0) * (y1 - y0));
+            }
+        }
+        return m;
+    }
+
+    // 辨識單一字元（一團像素）。回傳陣列（寬度異常時會嘗試切開成多個字元）
+    function decodeBlob(px, py, depth, ctx) {
+        const n = px.length;
+        let y0 = 1e9, y1 = -1e9, xmin = 1e9, xmax = -1e9;
+        for (let k = 0; k < n; k++) {
+            if (py[k] < y0) y0 = py[k]; if (py[k] > y1) y1 = py[k];
+            if (px[k] < xmin) xmin = px[k]; if (px[k] > xmax) xmax = px[k];
+        }
+        const H = y1 - y0 + 1;
+        if (H < 10 || n < 30) return [];
+        const ym = (y0 + y1) / 2;
+        // 1) 估計斜體傾斜量：讓垂直筆畫對齊時，欄位直方圖最「尖」
+        const base = Math.ceil(H * 0.25) + 3;
+        const span = xmax - xmin + 1;
+        const hist = new Float32Array(span + base * 2 + 4);
+        let bestS = 0, bestScore = -1;
+        const stride = n > 2500 ? Math.ceil(n / 2500) : 1;
+        for (let s = -0.15; s <= 0.4001; s += 0.0125) {
+            hist.fill(0);
+            for (let k = 0; k < n; k += stride) hist[Math.round(px[k] + s * (py[k] - ym) - xmin) + base]++;
+            let sc = 0;
+            for (let i = 0; i < hist.length; i++) sc += hist[i] * hist[i];
+            sc *= (1 - 0.0008 * Math.abs(s));
+            if (sc > bestScore) { bestScore = sc; bestS = s; }
+        }
+        const xp = new Float32Array(n);
+        let xa = 1e9, xb = -1e9;
+        for (let k = 0; k < n; k++) {
+            xp[k] = px[k] + bestS * (py[k] - ym);
+            if (xp[k] < xa) xa = xp[k]; if (xp[k] > xb) xb = xp[k];
+        }
+        const W = xb - xa + 1;
+        const aspect = W / H;
+
+        // 2) 太寬 → 可能把相鄰兩個字黏在一起，找谷底切開
+        if (aspect > 0.95 && depth < 3) {
+            const hh = new Float32Array(Math.ceil(W) + 2);
+            for (let k = 0; k < n; k++) hh[Math.round(xp[k] - xa)]++;
+            const lo = Math.floor(0.3 * H), hi = Math.floor(W - 0.3 * H);
+            if (hi > lo) {
+                let bc = -1, bv = 1e18;
+                for (let c = lo; c <= hi; c++) {
+                    const v = (hh[c - 1] || 0) + hh[c] + (hh[c + 1] || 0);
+                    if (v < bv) { bv = v; bc = c; }
+                }
+                const L = { x: [], y: [] }, R = { x: [], y: [] };
+                for (let k = 0; k < n; k++) {
+                    const t = (Math.round(xp[k] - xa) <= bc) ? L : R;
+                    t.x.push(px[k]); t.y.push(py[k]);
+                }
+                return decodeBlob(L.x, L.y, depth + 1, ctx).concat(decodeBlob(R.x, R.y, depth + 1, ctx));
+            }
+        }
+
+        const box = { x0: xmin, x1: xmax, y0, y1 };
+        const res = (ch, conf) => [{ ch, conf, x0: xmin, x1: xmax, y0, y1, cx: (xmin + xmax) / 2, cy: (y0 + y1) / 2, h: H }];
+
+        // 3) 「1」：又窄又高
+        if (aspect < 0.36) {
+            const fill = n / (W * H);
+            if (fill < 0.45) return [];
+            return res('1', Math.min(1, 0.5 + (0.36 - aspect) * 2));
+        }
+        if (aspect > 1.0) return [];
+
+        // 4) 計算七個線段取樣區的填滿率，與各數字圖樣比對
+        const cnt = new Float32Array(7);
+        for (let k = 0; k < n; k++) {
+            const u = (xp[k] - xa) / W, v = (py[k] - y0) / H;
+            for (let z = 0; z < 7; z++) {
+                const Z = ZONES[z];
+                if (u >= Z[0] && u < Z[1] && v >= Z[2] && v < Z[3]) cnt[z]++;
+            }
+        }
+        const fill = new Float32Array(7);
+        for (let z = 0; z < 7; z++) {
+            const Z = ZONES[z];
+            fill[z] = Math.min(1, cnt[z] / ((Z[1] - Z[0]) * W * (Z[3] - Z[2]) * H));
+        }
+        // 反光洗白偵測：某線段看起來「沒亮」，但該區背景明顯比同一個字的其他區域亮 → 可能是被反光蓋掉，視為未知
+        const unknown = [false, false, false, false, false, false, false];
+        if (ctx && ctx.gray) {
+            const sg = new Float32Array(7), sn = new Float32Array(7), hb = new Uint32Array(256); let hn = 0;
+            const gray = ctx.gray, fgm = ctx.fg, gw = ctx.w, gh = ctx.h;
+            for (let y = y0; y <= y1; y++) {
+                const v = (y - y0) / H;
+                for (let xq = Math.floor(xa); xq <= Math.ceil(xb); xq++) {
+                    const u = (xq - xa) / W;
+                    if (u < 0 || u >= 1) continue;
+                    const x = Math.round(xq - bestS * (y - ym));
+                    if (x < 0 || x >= gw || y < 0 || y >= gh) continue;
+                    const idx = y * gw + x;
+                    if (fgm[idx] === 2) continue;
+                    hb[gray[idx]]++; hn++;
+                    for (let z = 0; z < 7; z++) {
+                        const Z = ZONES[z];
+                        if (u >= Z[0] && u < Z[1] && v >= Z[2] && v < Z[3]) { sg[z] += gray[idx]; sn[z]++; }
+                    }
+                }
+            }
+            const means = [];
+            for (let z = 0; z < 7; z++) means.push(sn[z] > 12 ? sg[z] / sn[z] : null);
+            let p25 = 255, acc = 0;
+            for (let v = 0; v < 256; v++) { acc += hb[v]; if (acc >= hn * 0.25) { p25 = v; break; } }
+            for (let z = 0; z < 7; z++) if (means[z] !== null && fill[z] < 0.4 && means[z] > p25 + 28) unknown[z] = true;
+        }
+        const cost = {};
+        for (const c of CAND) {
+            let s = 0;
+            for (let z = 0; z < 7; z++) s += unknown[z] ? 0.36 : Math.abs(fill[z] - c.t[z]);
+            if (cost[c.ch] === undefined || s < cost[c.ch]) cost[c.ch] = s;
+        }
+        const arr = Object.keys(cost).map(ch => [ch, cost[ch]]).sort((p, q) => p[1] - q[1]);
+        if (arr[0][1] > 1.35) return [];
+        const conf = Math.max(0, Math.min(1, (arr[1][1] - arr[0][1]) / 0.7));
+        return res(arr[0][0], conf);
+    }
+
+    function analyze(gray, w, h, mean, t, light, bg) {
+        const N = w * h;
+        const fg = new Uint8Array(N);
+        for (let i = 0; i < N; i++) {
+            const p = gray[i], m = mean[i];
+            if (!light) { if (m - p > Math.max(7, t * m)) fg[i] = 1; }
+            else { if (p - m > Math.max(7, t * (255 - m))) fg[i] = 1; }
+        }
+        // 連通元件
+        const queue = new Int32Array(N);
+        let qn = 0;
+        const comps = [];
+        const minA = Math.max(20, Math.round(N * 0.00007)), maxA = N * 0.2;
+        for (let i = 0; i < N; i++) {
+            if (fg[i] !== 1) continue;
+            const s = qn;
+            queue[qn++] = i; fg[i] = 2;
+            let head = s, x0 = w, x1 = 0, y0 = h, y1 = 0;
+            while (head < qn) {
+                const p = queue[head++];
+                const y = (p / w) | 0, x = p - y * w;
+                if (x < x0) x0 = x; if (x > x1) x1 = x; if (y < y0) y0 = y; if (y > y1) y1 = y;
+                for (let dy = -1; dy <= 1; dy++) {
+                    const yy = y + dy; if (yy < 0 || yy >= h) continue;
+                    for (let dx = -1; dx <= 1; dx++) {
+                        const xx = x + dx; if (xx < 0 || xx >= w) continue;
+                        const q = yy * w + xx;
+                        if (fg[q] === 1) { fg[q] = 2; queue[qn++] = q; }
+                    }
+                }
+            }
+            const area = qn - s;
+            if (area >= minA && area <= maxA && (y1 - y0) < h * 0.7) comps.push({ s, e: qn, x0, x1, y0, y1, area });
+        }
+        comps.sort((a, b) => b.area - a.area);
+        if (comps.length > 400) comps.length = 400;
+        const nc = comps.length;
+        // 把屬於同一個字元的線段合併
+        const par = new Int32Array(nc).map((_, i) => i);
+        const find = a => { while (par[a] !== a) { par[a] = par[par[a]]; a = par[a]; } return a; };
+        for (let i = 0; i < nc; i++) {
+            const A = comps[i], la = Math.max(A.x1 - A.x0, A.y1 - A.y0) + 1;
+            for (let j = i + 1; j < nc; j++) {
+                const B = comps[j], lb = Math.max(B.x1 - B.x0, B.y1 - B.y0) + 1;
+                const dx = Math.max(0, Math.max(A.x0, B.x0) - Math.min(A.x1, B.x1) - 1);
+                const dy = Math.max(0, Math.max(A.y0, B.y0) - Math.min(A.y1, B.y1) - 1);
+                if (Math.max(la, lb) <= 4 * Math.min(la, lb) && Math.max(dx, dy) <= 0.15 * Math.min(la, lb)) { const ra = find(i), rb = find(j); if (ra !== rb) par[rb] = ra; }
+            }
+        }
+        const groups = new Map();
+        for (let i = 0; i < nc; i++) { const r = find(i); if (!groups.has(r)) groups.set(r, []); groups.get(r).push(comps[i]); }
+        let digits = [];
+        groups.forEach(list => {
+            let gx0 = 1e9, gx1 = -1e9, gy0 = 1e9, gy1 = -1e9, gn = 0;
+            for (const c of list) { gx0 = Math.min(gx0, c.x0); gx1 = Math.max(gx1, c.x1); gy0 = Math.min(gy0, c.y0); gy1 = Math.max(gy1, c.y1); gn += c.area; }
+            const gW = gx1 - gx0 + 1, gH = gy1 - gy0 + 1;
+            if (gH < 10 || gH > h * 0.6 || gW > 3.2 * gH) return;            // 太小/太大/太扁：不是字
+            if (gW * gH > 2000 && gn / (gW * gH) > 0.85) return;               // 實心塊：不是七段字
+            const px = [], py = [];
+            for (const c of list) for (let k = c.s; k < c.e; k++) { const p = queue[k]; const y = (p / w) | 0; py.push(y); px.push(p - y * w); }
+            digits = digits.concat(decodeBlob(px, py, 0, { gray, fg, w, h, bg }));
+        });
+        return assembleRows(digits);
+    }
+
+    function median(a) { const b = a.slice().sort((x, y) => x - y); return b[b.length >> 1]; }
+
+    function assembleRows(digits) {
+        if (digits.length < 4) return { rows: [], ok: false };
+        digits.sort((a, b) => a.cy - b.cy);
+        let rows = [];
+        for (const d of digits) {
+            const r = rows[rows.length - 1];
+            if (r && Math.abs(d.cy - r.cy) < 0.4 * Math.min(d.h, r.h)) {
+                r.items.push(d); const m = r.items.length;
+                r.cy = (r.cy * (m - 1) + d.cy) / m; r.h = (r.h * (m - 1) + d.h) / m;
+            } else rows.push({ items: [d], cy: d.cy, h: d.h });
+        }
+        // 每列：去掉高度差太多的雜訊，依 x 排序，遇到大空隙切成不同列
+        const cand = [];
+        for (const r of rows) {
+            const mh = median(r.items.map(i => i.h));
+            const it = r.items.filter(i => i.h >= 0.72 * mh && i.h <= 1.35 * mh).sort((a, b) => a.cx - b.cx);
+            let cur = [];
+            for (const d of it) {
+                if (cur.length && d.x0 - cur[cur.length - 1].x1 > 0.9 * mh) { cand.push(cur); cur = []; }
+                cur.push(d);
+            }
+            if (cur.length) cand.push(cur);
+        }
+        const valid = cand.filter(c => c.length >= 2 && c.length <= 3 && c[0].ch !== '0').map(c => ({
+            text: c.map(d => d.ch).join(''),
+            conf: Math.min.apply(null, c.map(d => d.conf)),
+            cy: c.reduce((s, d) => s + d.cy, 0) / c.length,
+            h: median(c.map(d => d.h)),
+            x0: c[0].x0, x1: c[c.length - 1].x1
+        }));
+        if (!valid.length) return { rows: [], ok: false };
+        // 取前 8 大的候選列，找出最合理的上下三列
+        const top = valid.sort((a, b) => b.h - a.h).slice(0, 8).sort((a, b) => a.cy - b.cy);
+        let best = null, bestScore = -1;
+        for (let i = 0; i < top.length; i++) for (let j = i + 1; j < top.length; j++) for (let k = j + 1; k < top.length; k++) {
+            const A = top[i], B = top[j], C = top[k];
+            const sys = parseInt(A.text, 10), dia = parseInt(B.text, 10), hr = parseInt(C.text, 10);
+            if (!plausible(sys, dia, hr)) continue;
+            if (Math.abs(A.h - B.h) > 0.25 * Math.max(A.h, B.h)) continue;          // 收縮/舒張字一樣大
+            if (C.h > 1.3 * A.h || C.h < 0.4 * A.h) continue;                       // 心率字大小相近或略小
+            if (B.cy - A.cy < 0.9 * A.h || C.cy - B.cy < 0.8 * B.h) continue;      // 上下間距合理
+            if (B.cy - A.cy > 2.2 * A.h || C.cy - B.cy > 2.2 * B.h) continue;
+            if (Math.abs(A.x1 - B.x1) > 0.7 * A.h) continue;                        // 前兩列右緣對齊
+            const score = (A.h + B.h + C.h) / 3 + 40 * (A.conf + B.conf + C.conf);
+            if (score > bestScore) { bestScore = score; best = [A, B, C]; }
+        }
+        if (best) return { rows: best, ok: true };
+        // 找不到合理組合：退回到「最大的三列」，交由後續投票/人工核對
+        const pick = valid.filter(v => v.h >= 0.45 * top.reduce((m, v2) => Math.max(m, v2.h), 0)).sort((a, b) => b.h - a.h).slice(0, 3).sort((a, b) => a.cy - b.cy);
+        return { rows: pick, ok: pick.length === 3 };
+    }
+
+    function plausible(sys, dia, hr) {
+        return sys >= 70 && sys <= 260 && dia >= 40 && dia <= 150 && hr >= 30 && hr <= 220 && sys - dia >= 10;
+    }
+
+    function rotateGray(g, w, h, deg) {
+        if (deg === 0) return { g, w, h };
+        const o = new Uint8Array(w * h);
+        if (deg === 180) { for (let i = 0; i < w * h; i++) o[i] = g[w * h - 1 - i]; return { g: o, w, h }; }
+        const nw = h, nh = w;
+        for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) {
+            if (deg === 90) o[x * nw + (h - 1 - y)] = g[y * w + x];
+            else o[(w - 1 - x) * nw + y] = g[y * w + x];
+        }
+        return { g: o, w: nw, h: nh };
+    }
+
+    // 解碼一張灰階影像。回傳多組「讀數」（不同參數各投一票），由呼叫端投票
+    function decodeFrame(gray, w, h, opts) {
+        opts = opts || {};
+        const wins = opts.wins || [0.07, 0.11, 0.17];
+        const ts = opts.ts || [0.05, 0.1, 0.18];
+        const out = [];
+        const dim = Math.max(w, h);
+        const hist = new Uint32Array(256);
+        for (let i = 0; i < w * h; i += 3) hist[gray[i]]++;
+        let acc = 0, bgMed = 128; const tot = Math.ceil(w * h / 3);
+        for (let v = 0; v < 256; v++) { acc += hist[v]; if (acc >= tot / 2) { bgMed = v; break; } }
+        for (const light of [false, true]) {
+            const bg = light ? 1e9 : bgMed; // 亮字模式不做洗白偵測
+            for (const wf of wins) {
+                const win = Math.max(15, Math.round(dim * wf) | 1);
+                const mean = meanMap(gray, w, h, win);
+                for (const t of ts) {
+                    const r = analyze(gray, w, h, mean, t, light, bg);
+                    if (!r.ok) continue;
+                    const sys = parseInt(r.rows[0].text, 10), dia = parseInt(r.rows[1].text, 10), hr = parseInt(r.rows[2].text, 10);
+                    out.push({
+                        sys, dia, hr, ok: plausible(sys, dia, hr),
+                        conf: Math.min(r.rows[0].conf, r.rows[1].conf, r.rows[2].conf), light
+                    });
+                }
+            }
+            if (out.some(r => r.ok)) break; // 深字淺底已有合理結果就不再試反相
+        }
+        return out;
+    }
+
+    function cropGray(g, w, h, fx, fy, fw, fh) {
+        const x0 = Math.floor(w * fx), y0 = Math.floor(h * fy), cw = Math.floor(w * fw), ch = Math.floor(h * fh);
+        const o = new Uint8Array(cw * ch);
+        for (let y = 0; y < ch; y++) for (let x = 0; x < cw; x++) o[y * cw + x] = g[(y0 + y) * w + x0 + x];
+        return { g: o, w: cw, h: ch };
+    }
+
+    // 解碼相簿/系統相機拍的整張照片：依序嘗試 原圖 → 旋轉 → 中央裁切放大
+    function decodePhoto(gray, w, h) {
+        const opts = { wins: [0.04, 0.07, 0.11, 0.17] };
+        const tryOne = (g, gw, gh) => {
+            const out = decodeFrame(g, gw, gh, opts);
+            return out.some(r => r.ok) ? out : null;
+        };
+        let r = tryOne(gray, w, h);
+        if (r) return r;
+        for (const deg of [90, 270, 180]) {
+            const t = rotateGray(gray, w, h, deg);
+            r = tryOne(t.g, t.w, t.h);
+            if (r) return r;
+        }
+        for (const f of [0.75, 0.55]) {
+            const cr = cropGray(gray, w, h, (1 - f) / 2, (1 - f) / 2, f, f);
+            r = tryOne(cr.g, cr.w, cr.h);
+            if (r) return r;
+        }
+        return [];
+    }
+
+    // 投票器：對三個欄位分別累積票數
+    function Voter() {
+        this.f = { sys: new Map(), dia: new Map(), hr: new Map() };
+        this.frame = 0;
+    }
+    Voter.prototype.add = function (readings) {
+        this.frame++;
+        for (const r of readings) {
+            if (!r.ok) continue;
+            for (const k of ['sys', 'dia', 'hr']) {
+                const m = this.f[k];
+                let e = m.get(r[k]);
+                if (!e) { e = { v: r[k], w: 0, n: 0, frames: new Set() }; m.set(r[k], e); }
+                e.w += 0.3 + r.conf; e.n++; e.frames.add(this.frame);
+            }
+        }
+    };
+    Voter.prototype.leaders = function (minFrames, ratio) {
+        const res = { sys: null, dia: null, hr: null, locked: true };
+        for (const k of ['sys', 'dia', 'hr']) {
+            const arr = Array.from(this.f[k].values()).sort((a, b) => b.w - a.w);
+            if (!arr.length) { res.locked = false; continue; }
+            res[k] = arr[0].v;
+            const second = arr[1] ? arr[1].w : 0;
+            if (arr[0].frames.size < minFrames || arr[0].w < ratio * second) res.locked = false;
+        }
+        if (res.sys != null && res.dia != null && res.hr != null && !plausible(res.sys, res.dia, res.hr)) res.locked = false;
+        return res;
+    };
+
+    return { decodeFrame, decodePhoto, Voter, plausible, rotateGray };
+})();
+// ==== BPOCR-CORE-END ====
+
+
+        const scan = { stream: null, running: false, voter: null, timer: null, canvas: null, last: null, t0: 0 };
+
+        function scanSay(msg) { document.getElementById('scan-status').textContent = msg; }
+        function scanShowLive(L) {
+            const f = v => (v == null ? '--' : v);
+            document.getElementById('scan-live').textContent = `${f(L.sys)} / ${f(L.dia)} / ${f(L.hr)}`;
+            const have = L.sys != null && L.dia != null && L.hr != null;
+            document.getElementById('scan-use-btn').disabled = !have;
+            scan.last = have ? L : null;
+        }
+        function scanToGray(img) {
+            const d = img.data, n = img.width * img.height, g = new Uint8Array(n);
+            for (let i = 0, j = 0; i < n; i++, j += 4) g[i] = (d[j] * 77 + d[j + 1] * 150 + d[j + 2] * 29) >> 8;
+            return { g, w: img.width, h: img.height };
+        }
+        function scanGrab() {
+            const v = document.getElementById('scan-video');
+            const vw = v.videoWidth, vh = v.videoHeight;
+            if (!vw || v.readyState < 2) return null;
+            const A = 4 / 3;
+            let sw, sh;
+            if (vw / vh < A) { sw = vw; sh = vw / A; } else { sh = vh; sw = vh * A; }
+            const cw = Math.min(800, Math.round(sw)), ch = Math.round(cw / A);
+            if (!scan.canvas) scan.canvas = document.createElement('canvas');
+            scan.canvas.width = cw; scan.canvas.height = ch;
+            const ctx = scan.canvas.getContext('2d', { willReadFrequently: true });
+            ctx.drawImage(v, (vw - sw) / 2, (vh - sh) / 2, sw, sh, 0, 0, cw, ch);
+            return scanToGray(ctx.getImageData(0, 0, cw, ch));
+        }
+
+        async function startScanCamera() {
+            const stage = document.getElementById('scan-stage'), video = document.getElementById('scan-video');
+            if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+                stage.style.display = 'none';
+                scanSay('⚠️ 此瀏覽器無法使用即時相機（LINE 等內建瀏覽器常見），請改用下方「系統相機」或「相簿選圖」，或用 Chrome 開啟。');
+                return;
+            }
+            try {
+                stage.style.display = 'block';
+                scan.stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: { ideal: 'environment' }, width: { ideal: 1920 }, height: { ideal: 1080 } }, audio: false });
+                video.srcObject = scan.stream;
+                await video.play();
+                try {
+                    const tr = scan.stream.getVideoTracks()[0];
+                    const caps = tr.getCapabilities ? tr.getCapabilities() : {};
+                    if (caps.focusMode && caps.focusMode.indexOf('continuous') >= 0) await tr.applyConstraints({ advanced: [{ focusMode: 'continuous' }] });
+                } catch (e) {}
+                scanSay('📍 讓血壓計液晶螢幕佔滿畫面、數字盡量水平，關閉閃光燈。');
+                scan.t0 = Date.now();
+                scan.running = true;
+                scanLoop();
+            } catch (e) {
+                stage.style.display = 'none';
+                scanSay('⚠️ 無法開啟相機（可能未授權）。請允許相機權限，或改用「系統相機」/「相簿選圖」。');
+            }
+        }
+        function stopScanCamera() {
+            scan.running = false;
+            if (scan.timer) { clearTimeout(scan.timer); scan.timer = null; }
+            if (scan.stream) { scan.stream.getTracks().forEach(t => t.stop()); scan.stream = null; }
+            const v = document.getElementById('scan-video');
+            if (v) v.srcObject = null;
+        }
+        function openScan() {
+            document.getElementById('scanModal').style.display = 'flex';
+            scan.voter = new BPOCR.Voter();
+            scanShowLive({ sys: null, dia: null, hr: null });
+            startScanCamera();
+        }
+        function closeScan() {
+            stopScanCamera();
+            document.getElementById('scanModal').style.display = 'none';
+        }
+        document.addEventListener('visibilitychange', () => { if (document.hidden && scan.running) closeScan(); });
+
+        function scanLoop() {
+            if (!scan.running) return;
+            const t0 = performance.now();
+            try {
+                const gi = scanGrab();
+                if (gi) {
+                    scan.voter.add(BPOCR.decodeFrame(gi.g, gi.w, gi.h));
+                    const L = scan.voter.leaders(2, 1.8);
+                    scanShowLive(L);
+                    if (L.locked) { applyScanResult(L, true); return; }
+                    const sec = (Date.now() - scan.t0) / 1000;
+                    if (sec > 6) scanSay('💡 讀不太到時：慢慢轉動手機換個角度，讓反光離開數字；靠近一點、保持穩定。');
+                }
+            } catch (e) { console.warn(e); }
+            const dt = performance.now() - t0;
+            scan.timer = setTimeout(scanLoop, Math.max(80, 220 - dt));
+        }
+
+        function applyScanResult(L, certain) {
+            if (L.sys != null) document.getElementById('sys').value = L.sys;
+            if (L.dia != null) document.getElementById('dia').value = L.dia;
+            if (L.hr != null) document.getElementById('hr').value = L.hr;
+            closeScan();
+            if (certain) showToast(`✅ 已辨識 ${L.sys}/${L.dia}、心率 ${L.hr}，請對照血壓計核對後再儲存`);
+            else showToast('⚠️ 辨識不夠確定，請務必對照血壓計核對／修改數值', 'warning');
+        }
+        function useScanBest() { if (scan.last) applyScanResult(scan.last, false); }
+
+        async function scanFromFile(inp) {
+            const f = inp.files && inp.files[0];
+            inp.value = '';
+            if (!f) return;
+            stopScanCamera();
+            document.getElementById('scan-stage').style.display = 'none';
+            scanSay('🔍 辨識中，請稍候（約數秒）…');
+            await new Promise(r => setTimeout(r, 60));
+            try {
+                let bmp;
+                try { bmp = await createImageBitmap(f, { imageOrientation: 'from-image' }); } catch (e) { bmp = await createImageBitmap(f); }
+                const sc = Math.min(1, 1000 / Math.max(bmp.width, bmp.height));
+                const w = Math.round(bmp.width * sc), h = Math.round(bmp.height * sc);
+                const cv = document.createElement('canvas');
+                cv.width = w; cv.height = h;
+                const cx = cv.getContext('2d', { willReadFrequently: true });
+                cx.drawImage(bmp, 0, 0, w, h);
+                const gi = scanToGray(cx.getImageData(0, 0, w, h));
+                const v = new BPOCR.Voter();
+                v.add(BPOCR.decodePhoto(gi.g, gi.w, gi.h));
+                const L = v.leaders(1, 1.5);
+                if (L.sys == null && L.dia == null && L.hr == null) {
+                    scanSay('😕 這張照片讀不到數字。請拍得更近、避開反光，或改用即時相機。');
+                    scanShowLive({ sys: null, dia: null, hr: null });
+                    startScanCamera();
+                    return;
+                }
+                applyScanResult(L, L.locked);
+            } catch (e) {
+                console.warn(e);
+                scanSay('⚠️ 照片處理失敗，請再試一次。');
+                startScanCamera();
+            }
         }
 
         init();
