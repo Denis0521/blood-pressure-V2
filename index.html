@@ -106,6 +106,8 @@
             white-space: nowrap; position: relative; -webkit-tap-highlight-color: transparent;
         }
         .btn-tall { height: 48px; font-size: 15px; }
+        /* 雲端備份區的按鈕：字太長時自動換行，不超出按鈕 */
+        #cloud-connected-area button, #cloud-setup-area button { white-space: normal; line-height: 1.2; font-size: 14px; padding: 0 10px; }
 
         .btn-primary, .btn-danger, .modal-btn-morning, .modal-btn-evening,
         .header-btn[onclick="openHelp()"], .header-btn[onclick="openTools()"], #todo-btn {
@@ -438,14 +440,14 @@
                 <div class="btn-group" style="flex-wrap: wrap; gap: 10px;">
                     <button class="btn-outline btn-tall" onclick="copyCloudCode()">📋 複製同步碼</button>
                     <button class="btn-outline btn-tall" onclick="syncToCloud(true)">☁️ 立即備份</button>
-                    <button class="btn-outline btn-tall" onclick="restoreFromCloud()">📥 雲端還原資料</button>
-                    <button class="btn-outline btn-tall" onclick="restoreOldVersion()">🕘 還原舊版本（救回誤刪）</button>
+                    <button class="btn-outline btn-tall" onclick="restoreFromCloud()">📥 雲端還原</button>
+                    <button class="btn-outline btn-tall" onclick="restoreOldVersion()">🕘 還原舊版本</button>
                     <button class="btn-danger btn-tall" onclick="disconnectCloud()" style="min-width: 100%;">🔗 解除綁定</button>
                     <button class="btn-danger btn-tall" onclick="deleteCloudData()" style="min-width: 100%;">🗑️ 刪除雲端資料並解除綁定</button>
                 </div>
             </div>
 
-            <div class="version-text">Version 10.11 ✨ 立體圓潤版</div>
+            <div class="version-text">Version 10.13 ✨ 立體圓潤版</div>
         </div>
     </div>
 
@@ -478,7 +480,7 @@
                 </ol>
             </div>
 
-            <div class="version-text">Version 10.11 ✨ 立體圓潤版</div>
+            <div class="version-text">Version 10.13 ✨ 立體圓潤版</div>
         </div>
     </div>
 
