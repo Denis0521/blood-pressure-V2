@@ -775,7 +775,7 @@
     
         // ===== ☁️ Cloudflare 雲端備份 =====
         // ⚠️ 部署 Worker 後，把下面網址換成你自己的 Worker 網址（結尾要保留 /backup）
-        const CLOUD_API = 'https://YOUR-WORKER.YOUR-SUBDOMAIN.workers.dev/backup';
+        const CLOUD_API = 'https://bp-backup.denis0521.workers.dev/backup';
         const CLOUD_KEY = (BP_PREFIX + 'CloudConfig');
         let cloudConfig = JSON.parse(localStorage.getItem(CLOUD_KEY)) || { code: '', last: '' };
         let isSyncing = false;
