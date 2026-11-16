@@ -414,64 +414,35 @@
                 <option value="slate">🪨 石墨灰</option>
             </select>
 
-            <div class="card-title" style="margin-top: 18px;">☁️ 簡易雲端備份</div>
-            <div class="gist-status">
-                <div class="gist-status-dot" id="sync-dot"></div>
-                <span id="sync-status-text">尚未開啟雲端備份</span>
+            <div class="card-title" style="margin-top: 18px;">☁️ 雲端備份</div>
+            <div id="cloud-status" class="gist-status">
+                <div class="gist-status-dot" id="cloud-dot"></div>
+                <span id="cloud-status-text">尚未開啟雲端備份</span>
             </div>
-            <div id="sync-setup-area">
+
+            <div id="cloud-setup-area">
                 <p style="font-size: 12px; color: var(--text-gray); margin-bottom: 12px; font-weight: 600; line-height: 1.5;">
-                    按下開啟後會產生一組「同步碼」。資料會先在手機上加密再備份，伺服器看不到內容；換手機時輸入同步碼即可還原。
+                    不用註冊、不用設定。按下開啟後會產生一組「同步碼」，請抄下來保存；換手機時輸入同一組同步碼即可還原。
                 </p>
-                <div class="btn-group" style="margin-bottom: 12px;">
-                    <button class="btn-primary btn-tall" onclick="syncEnable()" style="min-width: 100%;">☁️ 開啟雲端備份</button>
+                <div class="btn-group" style="flex-wrap: wrap; gap: 10px;">
+                    <button class="btn-primary" onclick="enableCloud()" style="min-width: 100%;">🆕 開啟雲端備份</button>
                 </div>
-                <input type="text" id="sync-code-input" autocomplete="off" autocorrect="off" autocapitalize="characters" spellcheck="false" class="token-input" placeholder="已有同步碼？在這裡輸入" style="margin-bottom: 10px;">
-                <div class="btn-group" style="margin-bottom: 4px;">
-                    <button class="btn-outline btn-tall" onclick="syncRestore()" style="min-width: 100%;">📥 用同步碼還原</button>
-                </div>
-            </div>
-            <div id="sync-connected-area" style="display: none;">
-                <div class="gist-id-display" id="sync-code-display" style="font-size: 20px; letter-spacing: 1px; text-align: center; font-weight: 800;"></div>
-                <p style="font-size: 12px; color: #c2410c; margin: 8px 0 12px; font-weight: 700; line-height: 1.5;">
-                    ⚠️ 請把同步碼抄下或截圖保存。遺失就無法還原，連管理者也無法協助。
-                </p>
-                <div class="btn-group" style="gap: 10px;">
-                    <button class="btn-outline btn-tall" onclick="syncUpload(true)">🔄 立即備份</button>
-                    <button class="btn-outline btn-tall" onclick="syncCopy()">📋 複製同步碼</button>
-                </div>
-                <div class="btn-group">
-                    <button class="btn-danger btn-tall" onclick="syncDisable()" style="min-width: 100%;">🔗 停用此手機的雲端備份</button>
+                <input type="text" id="cloud-code-input" autocomplete="off" autocorrect="off" autocapitalize="characters" spellcheck="false" class="token-input" placeholder="🔑 已有同步碼？貼在這裡" style="margin-top: 14px;">
+                <div class="btn-group" style="flex-wrap: wrap;">
+                    <button class="btn-outline btn-tall" onclick="joinCloud()" style="min-width: 100%;">📥 用同步碼還原</button>
                 </div>
             </div>
 
-            <details style="margin-top: 14px;">
-                <summary class="card-title" style="cursor: pointer; font-size: 15px; margin-bottom: 10px;">☁️ GitHub 雲端同步（進階）</summary>
-            <div id="gist-status" class="gist-status">
-                <div class="gist-status-dot" id="gist-dot"></div>
-                <span id="gist-status-text">尚未設定雲端備份</span>
-            </div>
-            
-            <div id="gist-setup-area">
-                <p style="font-size: 12px; color: var(--text-gray); margin-bottom: 12px; font-weight: 600; line-height: 1.5;">
-                    1. 前往 GitHub → Settings → Developer settings → Tokens (classic)<br>
-                    2. 點 Generate new token (classic) → 勾選「gist」<br>
-                    3. 複製 Token，貼到下方綁定。
-                </p>
-                <input type="text" id="gist-token-input" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" class="token-input" placeholder="🔑 貼上 GitHub Token">
-                <div class="btn-group" style="flex-wrap: wrap;">
-                    <button class="btn-primary" onclick="saveGistToken()" style="min-width: 100%;">🔌 儲存並連線測試</button>
-                </div>
-            </div>
-            
-            <div id="gist-connected-area" style="display: none;">
-                <div class="gist-id-display" id="gist-id-display"></div>
+            <div id="cloud-connected-area" style="display: none;">
+                <div class="gist-id-display" id="cloud-code-display"></div>
                 <div class="btn-group" style="flex-wrap: wrap; gap: 10px;">
-                    <button class="btn-outline btn-tall" onclick="importFromGist()">📥 雲端還原資料</button>
-                    <button class="btn-danger btn-tall" onclick="disconnectGist()">🔗 解除綁定連線</button>
+                    <button class="btn-outline btn-tall" onclick="copyCloudCode()">📋 複製同步碼</button>
+                    <button class="btn-outline btn-tall" onclick="syncToCloud(true)">☁️ 立即備份</button>
+                    <button class="btn-outline btn-tall" onclick="restoreFromCloud()">📥 雲端還原資料</button>
+                    <button class="btn-danger btn-tall" onclick="disconnectCloud()">🔗 解除綁定</button>
+                    <button class="btn-danger btn-tall" onclick="deleteCloudData()" style="min-width: 100%;">🗑️ 刪除雲端資料並解除綁定</button>
                 </div>
             </div>
-            </details>
 
             <div class="version-text">Version 10.11 ✨ 立體圓潤版</div>
         </div>
@@ -489,8 +460,7 @@
                     <li>📷 <b>拍照辨識</b>：對準血壓計螢幕自動讀取血壓與心率（全程在手機本機處理，不上傳）。有反光時慢慢轉動手機，系統會自動挑出讀得到的畫面；讀完請務必對照血壓計核對再儲存</li>
                     <li>系統會<b>自動保留近 180 天</b>記錄，過期會自動清除</li>
                     <li>點擊列表右側的「✏️」即可隨時補填或修改</li>
-                    <li>每次點擊儲存，系統將完全自動進行雲端安全覆蓋</li>
-                    <li>☁️ <b>簡易雲端備份</b>：到「進階」開啟後會得到一組同步碼，之後儲存時自動加密備份；換手機輸入同步碼即可還原。<b>同步碼請務必抄下保存</b></li>
+                    <li>開啟雲端備份後，每次儲存都會自動備份（雲端資料 300 天未更新會自動刪除）</li>
                     <li>一鍵產出乾淨的 PDF，方便回診給醫師看</li>
                 </ul>
             </div>
@@ -498,13 +468,11 @@
             <div style="margin-bottom: 16px;">
                 <div class="card-title" style="font-size: 15px; margin-top: 10px;">☁️ 雲端備份教學</div>
                 <ol style="font-size: 13px; color: var(--text-gray); padding-left: 20px; line-height: 1.6; font-weight: 600;">
-                    <li>前往 GitHub 註冊免費帳號並登入</li>
-                    <li>點選頭像 → 選擇 <b>Settings</b></li>
-                    <li>滑到最下方 → 點選 <b>Developer settings</b></li>
-                    <li>展開 Personal access tokens → 點選 <b>Tokens (classic)</b></li>
-                    <li>點擊 Generate new token → ⚠️ 選擇 <b>Generate new token (classic)</b></li>
-                    <li>期限 (Expiration) 選 <b>No expiration</b>，並勾選 <b>gist</b></li>
-                    <li>滑至最底部點擊 Generate token，產生後<b>立刻複製</b>貼回 App！</li>
+                    <li>點右上角設定 → <b>開啟雲端備份</b></li>
+                    <li>系統會產生一組<b>同步碼</b>，請<b>抄下或截圖保存</b>（它就是你的帳號密碼，遺失就無法還原）</li>
+                    <li>之後每次儲存都會自動備份到雲端</li>
+                    <li>換手機：設定 → 貼上同步碼 → <b>用同步碼還原</b></li>
+                    <li>⏳ 雲端資料若<b>超過 300 天沒有更新</b>，會自動全部刪除</li>
                 </ol>
             </div>
 
@@ -546,8 +514,6 @@
         let editDate = null, editPeriod = null;
         let pendingEditDate = null;
         let todos = JSON.parse(localStorage.getItem((BP_PREFIX + 'Todos'))) || [];
-        // ☁️ 簡易雲端備份伺服器（Cloudflare Worker）網址：部署後填在這裡，例如 'https://bp-sync.你的帳號.workers.dev'
-        const SYNC_URL = '';
 
         // 🌟 自動清理 180 天前的舊血壓紀錄
         function cleanExpiredRecords() {
@@ -643,12 +609,7 @@
             clearInputs();
             renderTable();
 
-            if (gistConfig.gistId && gistConfig.gistId !== 'pending') {
-                setTimeout(() => syncToGist(), 300);
-            } else if (gistConfig.token) {
-                setTimeout(() => syncToGist(), 300);
-            }
-            scheduleSyncUpload();
+            if (cloudConfig.code) setTimeout(() => syncToCloud(), 300);
         }
 
         function deleteCurrentRecord() {
@@ -659,10 +620,7 @@
                 showToast('🗑️ 記錄已刪除');
                 clearInputs();
                 renderTable();
-                if (gistConfig.gistId) {
-                    setTimeout(() => syncToGist(), 300);
-                }
-                scheduleSyncUpload();
+                if (cloudConfig.code) setTimeout(() => syncToCloud(), 300);
             }
         }
 
@@ -815,201 +773,185 @@
             });
         }
     
-        const GIST_STORAGE_KEY = (BP_PREFIX + 'GistConfig');
-        let gistConfig = JSON.parse(localStorage.getItem(GIST_STORAGE_KEY)) || { token: '', gistId: '' };
+        // ===== ☁️ Cloudflare 雲端備份 =====
+        // ⚠️ 部署 Worker 後，把下面網址換成你自己的 Worker 網址（結尾要保留 /backup）
+        const CLOUD_API = 'https://YOUR-WORKER.YOUR-SUBDOMAIN.workers.dev/backup';
+        const CLOUD_KEY = (BP_PREFIX + 'CloudConfig');
+        let cloudConfig = JSON.parse(localStorage.getItem(CLOUD_KEY)) || { code: '', last: '' };
         let isSyncing = false;
 
-        function updateGistUI() {
-            const dot = document.getElementById('gist-dot');
-            const statusText = document.getElementById('gist-status-text');
-            const setupArea = document.getElementById('gist-setup-area');
-            const connectedArea = document.getElementById('gist-connected-area');
-            const idDisplay = document.getElementById('gist-id-display');
+        function saveCloudConfig() { localStorage.setItem(CLOUD_KEY, JSON.stringify(cloudConfig)); }
+        function cloudReady() {
+            if (CLOUD_API.indexOf('YOUR-WORKER') >= 0) { showToast('⚠️ 尚未設定雲端網址（CLOUD_API）', 'error'); return false; }
+            return true;
+        }
+        // 同步碼：24 碼，去掉容易混淆的 0/O/1/I，分 6 組
+        function genSyncCode() {
+            const A = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+            const r = crypto.getRandomValues(new Uint8Array(24));
+            let out = '';
+            for (let i = 0; i < 24; i++) { if (i && i % 4 === 0) out += '-'; out += A[r[i] & 31]; }
+            return out;
+        }
+        function normalizeCode(str) {
+            const t = String(str || '').toUpperCase().replace(/[^A-Z0-9]/g, '');
+            return t.length === 24 ? t.match(/.{4}/g).join('-') : '';
+        }
+        function cloudFetch(method, body) {
+            return fetch(CLOUD_API, {
+                method,
+                headers: { 'Authorization': 'Bearer ' + cloudConfig.code, 'Content-Type': 'application/json' },
+                body: body ? JSON.stringify(body) : undefined
+            });
+        }
+        function mergeImported(importedData) {
+            for (const date in importedData) {
+                if (!appData[date]) { appData[date] = importedData[date]; continue; }
+                ['morning', 'evening'].forEach(period => {
+                    const im = importedData[date][period];
+                    if (im && im.sys && (!appData[date][period] || !appData[date][period].sys)) appData[date][period] = im;
+                });
+            }
+            cleanExpiredRecords();
+            localStorage.setItem((BP_PREFIX + 'Records'), JSON.stringify(appData));
+            renderTable();
+        }
 
-            if (!gistConfig.token) {
+        function updateCloudUI() {
+            const dot = document.getElementById('cloud-dot');
+            const text = document.getElementById('cloud-status-text');
+            const setup = document.getElementById('cloud-setup-area');
+            const conn = document.getElementById('cloud-connected-area');
+            if (!cloudConfig.code) {
                 dot.className = 'gist-status-dot';
-                statusText.textContent = '尚未設定雲端備份';
-                setupArea.style.display = 'block';
-                connectedArea.style.display = 'none';
+                text.textContent = '尚未開啟雲端備份';
+                setup.style.display = 'block'; conn.style.display = 'none';
                 return;
             }
-
-            if (gistConfig.gistId && gistConfig.gistId !== 'pending') {
-                dot.className = 'gist-status-dot connected';
-                statusText.textContent = '✅ 已啟用自動雲端覆蓋';
-                setupArea.style.display = 'none';
-                connectedArea.style.display = 'block';
-                idDisplay.innerHTML = `<strong>Gist ID:</strong> ${gistConfig.gistId}<br><small>儲存時系統將會全自動背景更新</small>`;
-            } else {
-                dot.className = 'gist-status-dot';
-                statusText.textContent = 'Token 已驗證，等待上傳初次建立';
-                setupArea.style.display = 'none';
-                connectedArea.style.display = 'block';
-                idDisplay.innerHTML = '<small>請點擊儲存一筆新紀錄，或直接執行還原。</small>';
-            }
+            dot.className = 'gist-status-dot connected';
+            text.textContent = '✅ 已啟用自動雲端備份';
+            setup.style.display = 'none'; conn.style.display = 'block';
+            const last = cloudConfig.last ? new Date(cloudConfig.last).toLocaleString() : '尚未上傳';
+            document.getElementById('cloud-code-display').innerHTML =
+                `<strong>同步碼：</strong><br>${cloudConfig.code}<br><small>最後備份：${last}<br>⏳ 300 天未更新，雲端資料將自動刪除</small>`;
         }
 
-        async function saveGistToken() {
-            const tokenInput = document.getElementById('gist-token-input');
-            const token = tokenInput.value.trim();
-            if (!token) { showToast('⚠️ 請輸入 GitHub Token', 'error'); return; }
+        async function enableCloud() {
+            if (!cloudReady()) return;
+            if (Object.keys(appData).length === 0 && !confirm('目前沒有任何記錄，仍要開啟雲端備份嗎？')) return;
+            cloudConfig = { code: genSyncCode(), last: '' };
+            saveCloudConfig();
+            updateCloudUI();
+            alert('✅ 已開啟雲端備份\n\n你的同步碼：\n' + cloudConfig.code + '\n\n⚠️ 請現在抄下或截圖保存！換手機或重灌時，必須用這組同步碼才能還原。');
+            await syncToCloud(true);
+        }
 
-            gistConfig.token = token;
-            localStorage.setItem(GIST_STORAGE_KEY, JSON.stringify(gistConfig));
-            tokenInput.value = '';
-
-            const dot = document.getElementById('gist-dot');
-            const statusText = document.getElementById('gist-status-text');
+        async function joinCloud() {
+            if (!cloudReady()) return;
+            const code = normalizeCode(document.getElementById('cloud-code-input').value);
+            if (!code) { showToast('⚠️ 同步碼格式不正確（共 24 碼）', 'error'); return; }
+            const prev = cloudConfig;
+            cloudConfig = { code, last: '' };
+            const dot = document.getElementById('cloud-dot');
             dot.className = 'gist-status-dot syncing';
-            statusText.textContent = '正在連線並尋找備份... 🔌';
-
+            document.getElementById('cloud-status-text').textContent = '📥 正在尋找雲端備份...';
             try {
-                const response = await fetch('https://api.github.com/user', {
-                    headers: { 'Authorization': `token ${token}`, 'Accept': 'application/vnd.github.v3+json' }
-                });
-                
-                if (response.ok) {
-                    const user = await response.json();
-                    
-                    try {
-                        const gistsResponse = await fetch('https://api.github.com/gists', {
-                            headers: { 'Authorization': `token ${token}`, 'Accept': 'application/vnd.github.v3+json' }
-                        });
-                        
-                        if (gistsResponse.ok) {
-                            const gists = await gistsResponse.json();
-                            const existingBackup = gists.find(gist => gist.files && gist.files['bp-records.json']);
-                            
-                            if (existingBackup) {
-                                gistConfig.gistId = existingBackup.id;
-                                localStorage.setItem(GIST_STORAGE_KEY, JSON.stringify(gistConfig));
-                                showToast(`🎉 成功連結！已找回雲端資料夾`);
-                            } else {
-                                gistConfig.gistId = 'pending';
-                                localStorage.setItem(GIST_STORAGE_KEY, JSON.stringify(gistConfig));
-                                showToast(`🎉 帳號驗證成功！將於下次存檔建立備份`);
-                            }
-                        }
-                    } catch (gistErr) {
-                        showToast(`🎉 連結成功！歡迎，${user.login}`);
-                    }
-                    updateGistUI();
+                const res = await cloudFetch('GET');
+                if (res.status === 404) {
+                    cloudConfig = prev;
+                    showToast('😕 找不到這組同步碼的備份（可能輸入錯誤，或超過 300 天未更新已被刪除）', 'error');
+                } else if (res.ok) {
+                    const r = await res.json();
+                    mergeImported(r.data || {});
+                    cloudConfig = { code, last: r.updatedAt || '' };
+                    saveCloudConfig();
+                    document.getElementById('cloud-code-input').value = '';
+                    showToast('🎉 已連結並還原雲端資料');
+                    await syncToCloud(false);
                 } else {
-                    showToast('❌ Token 驗證失敗，請檢查權限', 'error');
-                    disconnectGist();
+                    cloudConfig = prev;
+                    showToast('❌ 同步碼無效或伺服器錯誤', 'error');
                 }
             } catch (e) {
+                cloudConfig = prev;
                 showToast('❌ 網路連線錯誤', 'error');
-                disconnectGist();
             }
+            updateCloudUI();
         }
 
-        async function syncToGist() {
-            if (isSyncing || !gistConfig.token) return;
-            if (Object.keys(appData).length === 0) return;
-            
+        async function syncToCloud(manual) {
+            if (isSyncing || !cloudConfig.code || !cloudReady()) return;
+            if (Object.keys(appData).length === 0) { if (manual) showToast('⚠️ 目前沒有可備份的記錄', 'warning'); return; }
             isSyncing = true;
-            const dot = document.getElementById('gist-dot');
-            const statusText = document.getElementById('gist-status-text');
-            dot.className = 'gist-status-dot syncing';
-            statusText.textContent = '☁️ 正在同步至雲端...';
-
+            document.getElementById('cloud-dot').className = 'gist-status-dot syncing';
+            document.getElementById('cloud-status-text').textContent = '☁️ 正在同步至雲端...';
             try {
-                const payload = {
-                    description: `血壓記錄備份 - 自動更新`,
-                    public: false,
-                    files: { 'bp-records.json': { content: JSON.stringify(appData, null, 2) } }
-                };
-
-                let url = 'https://api.github.com/gists';
-                let method = 'POST';
-                if (gistConfig.gistId && gistConfig.gistId !== 'pending') {
-                    url = `https://api.github.com/gists/${gistConfig.gistId}`;
-                    method = 'PATCH';
-                }
-
-                const response = await fetch(url, {
-                    method: method,
-                    headers: { 'Authorization': `token ${gistConfig.token}`, 'Accept': 'application/vnd.github.v3+json', 'Content-Type': 'application/json' },
-                    body: JSON.stringify(payload)
-                });
-
-                if (response.ok) {
-                    const result = await response.json();
-                    if (!gistConfig.gistId || gistConfig.gistId === 'pending') {
-                        gistConfig.gistId = result.id;
-                        localStorage.setItem(GIST_STORAGE_KEY, JSON.stringify(gistConfig));
-                    }
+                const res = await cloudFetch('PUT', { data: appData });
+                if (res.ok) {
+                    const r = await res.json();
+                    cloudConfig.last = r.updatedAt || new Date().toISOString();
+                    saveCloudConfig();
                     showToast('☁️ 雲端數據已安全更新！');
+                } else if (manual) {
+                    showToast('❌ 備份失敗，請稍後再試', 'error');
                 }
             } catch (e) {
-                console.log('背景同步失敗，將於下次操作時重試');
+                if (manual) showToast('❌ 網路連線錯誤，將於下次儲存時重試', 'error');
             } finally {
                 isSyncing = false;
-                updateGistUI();
+                updateCloudUI();
             }
         }
 
-        async function importFromGist() {
-            if (!gistConfig.token || !gistConfig.gistId || gistConfig.gistId === 'pending') { 
-                showToast('⚠️ 雲端尚未綁定或無備份', 'error'); return; 
-            }
-
-            const dot = document.getElementById('gist-dot');
-            const statusText = document.getElementById('gist-status-text');
-            dot.className = 'gist-status-dot syncing';
-            statusText.textContent = '📥 正在下載歷史備份...';
-
+        async function restoreFromCloud() {
+            if (!cloudConfig.code || !cloudReady()) return;
+            document.getElementById('cloud-dot').className = 'gist-status-dot syncing';
+            document.getElementById('cloud-status-text').textContent = '📥 正在下載雲端備份...';
             try {
-                const response = await fetch(`https://api.github.com/gists/${gistConfig.gistId}`, {
-                    headers: { 'Authorization': `token ${gistConfig.token}`, 'Accept': 'application/vnd.github.v3+json' }
-                });
-
-                if (response.ok) {
-                    const result = await response.json();
-                    const file = result.files['bp-records.json'];
-                    if (file && file.content) {
-                        const importedData = JSON.parse(file.content);
-                        
-                        for (const date in importedData) {
-                            if (!appData[date]) {
-                                appData[date] = importedData[date];
-                            } else {
-                                ['morning', 'evening'].forEach(period => {
-                                    if (importedData[date][period] && importedData[date][period].sys) {
-                                        if (!appData[date][period] || !appData[date][period].sys) {
-                                            appData[date][period] = importedData[date][period];
-                                        }
-                                    }
-                                });
-                            }
-                        }
-                        
-                        // 還原後過濾 180 天舊資料
-                        cleanExpiredRecords();
-                        localStorage.setItem((BP_PREFIX + 'Records'), JSON.stringify(appData));
-                        showToast('🎉 雲端備份已還原並過濾過期資料！');
-                        renderTable();
-                    } else {
-                        showToast('⚠️ 檔案庫中無有效的記錄資料', 'error');
-                    }
+                const res = await cloudFetch('GET');
+                if (res.ok) {
+                    const r = await res.json();
+                    mergeImported(r.data || {});
+                    showToast('🎉 雲端備份已還原並過濾過期資料！');
+                } else if (res.status === 404) {
+                    showToast('⚠️ 雲端沒有備份（可能超過 300 天未更新已被刪除）', 'error');
                 } else {
-                    showToast('❌ 下載失敗，請檢查 Token', 'error');
+                    showToast('❌ 下載失敗', 'error');
                 }
             } catch (e) {
                 showToast('❌ 讀取失敗，請檢查網路連線', 'error');
             } finally {
-                updateGistUI();
+                updateCloudUI();
             }
         }
 
-        function disconnectGist() {
-            if (confirm('確定要解除綁定嗎？')) {
-                gistConfig = { token: '', gistId: '' };
-                localStorage.setItem(GIST_STORAGE_KEY, JSON.stringify(gistConfig));
-                updateGistUI();
-                showToast('🔗 已解除 GitHub 連結');
-            }
+        function copyCloudCode() {
+            if (!cloudConfig.code) return;
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(cloudConfig.code).then(() => showToast('📋 已複製同步碼'), () => showToast('⚠️ 無法複製，請手動抄寫', 'warning'));
+            } else { showToast('⚠️ 無法複製，請手動抄寫', 'warning'); }
+        }
+
+        function disconnectCloud() {
+            if (!confirm('確定要解除綁定嗎？\n雲端資料會保留，之後可用同步碼重新連結。\n（請確認你已保存同步碼）')) return;
+            cloudConfig = { code: '', last: '' };
+            saveCloudConfig();
+            updateCloudUI();
+            showToast('🔗 已解除雲端綁定');
+        }
+
+        async function deleteCloudData() {
+            if (!cloudConfig.code || !cloudReady()) return;
+            if (!confirm('⚠️ 確定要刪除雲端上的所有備份嗎？\n刪除後無法復原（手機上的資料不受影響）。')) return;
+            try {
+                const res = await cloudFetch('DELETE');
+                if (res.ok) {
+                    cloudConfig = { code: '', last: '' };
+                    saveCloudConfig();
+                    showToast('🗑️ 雲端資料已刪除，並已解除綁定');
+                } else { showToast('❌ 刪除失敗，請稍後再試', 'error'); }
+            } catch (e) { showToast('❌ 網路連線錯誤', 'error'); }
+            updateCloudUI();
         }
 
         function init() {
@@ -1025,8 +967,7 @@
             document.getElementById('start-date').value = formatDate(pastDate);
             document.getElementById('end-date').value = info.date;
             renderTable();
-            updateGistUI();
-            updateSyncUI();
+            updateCloudUI();
             checkTodayTodos();
         }
 
@@ -1414,7 +1355,7 @@ const BPOCR = (function () {
 // ==== BPOCR-CORE-END ====
 
 
-        const scan = { stream: null, running: false, voter: null, timer: null, canvas: null, last: null, t0: 0 };
+        const scan = { stream: null, track: null, expCap: null, expVal: 0, expT: 0, running: false, voter: null, timer: null, canvas: null, last: null, t0: 0 };
 
         function scanSay(msg) { document.getElementById('scan-status').textContent = msg; }
         function scanShowLive(L) {
@@ -1429,6 +1370,34 @@ const BPOCR = (function () {
             for (let i = 0, j = 0; i < n; i++, j += 4) g[i] = (d[j] * 77 + d[j + 1] * 150 + d[j + 2] * 29) >> 8;
             return { g, w: img.width, h: img.height };
         }
+        // 軟體補光：畫面偏暗或對比太低時，拉伸亮度範圍（任何瀏覽器都適用）
+        function scanEnhance(gi) {
+            const g = gi.g, n = g.length, hist = new Uint32Array(256);
+            for (let i = 0; i < n; i += 4) hist[g[i]]++;
+            const tot = Math.ceil(n / 4);
+            let lo = 0, hi = 255, acc = 0;
+            for (; lo < 255; lo++) { acc += hist[lo]; if (acc > tot * 0.02) break; }
+            acc = 0;
+            for (; hi > 0; hi--) { acc += hist[hi]; if (acc > tot * 0.02) break; }
+            if (hi - lo < 20 || hi - lo >= 170) return gi;
+            const s = 255 / (hi - lo);
+            for (let i = 0; i < n; i++) { const v = (g[i] - lo) * s; g[i] = v < 0 ? 0 : v > 255 ? 255 : v; }
+            return gi;
+        }
+        // 硬體補光：依畫面亮度自動調整相機曝光補償（僅支援的裝置，如 Android Chrome）
+        function scanAdaptExposure(g) {
+            if (!scan.track || !scan.expCap || Date.now() - scan.expT < 700) return;
+            let sum = 0, sat = 0, n = 0;
+            for (let i = 0; i < g.length; i += 16) { const v = g[i]; sum += v; if (v >= 245) sat++; n++; }
+            const mean = sum / n, satR = sat / n, c = scan.expCap;
+            let next = scan.expVal;
+            if (satR > 0.06) next -= c.step;            // 過曝（背光數字糊成一片）→ 降低
+            else if (mean < 85 && satR < 0.03) next += c.step; // 太暗 → 提高
+            next = Math.max(c.min, Math.min(c.max, next));
+            if (next === scan.expVal) return;
+            scan.expVal = next; scan.expT = Date.now();
+            scan.track.applyConstraints({ advanced: [{ exposureCompensation: next }] }).catch(() => {});
+        }
         function scanGrab() {
             const v = document.getElementById('scan-video');
             const vw = v.videoWidth, vh = v.videoHeight;
@@ -1441,7 +1410,9 @@ const BPOCR = (function () {
             scan.canvas.width = cw; scan.canvas.height = ch;
             const ctx = scan.canvas.getContext('2d', { willReadFrequently: true });
             ctx.drawImage(v, (vw - sw) / 2, (vh - sh) / 2, sw, sh, 0, 0, cw, ch);
-            return scanToGray(ctx.getImageData(0, 0, cw, ch));
+            const gi = scanToGray(ctx.getImageData(0, 0, cw, ch));
+            scanAdaptExposure(gi.g);
+            return scanEnhance(gi);
         }
 
         async function startScanCamera() {
@@ -1458,10 +1429,14 @@ const BPOCR = (function () {
                 await video.play();
                 try {
                     const tr = scan.stream.getVideoTracks()[0];
+                    scan.track = tr; scan.expCap = null; scan.expVal = 0;
                     const caps = tr.getCapabilities ? tr.getCapabilities() : {};
-                    if (caps.focusMode && caps.focusMode.indexOf('continuous') >= 0) await tr.applyConstraints({ advanced: [{ focusMode: 'continuous' }] });
+                    if (caps.focusMode && caps.focusMode.indexOf('continuous') >= 0) await tr.applyConstraints({ advanced: [{ focusMode: 'continuous' }] }).catch(() => {});
+                    if (caps.exposureMode && caps.exposureMode.indexOf('continuous') >= 0) await tr.applyConstraints({ advanced: [{ exposureMode: 'continuous' }] }).catch(() => {});
+                    const ec = caps.exposureCompensation;
+                    if (ec && ec.max > ec.min) scan.expCap = { min: ec.min, max: ec.max, step: ec.step || (ec.max - ec.min) / 8 };
                 } catch (e) {}
-                scanSay('📍 讓血壓計液晶螢幕佔滿畫面、數字盡量水平，關閉閃光燈。');
+                scanSay('📍 讓血壓計液晶螢幕佔滿畫面、數字盡量水平，相機會自動補光。');
                 scan.t0 = Date.now();
                 scan.running = true;
                 scanLoop();
@@ -1474,6 +1449,7 @@ const BPOCR = (function () {
             scan.running = false;
             if (scan.timer) { clearTimeout(scan.timer); scan.timer = null; }
             if (scan.stream) { scan.stream.getTracks().forEach(t => t.stop()); scan.stream = null; }
+            scan.track = null; scan.expCap = null;
             const v = document.getElementById('scan-video');
             if (v) v.srcObject = null;
         }
@@ -1534,7 +1510,7 @@ const BPOCR = (function () {
                 cv.width = w; cv.height = h;
                 const cx = cv.getContext('2d', { willReadFrequently: true });
                 cx.drawImage(bmp, 0, 0, w, h);
-                const gi = scanToGray(cx.getImageData(0, 0, w, h));
+                const gi = scanEnhance(scanToGray(cx.getImageData(0, 0, w, h)));
                 const v = new BPOCR.Voter();
                 v.add(BPOCR.decodePhoto(gi.g, gi.w, gi.h));
                 const L = v.leaders(1, 1.5);
@@ -1551,172 +1527,6 @@ const BPOCR = (function () {
                 startScanCamera();
             }
         }
-
-
-        // ================= ☁️ 簡易雲端備份（同步碼 + 手機端加密）=================
-// ==== BPSYNC-CORE-START ====
-const BPSYNC = (function () {
-    'use strict';
-    const ALPHA = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'; // 去掉容易混淆的 I O 0 1
-    const enc = new TextEncoder(), dec = new TextDecoder();
-    function genCode() {
-        const b = crypto.getRandomValues(new Uint8Array(16));
-        let s = '';
-        for (let i = 0; i < 16; i++) s += ALPHA[b[i] % 32];
-        return s.match(/.{4}/g).join('-');
-    }
-    function normalize(input) {
-        const s = String(input || '').toUpperCase().replace(/[^A-Z0-9]/g, '');
-        if (s.length !== 16) return null;
-        for (const ch of s) if (ALPHA.indexOf(ch) < 0) return null;
-        return s.match(/.{4}/g).join('-');
-    }
-    const hex = buf => Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2, '0')).join('');
-    function b64(bytes) { let s = ''; for (let i = 0; i < bytes.length; i += 0x8000) s += String.fromCharCode.apply(null, bytes.subarray(i, i + 0x8000)); return btoa(s); }
-    function unb64(str) { const s = atob(str), o = new Uint8Array(s.length); for (let i = 0; i < s.length; i++) o[i] = s.charCodeAt(i); return o; }
-    const cache = {};
-    async function derive(code) {
-        if (cache[code]) return cache[code];
-        const id = hex(await crypto.subtle.digest('SHA-256', enc.encode('bp-id-v1:' + code)));
-        const mat = await crypto.subtle.importKey('raw', enc.encode(code), 'PBKDF2', false, ['deriveKey']);
-        const key = await crypto.subtle.deriveKey({ name: 'PBKDF2', salt: enc.encode('bp-sync-salt-v1'), iterations: 150000, hash: 'SHA-256' }, mat, { name: 'AES-GCM', length: 256 }, false, ['encrypt', 'decrypt']);
-        return (cache[code] = { id, key });
-    }
-    async function encrypt(code, obj) {
-        const { key } = await derive(code);
-        const iv = crypto.getRandomValues(new Uint8Array(12));
-        const ct = new Uint8Array(await crypto.subtle.encrypt({ name: 'AES-GCM', iv }, key, enc.encode(JSON.stringify(obj))));
-        const out = new Uint8Array(12 + ct.length);
-        out.set(iv, 0); out.set(ct, 12);
-        return b64(out);
-    }
-    async function decrypt(code, data) {
-        const { key } = await derive(code);
-        const raw = unb64(data);
-        const pt = await crypto.subtle.decrypt({ name: 'AES-GCM', iv: raw.subarray(0, 12) }, key, raw.subarray(12));
-        return JSON.parse(dec.decode(pt));
-    }
-    return { genCode, normalize, derive, encrypt, decrypt };
-})();
-// ==== BPSYNC-CORE-END ====
-
-        const SYNC_CFG_KEY = (BP_PREFIX + 'SyncCfg');
-        let syncCfg = JSON.parse(localStorage.getItem(SYNC_CFG_KEY) || 'null') || { code: '', last: 0 };
-        let syncBusy = false, syncTimer = null;
-        const syncSave = () => localStorage.setItem(SYNC_CFG_KEY, JSON.stringify(syncCfg));
-        const syncEndpoint = id => SYNC_URL.replace(/\/+$/, '') + '/b/' + id;
-
-        function syncSetStatus(kind, text) {
-            const dot = document.getElementById('sync-dot'), t = document.getElementById('sync-status-text');
-            if (!dot || !t) return;
-            dot.className = 'gist-status-dot' + (kind ? ' ' + kind : '');
-            t.textContent = text;
-        }
-        function updateSyncUI() {
-            const setup = document.getElementById('sync-setup-area'), conn = document.getElementById('sync-connected-area');
-            if (!setup) return;
-            if (!SYNC_URL) {
-                setup.style.display = 'none'; conn.style.display = 'none';
-                syncSetStatus('error', '尚未設定雲端伺服器（管理者需先填入 SYNC_URL）');
-                return;
-            }
-            if (!syncCfg.code) {
-                setup.style.display = 'block'; conn.style.display = 'none';
-                syncSetStatus('', '尚未開啟雲端備份');
-                return;
-            }
-            setup.style.display = 'none'; conn.style.display = 'block';
-            document.getElementById('sync-code-display').textContent = syncCfg.code;
-            const when = syncCfg.last ? new Date(syncCfg.last).toLocaleString('zh-TW', { hour12: false }) : '';
-            syncSetStatus('connected', when ? '已開啟，最近備份：' + when : '已開啟，尚未備份');
-        }
-        function mergeIntoLocal(imported) {
-            for (const date in imported) {
-                if (!appData[date]) { appData[date] = imported[date]; continue; }
-                ['morning', 'evening'].forEach(p => {
-                    const r = imported[date] && imported[date][p];
-                    if (r && r.sys && (!appData[date][p] || !appData[date][p].sys)) appData[date][p] = r;
-                });
-            }
-        }
-        function scheduleSyncUpload() {
-            if (!SYNC_URL || !syncCfg.code) return;
-            clearTimeout(syncTimer);
-            syncTimer = setTimeout(() => syncUpload(false), 1500);
-        }
-        async function syncUpload(manual) {
-            if (!SYNC_URL || !syncCfg.code || syncBusy) return false;
-            if (Object.keys(appData).length === 0) { if (manual) showToast('⚠️ 目前沒有記錄可備份', 'warning'); return false; }
-            syncBusy = true;
-            syncSetStatus('syncing', '☁️ 正在備份...');
-            try {
-                const { id } = await BPSYNC.derive(syncCfg.code);
-                const data = await BPSYNC.encrypt(syncCfg.code, { v: 1, t: Date.now(), records: appData });
-                const res = await fetch(syncEndpoint(id), { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ data }) });
-                if (!res.ok) throw new Error('HTTP ' + res.status);
-                syncCfg.last = Date.now(); syncSave();
-                if (manual) showToast('☁️ 已備份到雲端');
-                return true;
-            } catch (e) {
-                console.warn('雲端備份失敗', e);
-                if (manual) showToast('❌ 備份失敗，請檢查網路連線', 'error');
-                return false;
-            } finally {
-                syncBusy = false;
-                updateSyncUI();
-            }
-        }
-        async function syncEnable() {
-            if (!SYNC_URL) return;
-            syncCfg = { code: BPSYNC.genCode(), last: 0 };
-            syncSave();
-            updateSyncUI();
-            if (Object.keys(appData).length === 0) { showToast('✅ 已開啟，請先抄下同步碼；有記錄後會自動備份'); return; }
-            const ok = await syncUpload(true);
-            if (ok) showToast('✅ 已開啟雲端備份，請把同步碼抄下保存');
-        }
-        async function syncRestore() {
-            if (!SYNC_URL) return;
-            const code = BPSYNC.normalize(document.getElementById('sync-code-input').value);
-            if (!code) { showToast('⚠️ 同步碼格式不正確（共 16 碼）', 'error'); return; }
-            syncSetStatus('syncing', '📥 正在下載備份...');
-            try {
-                const { id } = await BPSYNC.derive(code);
-                const res = await fetch(syncEndpoint(id), { cache: 'no-store' });
-                if (res.status === 404) { showToast('❌ 找不到這組同步碼的備份', 'error'); return; }
-                if (!res.ok) throw new Error('HTTP ' + res.status);
-                const body = await res.json();
-                let payload;
-                try { payload = await BPSYNC.decrypt(code, body.data); }
-                catch (e) { showToast('❌ 同步碼不正確或資料損毀', 'error'); return; }
-                mergeIntoLocal(payload.records || {});
-                cleanExpiredRecords();
-                localStorage.setItem((BP_PREFIX + 'Records'), JSON.stringify(appData));
-                syncCfg = { code, last: Date.now() }; syncSave();
-                renderTable();
-                showToast('🎉 已從雲端還原，並開啟此手機的自動備份');
-            } catch (e) {
-                console.warn(e);
-                showToast('❌ 還原失敗，請檢查網路連線', 'error');
-            } finally {
-                updateSyncUI();
-            }
-        }
-        function syncCopy() {
-            if (!syncCfg.code) return;
-            const done = () => showToast('📋 同步碼已複製，請另外保存');
-            if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(syncCfg.code).then(done, () => showToast('請手動抄下同步碼', 'warning'));
-            else showToast('請手動抄下同步碼', 'warning');
-        }
-        function syncDisable() {
-            if (!confirm('停用後此手機不再自動備份（雲端上的備份會保留）。\n請確定你已保存同步碼。確定停用？')) return;
-            syncCfg = { code: '', last: 0 }; syncSave();
-            updateSyncUI();
-            showToast('🔗 已停用此手機的雲端備份');
-        }
-
-        // 💾 請瀏覽器將本機資料設為「持久保存」，避免空間不足時被自動清除（不產生任何檔案）
-        try { if (navigator.storage && navigator.storage.persist) navigator.storage.persist(); } catch (e) {}
 
         init();
     </script>
