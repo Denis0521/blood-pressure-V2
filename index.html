@@ -439,7 +439,8 @@
                     <button class="btn-outline btn-tall" onclick="copyCloudCode()">📋 複製同步碼</button>
                     <button class="btn-outline btn-tall" onclick="syncToCloud(true)">☁️ 立即備份</button>
                     <button class="btn-outline btn-tall" onclick="restoreFromCloud()">📥 雲端還原資料</button>
-                    <button class="btn-danger btn-tall" onclick="disconnectCloud()">🔗 解除綁定</button>
+                    <button class="btn-outline btn-tall" onclick="restoreOldVersion()">🕘 還原舊版本（救回誤刪）</button>
+                    <button class="btn-danger btn-tall" onclick="disconnectCloud()" style="min-width: 100%;">🔗 解除綁定</button>
                     <button class="btn-danger btn-tall" onclick="deleteCloudData()" style="min-width: 100%;">🗑️ 刪除雲端資料並解除綁定</button>
                 </div>
             </div>
@@ -472,6 +473,7 @@
                     <li>系統會產生一組<b>同步碼</b>，請<b>抄下或截圖保存</b>（它就是你的帳號密碼，遺失就無法還原）</li>
                     <li>之後每次儲存都會自動備份到雲端</li>
                     <li>換手機：設定 → 貼上同步碼 → <b>用同步碼還原</b></li>
+                    <li>🕘 不小心刪掉記錄？按<b>還原舊版本</b>可救回（雲端每天保留前一天的資料，最多 7 份）</li>
                     <li>⏳ 雲端資料若<b>超過 300 天沒有更新</b>，會自動全部刪除</li>
                 </ol>
             </div>
@@ -797,8 +799,8 @@
             const t = String(str || '').toUpperCase().replace(/[^A-Z0-9]/g, '');
             return t.length === 24 ? t.match(/.{4}/g).join('-') : '';
         }
-        function cloudFetch(method, body) {
-            return fetch(CLOUD_API, {
+        function cloudFetch(method, body, query) {
+            return fetch(CLOUD_API + (query || ''), {
                 method,
                 headers: { 'Authorization': 'Bearer ' + cloudConfig.code, 'Content-Type': 'application/json' },
                 body: body ? JSON.stringify(body) : undefined
@@ -925,6 +927,31 @@
             }
         }
 
+        // 誤刪救回：從雲端保留的舊版本（每天第一次儲存前的狀態，最多 7 份）補回記錄
+        async function restoreOldVersion() {
+            if (!cloudConfig.code || !cloudReady()) return;
+            try {
+                const res = await cloudFetch('GET', null, '?history=1');
+                if (!res.ok) { showToast('❌ 讀取舊版本失敗', 'error'); return; }
+                const { versions } = await res.json();
+                if (!versions || !versions.length) {
+                    alert('目前還沒有舊版本。\n\n系統會在「每天第一次儲存」時，自動保留前一天的資料，最多保留 7 份。');
+                    return;
+                }
+                const menu = versions.map((v, i) => `${i + 1}. ${new Date(v.updatedAt).toLocaleString()} 的備份（共 ${v.count} 筆）`).join('\n');
+                const pick = parseInt(prompt('請輸入要還原的舊版本編號：\n\n' + menu + '\n\n※ 只會「補回」目前缺少的記錄，不會覆蓋你現有的資料。'), 10);
+                if (!pick || pick < 1 || pick > versions.length) return;
+                const r2 = await cloudFetch('GET', null, '?version=' + encodeURIComponent(versions[pick - 1].date));
+                if (!r2.ok) { showToast('❌ 讀取該版本失敗', 'error'); return; }
+                const r = await r2.json();
+                mergeImported(r.data || {});
+                showToast('🎉 已補回舊版本中的記錄');
+                await syncToCloud(false);
+            } catch (e) {
+                showToast('❌ 網路連線錯誤', 'error');
+            }
+        }
+
         function copyCloudCode() {
             if (!cloudConfig.code) return;
             if (navigator.clipboard && navigator.clipboard.writeText) {
@@ -955,6 +982,8 @@
         }
 
         function init() {
+            // 清除舊版 GitHub 備份遺留在手機上的 Token（已改用 Cloudflare 雲端備份）
+            try { localStorage.removeItem(BP_PREFIX + 'GistConfig'); } catch (e) {}
             loadTheme();
             cleanExpiredRecords(); // 啟動時自動刪除超過 180 天的舊紀錄
             
