@@ -446,7 +446,7 @@
                 </div>
             </div>
 
-            <div class="version-text">Version 10.15 ✨ 立體圓潤版</div>
+            <div class="version-text">Version 10.16 ✨ 立體圓潤版</div>
         </div>
     </div>
 
@@ -480,7 +480,7 @@
                 </ol>
             </div>
 
-            <div class="version-text">Version 10.15 ✨ 立體圓潤版</div>
+            <div class="version-text">Version 10.16 ✨ 立體圓潤版</div>
         </div>
     </div>
 
@@ -1455,14 +1455,16 @@ const BPOCR = (function () {
             return gi;
         }
         // 硬體補光：依畫面亮度自動調整相機曝光補償（僅支援的裝置，如 Android Chrome）
+        // 血壓計螢幕沒有背光 → 預設偏亮（+1 EV），太暗時直接跳到 +2 EV；反光過曝時再降回來
+        const SCAN_EV_START = 1, SCAN_EV_DARK = 2;
         function scanAdaptExposure(g) {
             if (!scan.track || !scan.expCap || Date.now() - scan.expT < 700) return;
             let sum = 0, sat = 0, n = 0;
             for (let i = 0; i < g.length; i += 16) { const v = g[i]; sum += v; if (v >= 245) sat++; n++; }
             const mean = sum / n, satR = sat / n, c = scan.expCap;
             let next = scan.expVal;
-            if (satR > 0.06) next -= c.step;            // 過曝（背光數字糊成一片）→ 降低
-            else if (mean < 85 && satR < 0.03) next += c.step; // 太暗 → 提高
+            if (satR > 0.06) next -= Math.max(c.step, 1);          // 過曝（反光、太亮）→ 降 1 EV
+            else if (mean < 85 && satR < 0.03) next = SCAN_EV_DARK; // 太暗 → 直接 +2 EV
             next = Math.max(c.min, Math.min(c.max, next));
             if (next === scan.expVal) return;
             scan.expVal = next; scan.expT = Date.now();
@@ -1504,7 +1506,12 @@ const BPOCR = (function () {
                     if (caps.focusMode && caps.focusMode.indexOf('continuous') >= 0) await tr.applyConstraints({ advanced: [{ focusMode: 'continuous' }] }).catch(() => {});
                     if (caps.exposureMode && caps.exposureMode.indexOf('continuous') >= 0) await tr.applyConstraints({ advanced: [{ exposureMode: 'continuous' }] }).catch(() => {});
                     const ec = caps.exposureCompensation;
-                    if (ec && ec.max > ec.min) scan.expCap = { min: ec.min, max: ec.max, step: ec.step || (ec.max - ec.min) / 8 };
+                    if (ec && ec.max > ec.min) {
+                        scan.expCap = { min: ec.min, max: ec.max, step: ec.step || (ec.max - ec.min) / 8 };
+                        const ev0 = Math.max(ec.min, Math.min(ec.max, SCAN_EV_START));
+                        scan.expVal = ev0;
+                        await tr.applyConstraints({ advanced: [{ exposureCompensation: ev0 }] }).catch(() => {});
+                    }
                 } catch (e) {}
                 scanSay('📍 讓血壓計液晶螢幕佔滿畫面、數字盡量水平，相機會自動補光。');
                 scan.t0 = Date.now();
