@@ -3,6 +3,68 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <script>
+        // ===== 在 LINE 內建瀏覽器開啟時，改用外部瀏覽器（內建瀏覽器無法安裝 App、相機也常受限）=====
+        (function () {
+            var u;
+            try { u = new URL(location.href); } catch (e) { return; }
+            var P = 'openExternalBrowser';
+            var isLine = /Line\//i.test(navigator.userAgent || '');
+
+            if (!isLine) { // 一般瀏覽器：把網址上用不到的參數清掉
+                if (u.searchParams.has(P) && history.replaceState) {
+                    u.searchParams.delete(P);
+                    history.replaceState(null, '', u.pathname + u.search + u.hash);
+                }
+                return;
+            }
+
+            if (u.searchParams.get(P) !== '1') { // 第一步：加上 LINE 官方參數，LINE 會改用外部瀏覽器開啟
+                u.searchParams.set(P, '1');
+                location.replace(u.toString());
+                return;
+            }
+
+            // 第二步：已帶參數但仍在 LINE 內 → 顯示引導畫面（可能是舊版 LINE 不支援）
+            var clean = new URL(u.toString());
+            clean.searchParams.delete(P);
+            var plainUrl = clean.toString();
+            var isAndroid = /Android/i.test(navigator.userAgent);
+
+            document.addEventListener('DOMContentLoaded', function () {
+                var box = document.createElement('div');
+                box.style.cssText = 'position:fixed;inset:0;z-index:2147483647;background:#f4f9f9;color:#234;display:flex;flex-direction:column;justify-content:center;align-items:center;padding:28px;text-align:center;font-family:-apple-system,BlinkMacSystemFont,"Noto Sans TC",sans-serif;';
+                var steps = isAndroid
+                    ? '請點下方按鈕用 Chrome 開啟。<br>若沒有反應，請點畫面右上角的 <b>⋮</b>，選「<b>以其他瀏覽器開啟</b>」或「<b>在瀏覽器中開啟</b>」。'
+                    : '請點畫面右下角的 <b>分享／⋯</b> 圖示，選「<b>在 Safari 中開啟</b>」（或「<b>以預設瀏覽器開啟</b>」）。';
+                box.innerHTML =
+                    '<div style="font-size:52px;margin-bottom:10px">📲</div>' +
+                    '<div style="font-size:21px;font-weight:800;margin-bottom:12px">請改用瀏覽器開啟</div>' +
+                    '<div style="font-size:15px;line-height:1.7;max-width:340px;margin-bottom:22px">LINE 內建的瀏覽器無法安裝成手機 App，相機功能也可能無法使用。<br><br>' + steps + '</div>';
+                function btn(label, fn, primary) {
+                    var b = document.createElement('button');
+                    b.textContent = label;
+                    b.style.cssText = 'width:100%;max-width:320px;height:50px;margin-bottom:12px;border:0;border-radius:26px;font-size:16px;font-weight:800;' +
+                        (primary ? 'background:#2e9d8f;color:#fff;' : 'background:#fff;color:#234;border:2px solid #b8d8d4;');
+                    b.onclick = fn;
+                    box.appendChild(b);
+                }
+                if (isAndroid) {
+                    btn('🌐 用 Chrome 開啟', function () {
+                        location.href = 'intent://' + clean.host + clean.pathname + clean.search +
+                            '#Intent;scheme=https;package=com.android.chrome;S.browser_fallback_url=' + encodeURIComponent(plainUrl) + ';end';
+                    }, true);
+                }
+                btn('📋 複製網址（貼到瀏覽器開啟）', function () {
+                    if (navigator.clipboard && navigator.clipboard.writeText) {
+                        navigator.clipboard.writeText(plainUrl).then(function () { alert('已複製網址，請貼到瀏覽器開啟'); }, function () { prompt('請長按複製網址：', plainUrl); });
+                    } else { prompt('請長按複製網址：', plainUrl); }
+                }, !isAndroid);
+                document.body.appendChild(box);
+                document.documentElement.style.overflow = 'hidden';
+            });
+        })();
+    </script>
     <title>血壓記錄版</title>
     <link rel="manifest" href="manifest.json">
     <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
@@ -446,7 +508,7 @@
                 </div>
             </div>
 
-            <div class="version-text">Version 10.16 ✨ 立體圓潤版</div>
+            <div class="version-text">Version 10.17 ✨ 立體圓潤版</div>
         </div>
     </div>
 
@@ -480,7 +542,7 @@
                 </ol>
             </div>
 
-            <div class="version-text">Version 10.16 ✨ 立體圓潤版</div>
+            <div class="version-text">Version 10.17 ✨ 立體圓潤版</div>
         </div>
     </div>
 
