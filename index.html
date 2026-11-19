@@ -244,7 +244,7 @@
 
         .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; box-sizing: border-box; padding: env(safe-area-inset-top, 0px) env(safe-area-inset-right, 0px) env(safe-area-inset-bottom, 0px) env(safe-area-inset-left, 0px); background: rgba(15, 23, 42, 0.55); z-index: 1000; justify-content: center; align-items: center; backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); }
         .modal-content {
-            background: linear-gradient(170deg, #ffffff 0%, #fbfdff 60%, rgba(var(--theme-rgb), 0.08) 100%);
+            background: #ffffff; /* 純白不透明：避免漸層尾端半透明，讓底下深色遮罩透出來導致字看不清 */
             color: var(--text-dark); padding: 20px; border-radius: 32px; box-sizing: border-box; width: 90%; max-width: 380px; position: relative;
             box-shadow: inset 0 2px 0 #ffffff, inset 0 -6px 14px rgba(var(--theme-rgb), 0.08), 0 32px 60px -14px rgba(15,23,42,0.45), 0 8px 16px rgba(15,23,42,0.12);
             border: 1px solid rgba(255,255,255,0.7); max-height: 90vh; max-height: 90dvh; overflow-y: auto;
@@ -508,7 +508,7 @@
                 </div>
             </div>
 
-            <div class="version-text">Version 10.17 ✨ 立體圓潤版</div>
+            <div class="version-text">Version 10.18 ✨ 立體圓潤版</div>
         </div>
     </div>
 
@@ -542,7 +542,7 @@
                 </ol>
             </div>
 
-            <div class="version-text">Version 10.17 ✨ 立體圓潤版</div>
+            <div class="version-text">Version 10.18 ✨ 立體圓潤版</div>
         </div>
     </div>
 
