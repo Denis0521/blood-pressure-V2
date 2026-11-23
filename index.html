@@ -508,7 +508,7 @@
                 </div>
             </div>
 
-            <div class="version-text">Version 10.20 ✨ 立體圓潤版</div>
+            <div class="version-text">Version 10.21 ✨ 立體圓潤版</div>
         </div>
     </div>
 
@@ -542,7 +542,7 @@
                 </ol>
             </div>
 
-            <div class="version-text">Version 10.20 ✨ 立體圓潤版</div>
+            <div class="version-text">Version 10.21 ✨ 立體圓潤版</div>
         </div>
     </div>
 
@@ -1056,11 +1056,14 @@
                     return;
                 }
                 const menu = versions.map((v, i) => `${i + 1}. ${new Date(v.updatedAt).toLocaleString()} 的備份（共 ${v.count} 筆）`).join('\n');
-                const pick = parseInt(prompt('請輸入要還原的舊版本編號：\n\n' + menu + '\n\n※ 下一步可選擇「只補回缺少的」或「連不同的也覆蓋」。（程式 v10.20）'), 10);
+                const pick = parseInt(prompt('請輸入要還原的舊版本編號：\n\n' + menu + '\n\n※ 下一步可選擇「只補回缺少的」或「連不同的也覆蓋」。（程式 v10.21）'), 10);
                 if (!pick || pick < 1 || pick > versions.length) return;
                 const r2 = await cloudFetch('GET', null, '?version=' + encodeURIComponent(versions[pick - 1].date));
                 if (!r2.ok) { showToast('❌ 讀取該版本失敗', 'error'); return; }
                 const r = await r2.json();
+                const cnt = (data, from) => { let n = 0; for (const d in data) { if (d >= from) ['morning', 'evening'].forEach(p => { const o = data[d] && data[d][p]; if (o && (o.sys || o.dia || o.hr)) n++; }); } return n; };
+                const from14 = formatDate(new Date(Date.now() - 14 * 86400000));
+                const diag = '【診斷】近 14 天（' + from14 + ' 起）\n舊版本裡有 ' + cnt(r.data || {}, from14) + ' 筆\n你現在這支手機有 ' + cnt(appData, from14) + ' 筆\n舊版本日期範圍：' + (Object.keys(r.data || {}).sort()[0] || '無') + ' ～ ' + (Object.keys(r.data || {}).sort().slice(-1)[0] || '無') + '\n本機網址路徑：' + location.pathname + '（儲存代號 ' + BP_PREFIX + '）';
                 const overwrite = confirm('要連「現在已有、但數值和舊版本不同」的記錄，也一併用舊版本覆蓋嗎？\n\n按「確定」＝補回缺少的 ＋ 覆蓋不同的\n按「取消」＝只補回缺少的');
                 const m = mergeImported(r.data || {}, overwrite);
                 // 把顯示範圍拉到涵蓋被還原的日期，否則看起來像沒還原
@@ -1071,9 +1074,10 @@
                 const total = m.added + m.changed;
                 if (total > 0) {
                     showToast('🎉 已還原 ' + total + ' 筆（補回 ' + m.added + '、覆蓋 ' + m.changed + '）');
+                    alert('已還原 ' + total + ' 筆\n\n' + diag);
                     await syncToCloud(false);
                 } else {
-                    alert('這個舊版本沒有可還原的記錄。\n\n原因：舊版本裡的記錄，你現在都已經有了' + (overwrite ? '（且數值相同）' : '（若要用舊版本的數值取代，請重按並選「覆蓋」）') + (m.expired ? '\n另有 ' + m.expired + ' 筆超過 180 天，已被自動清除規則排除。' : '') + '\n\n可改選更舊的版本試試。');
+                    alert('這個舊版本沒有可還原的記錄。\n\n原因：舊版本裡的記錄，你現在都已經有了' + (overwrite ? '（且數值相同）' : '（若要用舊版本的數值取代，請重按並選「覆蓋」）') + (m.expired ? '\n另有 ' + m.expired + ' 筆超過 180 天，已被自動清除規則排除。' : '') + '\n\n' + diag);
                 }
             } catch (e) {
                 showToast('❌ 網路連線錯誤', 'error');
