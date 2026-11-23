@@ -503,12 +503,14 @@
                     <button class="btn-outline btn-tall" onclick="copyCloudCode()">📋 複製同步碼</button>
                     <button class="btn-outline btn-tall" onclick="restoreFromCloud()">📥 雲端還原</button>
                     <button class="btn-outline btn-tall" onclick="restoreOldVersion()">🕘 還原舊版本</button>
+                    <button class="btn-outline btn-tall" onclick="restoreAllVersions()" style="min-width: 100%;">🧰 合併還原「所有」備份</button>
+                    <button class="btn-outline btn-tall" onclick="exportAllBackups()" style="min-width: 100%;">💾 下載「所有」備份檔</button>
                     <button class="btn-danger btn-tall" onclick="disconnectCloud()">🔗 解除綁定</button>
                     <button class="btn-danger btn-tall" onclick="deleteCloudData()" style="min-width: 100%;">🗑️ 刪除雲端資料並解除綁定</button>
                 </div>
             </div>
 
-            <div class="version-text">Version 10.21 ✨ 立體圓潤版</div>
+            <div class="version-text">Version 10.22 ✨ 立體圓潤版</div>
         </div>
     </div>
 
@@ -542,7 +544,7 @@
                 </ol>
             </div>
 
-            <div class="version-text">Version 10.21 ✨ 立體圓潤版</div>
+            <div class="version-text">Version 10.22 ✨ 立體圓潤版</div>
         </div>
     </div>
 
@@ -1056,7 +1058,7 @@
                     return;
                 }
                 const menu = versions.map((v, i) => `${i + 1}. ${new Date(v.updatedAt).toLocaleString()} 的備份（共 ${v.count} 筆）`).join('\n');
-                const pick = parseInt(prompt('請輸入要還原的舊版本編號：\n\n' + menu + '\n\n※ 下一步可選擇「只補回缺少的」或「連不同的也覆蓋」。（程式 v10.21）'), 10);
+                const pick = parseInt(prompt('請輸入要還原的舊版本編號：\n\n' + menu + '\n\n※ 下一步可選擇「只補回缺少的」或「連不同的也覆蓋」。（程式 v10.22）'), 10);
                 if (!pick || pick < 1 || pick > versions.length) return;
                 const r2 = await cloudFetch('GET', null, '?version=' + encodeURIComponent(versions[pick - 1].date));
                 if (!r2.ok) { showToast('❌ 讀取該版本失敗', 'error'); return; }
@@ -1082,6 +1084,69 @@
             } catch (e) {
                 showToast('❌ 網路連線錯誤', 'error');
             }
+        }
+
+        // 抓取雲端「目前版本 ＋ 全部舊版本」
+        async function fetchAllBackups() {
+            const out = { current: null, versions: [] };
+            const rc = await cloudFetch('GET');
+            if (rc.ok) { const c = await rc.json(); out.current = { updatedAt: c.updatedAt, data: c.data || {}, todos: c.todos || [] }; }
+            const rh = await cloudFetch('GET', null, '?history=1');
+            if (!rh.ok) throw new Error('history');
+            const { versions } = await rh.json();
+            for (const v of (versions || [])) {
+                const rv = await cloudFetch('GET', null, '?version=' + encodeURIComponent(v.date));
+                if (rv.ok) { const d = await rv.json(); out.versions.push({ date: v.date, updatedAt: d.updatedAt, data: d.data || {} }); }
+            }
+            return out;
+        }
+
+        // 把所有備份下載成一個檔案（本機存檔，不動現有資料）
+        async function exportAllBackups() {
+            if (!cloudConfig.code || !cloudReady()) return;
+            try {
+                showToast('⏳ 正在下載所有備份...');
+                const all = await fetchAllBackups();
+                const merged = {};
+                const add = data => { for (const d in data) for (const p of ['morning', 'evening']) {
+                    const o = data[d] && data[d][p];
+                    if (o && (o.sys || o.dia || o.hr)) { if (!merged[d]) merged[d] = { morning: {}, evening: {} }; if (!(merged[d][p] && (merged[d][p].sys || merged[d][p].dia || merged[d][p].hr))) merged[d][p] = o; }
+                } };
+                [...all.versions].reverse().forEach(v => add(v.data)); // 舊的先、新的後（缺的才補）
+                if (all.current) add(all.current.data);
+                const payload = { exportedAt: new Date().toISOString(), merged, current: all.current, versions: all.versions };
+                const blob = new Blob([JSON.stringify(payload, null, 1)], { type: 'application/json' });
+                const a = document.createElement('a');
+                a.href = URL.createObjectURL(blob);
+                a.download = '血壓全部備份_' + formatDate(new Date()) + '.json';
+                document.body.appendChild(a); a.click(); a.remove();
+                setTimeout(() => URL.revokeObjectURL(a.href), 5000);
+                showToast('💾 已下載（含 ' + all.versions.length + ' 份舊版本）');
+            } catch (e) { showToast('❌ 下載備份失敗，請檢查網路', 'error'); }
+        }
+
+        // 把所有舊版本與目前雲端版本全部合併回這支手機（只補缺少的，不覆蓋現有）
+        async function restoreAllVersions() {
+            if (!cloudConfig.code || !cloudReady()) return;
+            try {
+                showToast('⏳ 正在讀取所有備份...');
+                const all = await fetchAllBackups();
+                let added = 0, expired = 0, minD = '', maxD = '';
+                const sources = [...all.versions].map(v => v.data);
+                if (all.current) sources.push(all.current.data);
+                sources.forEach(data => {
+                    const m = mergeImported(data || {}, false);
+                    added += m.added; expired += m.expired;
+                    if (m.minDate && (!minD || m.minDate < minD)) minD = m.minDate;
+                    if (m.maxDate && (!maxD || m.maxDate > maxD)) maxD = m.maxDate;
+                });
+                const sd = document.getElementById('start-date'), ed = document.getElementById('end-date');
+                if (minD && minD < sd.value) sd.value = minD;
+                if (maxD && maxD > ed.value) ed.value = maxD;
+                renderTable();
+                alert('已讀取 ' + all.versions.length + ' 份舊版本' + (all.current ? ' ＋ 目前雲端版本' : '') + '\n補回 ' + added + ' 筆記錄' + (minD ? '\n補回的日期範圍：' + minD + ' ～ ' + maxD : '') + (expired ? '\n另有 ' + expired + ' 筆超過 180 天，已被排除。' : '') + '\n\n本機現在共有 ' + Object.keys(appData).length + ' 天的記錄。');
+                if (added > 0) await syncToCloud(false);
+            } catch (e) { showToast('❌ 讀取備份失敗，請檢查網路', 'error'); }
         }
 
         function copyCloudCode() {
