@@ -897,17 +897,35 @@
                 body: body ? JSON.stringify(body) : undefined
             });
         }
-        function mergeImported(importedData) {
+        function mergeImported(importedData, overwrite) {
+            const has = o => !!(o && (o.sys || o.dia || o.hr));
+            const cutoff = new Date(); cutoff.setHours(0, 0, 0, 0); cutoff.setDate(cutoff.getDate() - 180);
+            const res = { added: 0, changed: 0, expired: 0, minDate: '', maxDate: '' };
             for (const date in importedData) {
-                if (!appData[date]) { appData[date] = importedData[date]; continue; }
+                const d = new Date(date + 'T00:00:00');
+                const src = importedData[date] || {};
+                if (!isNaN(d.getTime()) && d < cutoff) {
+                    ['morning', 'evening'].forEach(p => { if (has(src[p])) res.expired++; });
+                    continue;
+                }
                 ['morning', 'evening'].forEach(period => {
-                    const im = importedData[date][period];
-                    if (im && im.sys && (!appData[date][period] || !appData[date][period].sys)) appData[date][period] = im;
+                    const im = src[period];
+                    if (!has(im)) return;
+                    if (!appData[date]) appData[date] = { morning: {}, evening: {} };
+                    const cur = appData[date][period];
+                    let hit = false;
+                    if (!has(cur)) { appData[date][period] = im; res.added++; hit = true; }
+                    else if (overwrite && (cur.sys !== im.sys || cur.dia !== im.dia || cur.hr !== im.hr)) { appData[date][period] = im; res.changed++; hit = true; }
+                    if (hit) {
+                        if (!res.minDate || date < res.minDate) res.minDate = date;
+                        if (!res.maxDate || date > res.maxDate) res.maxDate = date;
+                    }
                 });
             }
             cleanExpiredRecords();
             localStorage.setItem((BP_PREFIX + 'Records'), JSON.stringify(appData));
             renderTable();
+            return res;
         }
 
         function updateCloudUI() {
@@ -1043,9 +1061,20 @@
                 const r2 = await cloudFetch('GET', null, '?version=' + encodeURIComponent(versions[pick - 1].date));
                 if (!r2.ok) { showToast('❌ 讀取該版本失敗', 'error'); return; }
                 const r = await r2.json();
-                mergeImported(r.data || {});
-                showToast('🎉 已補回舊版本中的記錄');
-                await syncToCloud(false);
+                const overwrite = confirm('要連「現在已有、但數值和舊版本不同」的記錄，也一併用舊版本覆蓋嗎？\n\n按「確定」＝補回缺少的 ＋ 覆蓋不同的\n按「取消」＝只補回缺少的');
+                const m = mergeImported(r.data || {}, overwrite);
+                // 把顯示範圍拉到涵蓋被還原的日期，否則看起來像沒還原
+                const sd = document.getElementById('start-date'), ed = document.getElementById('end-date');
+                if (m.minDate && m.minDate < sd.value) sd.value = m.minDate;
+                if (m.maxDate && m.maxDate > ed.value) ed.value = m.maxDate;
+                renderTable();
+                const total = m.added + m.changed;
+                if (total > 0) {
+                    showToast('🎉 已還原 ' + total + ' 筆（補回 ' + m.added + '、覆蓋 ' + m.changed + '）');
+                    await syncToCloud(false);
+                } else {
+                    alert('這個舊版本沒有可還原的記錄。\n\n原因：舊版本裡的記錄，你現在都已經有了' + (overwrite ? '（且數值相同）' : '（若要用舊版本的數值取代，請重按並選「覆蓋」）') + (m.expired ? '\n另有 ' + m.expired + ' 筆超過 180 天，已被自動清除規則排除。' : '') + '\n\n可改選更舊的版本試試。');
+                }
             } catch (e) {
                 showToast('❌ 網路連線錯誤', 'error');
             }
