@@ -862,7 +862,7 @@
 
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
-                navigator.serviceWorker.register('./sw.js').then(reg => { console.log('SW 註冊成功'); }).catch(err => { console.log('SW 註冊失敗:', err); });
+                navigator.serviceWorker.register('./sw.js', { updateViaCache: 'none' }).then(reg => { console.log('SW 註冊成功'); }).catch(err => { console.log('SW 註冊失敗:', err); });
             });
         }
     
@@ -1056,7 +1056,7 @@
                     return;
                 }
                 const menu = versions.map((v, i) => `${i + 1}. ${new Date(v.updatedAt).toLocaleString()} 的備份（共 ${v.count} 筆）`).join('\n');
-                const pick = parseInt(prompt('請輸入要還原的舊版本編號：\n\n' + menu + '\n\n※ 只會「補回」目前缺少的記錄，不會覆蓋你現有的資料。'), 10);
+                const pick = parseInt(prompt('請輸入要還原的舊版本編號：\n\n' + menu + '\n\n※ 下一步可選擇「只補回缺少的」或「連不同的也覆蓋」。（程式 v10.20）'), 10);
                 if (!pick || pick < 1 || pick > versions.length) return;
                 const r2 = await cloudFetch('GET', null, '?version=' + encodeURIComponent(versions[pick - 1].date));
                 if (!r2.ok) { showToast('❌ 讀取該版本失敗', 'error'); return; }

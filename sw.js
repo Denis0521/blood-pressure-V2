@@ -1,5 +1,5 @@
 // 每次更新網頁有大改動時，更改這個版本號，強制讓瀏覽器更新快取
-const CACHE_NAME = 'bp-tracker-v2-v10.19'; 
+const CACHE_NAME = 'bp-tracker-v2-v10.20'; 
 
 // 需要被快取的檔案清單
 const urlsToCache = [
@@ -39,7 +39,7 @@ self.addEventListener('fetch', event => {
   // 雲端備份 API 等跨網域或非 GET 請求不經過快取，直接放行
   if (event.request.method !== 'GET' || new URL(event.request.url).origin !== self.location.origin) return;
   event.respondWith(
-    fetch(event.request)
+    fetch(event.request, { cache: 'no-cache' })
       .then(response => {
         if (response && response.status === 200 && response.type === 'basic') {
           const responseToCache = response.clone();
